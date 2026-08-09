@@ -1,0 +1,57 @@
+{
+  "_comment": "CyberLoRA Kohya_SS 训练配置 — 适配 SDXL + T4 16GB",
+  "pretrained_model_name_or_path": "stabilityai/stable-diffusion-xl-base-1.0",
+  "v2": false,
+  "v_parameterization": false,
+  "train_data_dir": "./train_data/100_cyberboy",
+  "reg_data_dir": "./reg_data/1_cyberboy",
+  "output_dir": "./output",
+  "output_name": "cyberboy_sdxl",
+  "save_model_as": "safetensors",
+
+  "_resolution_comment": "SDXL 标准分辨率，bucket 会自动处理不同尺寸图片",
+  "resolution": "1024,1024",
+  "enable_bucket": true,
+  "min_bucket_reso": 512,
+  "max_bucket_reso": 1536,
+
+  "_training_comment": "SDXL LoRA 推荐参数",
+  "train_batch_size": 1,
+  "max_train_epochs": 8,
+  "network_module": "networks.lora",
+  "network_dim": 32,
+  "network_alpha": 16,
+  "noise_offset": 0.1,
+
+  "_lr_comment": "UNet 学习率是 Text Encoder 的 2 倍",
+  "learning_rate": "1e-4",
+  "unet_lr": "1e-4",
+  "text_encoder_lr": "5e-5",
+  "lr_scheduler": "cosine",
+  "lr_warmup_steps": 0,
+  "optimizer_type": "AdamW8bit",
+
+  "_precision_comment": "bf16 比 fp16 更省显存，T4 首选",
+  "mixed_precision": "bf16",
+  "save_precision": "bf16",
+  "xformers": true,
+  "sdpa": false,
+
+  "save_every_n_epochs": 4,
+  "save_every_n_steps": 0,
+  "sample_every_n_steps": 0,
+
+  "caption_extension": ".txt",
+  "max_token_length": 225,
+  "shuffle_caption": false,
+  "keep_tokens": 1,
+
+  "_cache_comment": "缓存 latents 到磁盘，大幅减少训练中 CPU-GPU 传输",
+  "cache_latents": true,
+  "cache_latents_to_disk": true,
+
+  "dataset_config": "",
+  "gradient_checkpointing": true,
+  "gradient_accumulation_steps": 1,
+  "max_grad_norm": 1.0
+}
