@@ -1,0 +1,79 @@
+# Markdown Resume
+
+个人简历与面试备战仓库 — 简历维护、JD 追踪、算法刷题笔记，全部用 Markdown 管理。
+
+## 目录结构
+
+```
+├── resume.md               # 简历（Markdown 源文件）
+├── resume.html             # 简历（HTML 渲染版）
+├── assets/                 # 简历用到的图标、头像等静态资源
+├── jd/                     # 意向岗位 JD 收集
+├── leetcode-hot100/        # Hot 100 刷题笔记（含题解、代码、踩坑总结）
+├── java/                   # Java 技术笔记
+├── lover/                  # 其他
+├── repo/                   # 其他
+├── mdconvert               # 文档转换工具（见下方说明）
+├── .venv/                  # Python 虚拟环境（gitignore）
+└── .gitignore
+```
+
+## 工具
+
+### mdconvert — 任意文档转 Markdown
+
+基于微软 [MarkItDown](https://github.com/microsoft/markitdown) 的一键转换脚本，支持 PDF、Word、PPT、Excel、HTML 等格式。
+
+#### 安装
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install markitdown
+```
+
+#### 使用
+
+```bash
+# 基本用法：输入文件 → 自动生成同名 .md
+./mdconvert input.pdf
+
+# 指定输出路径
+./mdconvert input.docx output.md
+```
+
+#### 支持的格式
+
+| 格式 | 说明 |
+|:---|:---|
+| `.pdf` | PDF 文档 |
+| `.docx` | Word 文档 |
+| `.pptx` | PowerPoint 幻灯片 |
+| `.xlsx` | Excel 表格 |
+| `.html` | 网页 |
+| `.csv` / `.json` / `.xml` | 结构化数据 |
+| `.zip` | 压缩包（递归解析内部文件） |
+
+#### 典型场景
+
+```bash
+# 把 JD 的 PDF/Word 转成 Markdown 存入 jd/ 目录
+./mdconvert ~/Downloads/Java高级工程师.pdf jd/Java高级工程师.md
+
+# 简历 HTML → Markdown 双向维护
+./mdconvert resume.html resume.md
+```
+
+## LeetCode Hot 100
+
+刷题笔记统一模板：
+
+```
+# N. 题目名称
+> **难度**：🟢/🟡/🔴 | **标签**：xxx | **企业**：—
+
+## 题目描述 → ## 示例 → ## 提示 → ## 进阶
+## 思路 → ## 代码（我的伪代码 + 解法） → ## 个人总结
+```
+
+每道题记录：伪代码复盘 + 正确解法 + 踩坑总结，方便二刷回顾。

@@ -1,0 +1,25 @@
+#!/bin/bash
+# MarkItDown wrapper — 将任意文档转 Markdown
+# 用法: ./mdconvert input.pdf|docx|html|pptx|xlsx [output.md]
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+VENV_PYTHON="$SCRIPT_DIR/.venv/bin/python3"
+
+if [ ! -f "$VENV_PYTHON" ]; then
+    echo "❌ 虚拟环境未初始化，请先运行: python3 -m venv .venv && .venv/bin/pip install markitdown"
+    exit 1
+fi
+
+INPUT="${1:-}"
+OUTPUT="${2:-${INPUT%.*}.md}"
+
+if [ -z "$INPUT" ]; then
+    echo "用法: ./mdconvert <input-file> [output.md]"
+    echo "支持: pdf, docx, pptx, xlsx, html, csv, json, xml, zip 等"
+    exit 1
+fi
+
+"$VENV_PYTHON" -m markitdown "$INPUT" > "$OUTPUT" 2>/dev/null && echo "✅ 已生成: $OUTPUT" || {
+    "$VENV_PYTHON" -c "from markitdown import MarkItDown; md = MarkItDown(); print(md.convert('$INPUT').text_content)" > "$OUTPUT" 2>/dev/null && echo "✅ 已生成: $OUTPUT" || echo "❌ 转换失败"
+}
