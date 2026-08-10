@@ -59,6 +59,14 @@
 
 ## <img src="assets/project-diagram-solid.svg" width="30px"> 项目经历
 
+- **阿里云中间件MSE微服务，AgentMate，负责AI应用开发，2024年～至今**
+
+​      **框架构建：**SpringBoot +  Mysql + Redis + AgentScope + RAG
+
+​      **项目描述：**
+
+
+
 - **奥克斯集团家电IT部，国际物流平台，负责后端开发，2022.12~至今**
 
 ​       **框架构建：**SpringBoot +  Mysql + Redis + RocketMq + Mybatis + Eureka + Fegin + Ribbon + Zuul
