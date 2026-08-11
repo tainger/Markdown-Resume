@@ -12,6 +12,7 @@
 ├── leetcode-hot100/        # Hot 100 刷题笔记（含题解、代码、踩坑总结）
 ├── 华为OD机试/              # 华为 OD 机试高频真题 + 题解（100/200/300 分）
 ├── java/                   # Java 技术笔记
+├── agentscope-java/        # AgentScope Java 2.0 设计思想源码解读
 ├── lover/                  # 其他
 ├── repo/                   # 其他
 ├── mdconvert               # 文档转换工具（见下方说明）
