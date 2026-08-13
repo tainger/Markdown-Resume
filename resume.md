@@ -98,7 +98,7 @@
 
 
 
-- **乐其电商，[EasyBI（数据分析平台)](https://www.leqee.com/services/#dual_drive_engine)，负责后端开发，2021.12~2022.10**
+- **乐其电商，[EasyBI（数据分析平台)](https://www.leqee.com/services/#dual_drive_engine)，负责后端开发，2021.12~2024.4**
 
   **框架构建：**SpringBoot + Presto + Mysql + Redis + Nacos + Mybatis + Spark + Xxl-job + RocketMq
 
