@@ -19,7 +19,7 @@
           ·
           <span>
                 <img src="assets/rss.svg" width="18px">
-                <a href="http://www.tanxiaohu.com">Blog</a>
+                <a href="https://tainger.github.io/">Blog</a>
             </span>
         </div>
     </div>
