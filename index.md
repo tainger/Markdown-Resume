@@ -1,5 +1,6 @@
 ---
 layout: home
+comment: false
 
 hero:
   name: 学习笔记
