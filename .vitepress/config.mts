@@ -23,20 +23,36 @@ export default defineConfig({
   // 关闭死链检查：笔记里存在少量占位/纯文本链接，不因此中断构建
   ignoreDeadLinks: true,
 
-  // 笔记正文里含大量 {..}、{{..}}（如 Java 数组初始化、集合表示），
-  // 默认会被 Vue 当成模板插值导致构建报错。改用不冲突的分隔符规避。
-  vue: {
-    template: {
-      compilerOptions: {
-        delimiters: ['{{{{', '}}}}'],
-      },
-    },
-  },
-
   markdown: {
     // 支持 \(...\)、$$...$$ 等 LaTeX 数学公式渲染
     config: (md) => {
       md.use(mathjax3 as any)
+
+      // 笔记正文里含 {{ }} 花括号（如 Java 数组 {{1,0},{0,1}}），
+      // 会被 Vue 当成模板插值导致构建报错。这里在渲染时把它转义成
+      // HTML 实体，Vue 不再识别为插值，浏览器仍正常显示花括号。
+      // 需同时覆盖：普通文本、行内代码、代码块。
+      const escapeCurly = (s: string) =>
+        s.replace(/\{\{/g, '&#123;&#123;').replace(/\}\}/g, '&#125;&#125;')
+
+      const defaultText =
+        md.renderer.rules.text ||
+        ((tokens: any, idx: number) => tokens[idx].content)
+      md.renderer.rules.text = (tokens, idx, options, env, self) => {
+        return escapeCurly(defaultText(tokens, idx, options, env, self))
+      }
+
+      const defaultCodeInline =
+        md.renderer.rules.code_inline ||
+        ((tokens: any, idx: number) => tokens[idx].content)
+      md.renderer.rules.code_inline = (tokens, idx, options, env, self) => {
+        return escapeCurly(defaultCodeInline(tokens, idx, options, env, self))
+      }
+
+      const defaultFence = md.renderer.rules.fence!
+      md.renderer.rules.fence = (tokens, idx, options, env, self) => {
+        return escapeCurly(defaultFence(tokens, idx, options, env, self))
+      }
     },
   },
 
