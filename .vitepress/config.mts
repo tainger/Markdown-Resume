@@ -12,6 +12,7 @@ export const INCLUDE_DIRS: { text: string; dir: string }[] = [
   { text: 'Redis', dir: 'redis' },
   { text: 'RocketMQ', dir: 'rocketMq' },
   { text: 'Java', dir: 'java' },
+  { text: 'JVM', dir: 'jvm' },
   { text: '面试准备', dir: '面试准备' },
 ]
 
