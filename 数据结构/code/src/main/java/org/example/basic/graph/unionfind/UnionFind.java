@@ -1,6 +1,8 @@
 package org.example.basic.graph.unionfind;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author jiazhiyuan
@@ -107,7 +109,164 @@ public class UnionFind {
     public static void main(String[] args) {
 //        unionFindDemo1();
 //        System.out.println("\n" + "=".repeat(50) + "\n");
-        unionFindDemo7();
+        unionFindDemo8();
+    }
+
+     // ========== 新增：最大不平衡度计算 ==========
+    /**
+     * Demo 8: 计算连通分量的最大不平衡度
+     * 定义：不平衡度 = (最大值 - 最小值) * 节点数
+     * 要求：节点数 >= 2 才有效
+     * 
+     * 应用场景：负载均衡、资源分配、网络分区评估等
+     */
+    public static void unionFindDemo8() {
+        System.out.println("=== 计算连通分量最大不平衡度 ===");
+        
+        // 测试用例1: 多个连通分量
+        System.out.println("\n--- 测试1: 多个连通分量 ---");
+        int[] loads1 = {10, 20, 30, 40, 50};
+        int[][] edges1 = {{0, 1}, {1, 2}, {3, 4}};
+        int result1 = maxImbalance(loads1, edges1);
+        System.out.println("最大不平衡度: " + result1);
+        // 组0: {0,1,2} -> max=30,min=10,count=3 -> (30-10)*3=60
+        // 组1: {3,4} -> max=50,min=40,count=2 -> (50-40)*2=20
+        // 最大: 60
+
+        // 测试用例2: 单节点（无效）
+        System.out.println("\n--- 测试2: 单节点（无效） ---");
+        int[] loads2 = {100};
+        int[][] edges2 = {};
+        int result2 = maxImbalance(loads2, edges2);
+        System.out.println("最大不平衡度: " + result2); // -1
+
+        // 测试用例3: 所有节点连通
+        System.out.println("\n--- 测试3: 所有节点连通 ---");
+        int[] loads3 = {5, 15, 25, 35};
+        int[][] edges3 = {{0, 1}, {1, 2}, {2, 3}};
+        int result3 = maxImbalance(loads3, edges3);
+        System.out.println("最大不平衡度: " + result3);
+        // max=35,min=5,count=4 -> (35-5)*4=120
+
+        // 测试用例4: 复杂情况
+        System.out.println("\n--- 测试4: 复杂情况 ---");
+        int[] loads4 = {8, 3, 12, 6, 20, 15};
+        int[][] edges4 = {{0, 1}, {1, 2}, {3, 4}, {4, 5}};
+        int result4 = maxImbalance(loads4, edges4);
+        System.out.println("最大不平衡度: " + result4);
+        // 组0: {0,1,2} -> max=12,min=3,count=3 -> (12-3)*3=27
+        // 组1: {3,4,5} -> max=20,min=6,count=3 -> (20-6)*3=42
+        // 最大: 42
+        
+        // 测试用例5: 无连接（每个节点独立）
+        System.out.println("\n--- 测试5: 无连接（每个节点独立） ---");
+        int[] loads5 = {1, 5, 3, 9, 7};
+        int[][] edges5 = {};
+        int result5 = maxImbalance(loads5, edges5);
+        System.out.println("最大不平衡度: " + result5); // -1 (因为没有分组达到2个节点)
+    }
+
+    /**
+     * 计算最大不平衡度（基础版本）
+     * @param loads 每个节点的负载值
+     * @param edges 边的关系
+     * @return 最大不平衡度，如果没有有效分组返回 -1
+     */
+    static int maxImbalance(int[] loads, int[][] edges) {
+        int n = loads.length;
+        UnionFind uf = new UnionFind(n);
+        
+        // 1. 建立连通关系
+        for (int[] e : edges) {
+            uf.union(e[0], e[1]);
+        }
+        
+        // 2. 按根分组统计: root -> [max, min, count]
+        Map<Integer, long[]> groups = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            int root = uf.find(i);
+            long[] g = groups.computeIfAbsent(root, 
+                k -> new long[]{Long.MIN_VALUE, Long.MAX_VALUE, 0});
+            g[0] = Math.max(g[0], loads[i]);  // max
+            g[1] = Math.min(g[1], loads[i]);  // min
+            g[2]++;                            // count
+        }
+        
+        // 3. 打印分组信息（便于调试）
+        System.out.println("分组统计:");
+        for (Map.Entry<Integer, long[]> entry : groups.entrySet()) {
+            int root = entry.getKey();
+            long[] g = entry.getValue();
+            long imbalance = (g[0] - g[1]) * g[2];
+            System.out.printf("  组%d: max=%d, min=%d, count=%d, 不平衡度=%d%n",
+                root, g[0], g[1], g[2], imbalance);
+        }
+        
+        // 4. 计算最大不平衡度
+        long ans = -1;
+        for (long[] g : groups.values()) {
+            if (g[2] < 2) continue;
+            long imbalance = (g[0] - g[1]) * g[2];
+            ans = Math.max(ans, imbalance);
+        }
+        return (int) ans;
+    }
+
+    /**
+     * 增强版：计算最大不平衡度并返回详细信息
+     */
+    static int maxImbalanceWithDetails(int[] loads, int[][] edges) {
+        int n = loads.length;
+        UnionFind uf = new UnionFind(n);
+        
+        // 建立连通关系
+        for (int[] e : edges) {
+            uf.union(e[0], e[1]);
+        }
+        
+        // 分组统计：[max, min, count, maxIndex, minIndex]
+        Map<Integer, long[]> groups = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            int root = uf.find(i);
+            long[] g = groups.computeIfAbsent(root, 
+                k -> new long[]{Long.MIN_VALUE, Long.MAX_VALUE, 0, -1, -1});
+            
+            if (loads[i] > g[0]) {
+                g[0] = loads[i];
+                g[3] = i; // 记录最大值索引
+            }
+            if (loads[i] < g[1]) {
+                g[1] = loads[i];
+                g[4] = i; // 记录最小值索引
+            }
+            g[2]++;
+        }
+        
+        // 计算并找出最大不平衡度
+        long maxImbalance = -1;
+        int bestRoot = -1;
+        System.out.println("分组详细信息:");
+        for (Map.Entry<Integer, long[]> entry : groups.entrySet()) {
+            int root = entry.getKey();
+            long[] g = entry.getValue();
+            if (g[2] < 2) {
+                System.out.printf("  组%d: count=%d (节点数<2, 跳过)%n", root, g[2]);
+                continue;
+            }
+            long imbalance = (g[0] - g[1]) * g[2];
+            System.out.printf("  组%d: max=%d(节点%d), min=%d(节点%d), count=%d, 不平衡度=%d%n",
+                root, g[0], g[3], g[1], g[4], g[2], imbalance);
+            
+            if (imbalance > maxImbalance) {
+                maxImbalance = imbalance;
+                bestRoot = root;
+            }
+        }
+        
+        if (bestRoot != -1) {
+            System.out.printf(">>> 最大不平衡度: 组%d, 值=%d%n", bestRoot, maxImbalance);
+        }
+        return (int) maxImbalance;
     }
 
 
