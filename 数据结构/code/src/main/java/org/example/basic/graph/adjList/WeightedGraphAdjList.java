@@ -1,4 +1,4 @@
-package org.example.graph.adjList;
+package org.example.basic.graph.adjList;
 
 import java.util.ArrayList;
 import java.util.List;

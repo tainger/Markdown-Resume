@@ -1,4 +1,4 @@
-package org.example.graph;
+package org.example.basic.graph;
 
 /**
  * @author jiazhiyuan

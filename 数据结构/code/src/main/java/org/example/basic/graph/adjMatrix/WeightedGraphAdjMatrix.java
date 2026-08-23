@@ -1,4 +1,4 @@
-package org.example.graph.adjMatrix;
+package org.example.basic.graph.adjMatrix;
 
 import java.util.Arrays;
 
