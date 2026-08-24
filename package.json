@@ -10,7 +10,10 @@
     "docs:preview": "vitepress preview"
   },
   "devDependencies": {
+    "idb": "^8.0.3",
     "markdown-it-mathjax3": "^4.3.2",
+    "markdown-it-container": "^3.0.0",
+    "ts-fsrs": "^5.4.1",
     "vitepress": "^1.6.3"
   }
 }

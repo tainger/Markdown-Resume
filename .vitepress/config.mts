@@ -1,6 +1,19 @@
 import { defineConfig } from 'vitepress'
 import mathjax3 from 'markdown-it-mathjax3'
+import container from 'markdown-it-container'
 import { generateSidebar } from './sidebar.mts'
+
+// 注册 SRS 卡片正反面容器（::: srs-front ... ::: 与 ::: srs-back ... :::）
+function srsContainer(name: string) {
+  return {
+    marker: ':',
+    render(tokens: any[], idx: number) {
+      return tokens[idx].nesting === 1
+        ? `<div class="${name}">\n`
+        : `</div>\n`
+    },
+  }
+}
 
 // 只收录这些学习笔记目录（按导航栏顺序）
 export const INCLUDE_DIRS: { text: string; dir: string }[] = [
@@ -28,6 +41,10 @@ export default defineConfig({
     // 支持 \(...\)、$$...$$ 等 LaTeX 数学公式渲染
     config: (md) => {
       md.use(mathjax3 as any)
+
+      // 注册 SRS 卡片正反面容器（::: srs-front / ::: srs-back）
+      md.use(container, 'srs-front', srsContainer('srs-front'))
+      md.use(container, 'srs-back', srsContainer('srs-back'))
 
       // 笔记正文里含 {{ }} 花括号（如 Java 数组 {{1,0},{0,1}}），
       // 会被 Vue 当成模板插值导致构建报错。这里在渲染时把它转义成
@@ -79,6 +96,7 @@ export default defineConfig({
         text: d.text,
         link: firstDocLink(d.dir),
       })),
+      { text: '📖 复习', link: '/review' },
     ],
 
     sidebar: generateSidebar(INCLUDE_DIRS),
