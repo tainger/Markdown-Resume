@@ -14,10 +14,13 @@
 ├── 分布式/                 # 分布式系统面试笔记（事务、一致性、高可用、服务治理、锁 — P7 备战）
 ├── 系统设计/              # 系统设计面试笔记（短链、秒杀、ID 生成器、Feed 流 — P7 备战）
 ├── AI应用开发/             # AI 应用落地经验（RAG、Agent框架、大模型基础、安全工程 — 差异化杀手锏）
+├── DeepSeek Harness/      # DeepSeek 学习路径与面试资料（模型选型、API应用、RAG/Agent集成、核心原理、部署成本）
 ├── mysql/                  # MySQL 面试题笔记（索引、事务锁、存储引擎、SQL 优化）
 ├── jvm/                    # JVM 面试笔记（内存、GC、类加载、JMM、调优 — P7 备战）
 ├── java/                   # Java 技术笔记
 ├── agentscope-java/        # AgentScope Java 2.0 设计思想源码解读
+├── 自媒体/                # 自媒体技术分享文章（微信公众号、微博）
+│   └── 微信公众号/探小虎/ # AI Agent 设计哲学、OpenSpec 技术分享等
 ├── lover/                  # 其他
 ├── repo/                   # 其他
 ├── mdconvert               # 文档转换工具（见下方说明）

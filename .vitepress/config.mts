@@ -18,6 +18,7 @@ export const INCLUDE_DIRS: { text: string; dir: string }[] = [
   { text: 'Java', dir: 'java' },
   { text: 'JVM', dir: 'jvm' },
   { text: '面试准备', dir: '面试准备' },
+  { text: '探小虎', dir: '自媒体/微信公众号/探小虎' },
 ]
 
 export default defineConfig({
