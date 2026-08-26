@@ -11,6 +11,7 @@ Java 核心类库源码分析、语言特性与工程实践笔记，风格与 `l
 | 3 | [TreeSet 的应用场景和源码分析](TreeSet的应用场景和源码分析.md) | 委托 TreeMap、有序去重、导航方法 | ✅ |
 | 4 | [JDK21 增加了哪些新内容？](jdk21增加了哪些新内容？.md) | 虚拟线程、模式匹配、分代 ZGC 等新特性 | ✅ |
 | 5 | [JUC 并发包面试题](JUC并发包.md) | 显式锁、AQS、CAS、原子类、并发容器、阻塞队列、同步工具、线程池、ThreadLocal | ✅ |
+| 6 | [ThreadLocal 源码分析](ThreadLocal源码分析.md) | Thread/ThreadLocalMap 结构、线性探测、被动清理、泄漏原理、InheritableThreadLocal/TTL | ✅ |
 
 > 状态图例：⬜ 待整理 · 🟡 整理中 · ✅ 已完成
 
