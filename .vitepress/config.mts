@@ -11,6 +11,7 @@ export const INCLUDE_DIRS: { text: string; dir: string }[] = [
   { text: '分布式', dir: '分布式' },
   { text: '系统设计', dir: '系统设计' },
   { text: 'AI应用开发', dir: 'AI应用开发' },
+  { text: 'DeepSeek Harness', dir: 'DeepSeek Harness' },
   { text: 'MySQL', dir: 'mysql' },
   { text: 'Redis', dir: 'redis' },
   { text: 'RocketMQ', dir: 'rocketMq' },
