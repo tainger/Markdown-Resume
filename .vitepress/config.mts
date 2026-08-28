@@ -22,6 +22,15 @@ export const INCLUDE_DIRS: { text: string; dir: string }[] = [
   { text: '探小虎', dir: '自媒体/微信公众号/探小虎' },
 ]
 
+// 顶部导航栏分组（下拉菜单）：目录太多平铺会溢出，按类折叠
+// dirs 里的值必须能在 INCLUDE_DIRS 中找到
+export const NAV_GROUPS: { text: string; dirs: string[] }[] = [
+  { text: '算法', dirs: ['算法思想', 'leetcode-hot100', '华为OD机试', '数据结构'] },
+  { text: '后端', dirs: ['分布式', '系统设计', 'mysql', 'redis', 'rocketMq'] },
+  { text: '基础', dirs: ['java', 'jvm', '计算机网络'] },
+  { text: '更多', dirs: ['AI应用开发', 'DeepSeek Harness', '面试准备', '自媒体/微信公众号/探小虎'] },
+]
+
 export default defineConfig({
   title: '学习笔记',
   description: '算法刷题、面试八股、数据库等个人学习笔记',
@@ -82,9 +91,12 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: '首页', link: '/' },
-      ...INCLUDE_DIRS.map((d) => ({
-        text: d.text,
-        link: firstDocLink(d.dir),
+      ...NAV_GROUPS.map((g) => ({
+        text: g.text,
+        items: g.dirs.map((dir) => ({
+          text: INCLUDE_DIRS.find((d) => d.dir === dir)?.text ?? dir,
+          link: firstDocLink(dir),
+        })),
       })),
     ],
 
