@@ -17,6 +17,7 @@ export const INCLUDE_DIRS: { text: string; dir: string }[] = [
   { text: 'RocketMQ', dir: 'rocketMq' },
   { text: 'Java', dir: 'java' },
   { text: 'JVM', dir: 'jvm' },
+  { text: '计算机网络', dir: '计算机网络' },
   { text: '面试准备', dir: '面试准备' },
   { text: '探小虎', dir: '自媒体/微信公众号/探小虎' },
 ]
@@ -71,6 +72,7 @@ export default defineConfig({
     'assets/**',
     '公司赔偿/**',
     'resume.md',
+    'resume (copy).md',
     'README.md',
     'node_modules/**',
     '.venv/**',

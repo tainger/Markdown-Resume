@@ -17,6 +17,7 @@
 ├── DeepSeek Harness/      # DeepSeek 学习路径与面试资料（模型选型、API应用、RAG/Agent集成、核心原理、部署成本）
 ├── mysql/                  # MySQL 面试题笔记（索引、事务锁、存储引擎、SQL 优化）
 ├── jvm/                    # JVM 面试笔记（内存、GC、类加载、JMM、调优 — P7 备战）
+├── 计算机网络/              # 计算机网络面试题笔记（分层、TCP、HTTP/HTTPS、IP、DNS/CDN — P7 备战）
 ├── java/                   # Java 技术笔记
 ├── agentscope-java/        # AgentScope Java 2.0 设计思想源码解读
 ├── 自媒体/                # 自媒体技术分享文章（微信公众号、微博）
