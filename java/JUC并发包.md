@@ -365,6 +365,8 @@ ConcurrentHashMap
 | **扩容并发** | 多线程分摊迁移不同桶，避免单线程搬运全表 |
 
 > 对比：`HashMap` 并发 `put` 会丢失数据/死循环（JDK7 头插法成环）；`ConcurrentHashMap` 才是并发正解。`HashMap` 源码细节见 [HashMap的应用场景和源码分析.md](HashMap的应用场景和源码分析.md)。
+>
+> 源码级深挖（putVal 全流程、transfer 协助扩容、CounterCell 计数、computeIfAbsent 的坑）见 [ConcurrentHashMap应用场景和源码分析.md](ConcurrentHashMap应用场景和源码分析.md)。
 
 ---
 

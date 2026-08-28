@@ -12,6 +12,7 @@ Java 核心类库源码分析、语言特性与工程实践笔记，风格与 `l
 | 4 | [JDK21 增加了哪些新内容？](jdk21增加了哪些新内容？.md) | 虚拟线程、模式匹配、分代 ZGC 等新特性 | ✅ |
 | 5 | [JUC 并发包面试题](JUC并发包.md) | 显式锁、AQS、CAS、原子类、并发容器、阻塞队列、同步工具、线程池、ThreadLocal | ✅ |
 | 6 | [ThreadLocal 源码分析](ThreadLocal源码分析.md) | Thread/ThreadLocalMap 结构、线性探测、被动清理、泄漏原理、InheritableThreadLocal/TTL | ✅ |
+| 7 | [ConcurrentHashMap 的应用场景和源码分析](ConcurrentHashMap应用场景和源码分析.md) | CAS+synchronized 桶级锁、协助扩容、LongAdder 计数、弱一致性 | ✅ |
 
 > 状态图例：⬜ 待整理 · 🟡 整理中 · ✅ 已完成
 
@@ -24,6 +25,7 @@ Java 核心类库源码分析、语言特性与工程实践笔记，风格与 `l
 | `TreeMap` | 红黑树 | 按 key 排序 | \(O(\log n)\) | `compareTo`/`Comparator` | 有序 / 范围 / 最近邻 |
 | `HashSet` | HashMap | 无序 | 平均 \(O(1)\) | `hashCode`+`equals` | 去重 |
 | `TreeSet` | TreeMap（红黑树） | 排序 | \(O(\log n)\) | `compareTo`/`Comparator` | 有序去重 / 导航 |
+| `ConcurrentHashMap` | 数组+链表+红黑树（CAS+桶级锁） | 无序 | 并发平均 \(O(1)\) | `hashCode`+`equals` | 并发场景正解 |
 
 ## 相关
 
