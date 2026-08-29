@@ -16,9 +16,9 @@ public class Main {
     }
 
     /**
-     * 1.双重for循环暴力
-     * 2.hashmap
-     * 3.sort 之后双指针。双指针不行，排序之后会把下标换掉。
+     * 【✅】1.双重for循环暴力
+     * 【✅】2.hashmap
+     * 【】3.sort 之后双指针。双指针不行，排序之后会把下标换掉【不信你g】。
      */
     public int[] twoSum1(int[] nums, int target) {
 
