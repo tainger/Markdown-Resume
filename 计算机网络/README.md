@@ -2,7 +2,7 @@
 
 > 面向工作 6 年、冲击 P7 的 Java 工程师——从分层模型到应用层协议，成体系地理解计算机网络。
 
-按「**分层模型 → TCP → HTTP/HTTPS → IP 与链路 → DNS/CDN**」的主线组织，每篇均含对比表、图解、易错点、一句话总结。
+按「**分层模型 → TCP → HTTP/HTTPS → IP 与链路 → DNS/CDN → 抓包实战**」的主线组织，每篇均含对比表、图解、易错点、一句话总结。
 
 ## 目录
 
@@ -14,6 +14,7 @@
 | 4 | 🔒 HTTPS | [HTTPS.md](HTTPS.md) | 对称/非对称混合加密、TLS 1.2/1.3 握手、证书链与中间人、前向安全 |
 | 5 | 🛣️ IP 与链路层 | [IP与链路层.md](IP与链路层.md) | 子网/CIDR、私网与 NAT、ARP、ICMP/ping/traceroute、断网排查 |
 | 6 | 🗺️ DNS 与 CDN | [DNS与CDN.md](DNS与CDN.md) | 递归/迭代查询、缓存 TTL、DNS 负载均衡、HTTPDNS、CDN 命中与回源 |
+| 7 | 🔬 抓包排查实战 | [抓包排查实战.md](抓包排查实战.md) | tcpdump/Wireshark 命令、分层排查方法论、8 个生产 Case（DROP vs REJECT、TIME_WAIT/CLOSE_WAIT、RST、重传与 zero window、MTU、TLS 握手、DNS 缓存、curl 时延分解） |
 
 ## P7 必背清单（速查）
 
@@ -31,10 +32,11 @@
 - **IP/MAC 分工**：跨网段 IP 不变、MAC 每跳都换；ARP 在同一链路把 IP 翻译成 MAC
 - **NAT**：私网共享公网出口（NAPT 靠端口区分），外网不能主动进内网
 - **DNS**：客户端 → 本地 DNS（递归），本地 DNS → 根/TLD/权威（迭代），结果按 TTL 层层缓存；CDN 靠 CNAME + GSLB 就近调度
+- **排查第一反应**：connect 超时=被 DROP 查防火墙，refused=没监听查进程；大量 TIME_WAIT=本端主动关（上连接池），大量 CLOSE_WAIT=代码没 close；握手通但大包断=MTU/PMTUD；reset=对端重启或空闲超时后还在用死连接
 
 ## 学习/复习建议
 
-1. 先按 1→6 顺序建立体系，篇末「相关笔记」形成交叉引用网。
+1. 先按 1→7 顺序建立体系，篇末「相关笔记」形成交叉引用网；抓包实战篇是前六篇的「落地验收」。
 2. 「输入 URL 到页面展示」是总纲：把它讲一遍，每个环节都能被追问到对应篇章。
 3. 每篇「一句话总结」当作口述提纲，能复述即过关。
 4. 「易错点」章节是面试细节陷阱，重点记忆（TIME_WAIT 在谁、401 vs 403、递归 vs 迭代）。
