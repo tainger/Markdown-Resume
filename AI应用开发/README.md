@@ -96,6 +96,8 @@
 | 2 | 🤖 **Agent 智能体框架** | [Agent智能体框架.md](Agent智能体框架.md) | ReAct 发散 vs 过程式状态机（AutoDev 五阶段）、Skill 体系建设、Git WorktreeManager 并发隔离、钉钉 Stream 异步消息 |
 | 3 | 🧠 **大模型工程基础** | [大模型工程基础.md](大模型工程基础.md) | Transformer 架构要点、LoRA/QLoRA 微调原理、推理优化（量化/KV Cache）、Embedding 选型、SDXL 相似度量化闭环 |
 | 4 | 🛡️ **LLM 安全与工程化** | [LLM安全与工程化.md](LLM安全与工程化.md) | 5 类 PII 正则脱敏、pre/do/post 三态 Hook 架构、LLM-as-Judge 双引擎回归、SSE 粘包半包容错、越权拦截 |
+| 5 | ⚡ **AI 高频面试题速查** | [AI高频面试题速查.md](AI高频面试题速查.md) | 面试前一晚速背版：30 道高频题骨架 + 追问链（RAG vs 微调、幻觉治理、状态机 vs ReAct、双引擎评测、成本优化）+ 场景设计题模板 + P7 必背十条 |
+| 6 | ☕ **Spring AI 与 LangChain4j** | [SpringAI与LangChain4j.md](SpringAI与LangChain4j.md) | Java 生态落地层：ChatClient 门面、Advisor 责任链（≈MyBatis 插件）、Tool Calling 循环、RAG 组件化、AiServices 动态代理（≈Mapper）、选型对比 |
 
 ---
 
