@@ -19,6 +19,7 @@ Java 核心类库源码分析、语言特性与工程实践笔记，风格与 `l
 | 11 | [泛型与类型擦除](泛型与类型擦除.md) | 擦除规则、Signature 属性与 TypeToken、桥方法、PECS、数组协变 | ✅ |
 | 12 | [反射与动态代理](反射与动态代理.md) | 反射性能与优化、JDK Proxy vs CGLIB、Spring AOP 选型、事务失效 | ✅ |
 | 13 | [Stream 与 Lambda](Stream与Lambda.md) | 函数式接口、invokedynamic 原理、惰性求值、并行流的坑、Optional | ✅ |
+| 14 | [volatile 关键字面试题](volatile关键字.md) | 三大特性、原子性反证、DCL、传递可见性、内存屏障速答 | ✅ |
 
 > 状态图例：⬜ 待整理 · 🟡 整理中 · ✅ 已完成
 
@@ -32,6 +33,7 @@ Java 核心类库源码分析、语言特性与工程实践笔记，风格与 `l
 - **泛型擦除**：运行期无参数类型，但 Signature 元数据在（TypeToken 原理）；PECS：生产 extends 只读、消费 super 可写
 - **JDK 代理 vs CGLIB**：接口+反射 vs 子类+FastClass；Spring Boot 默认 CGLIB；@Transactional 自调用失效 = 绕过代理
 - **并行流公共 ForkJoinPool 只给 CPU 密集**；toMap 必给 merge 函数
+- **volatile 保证可见性 + 有序性、不保证原子性**：`i++` 仍丢更新，计数用 AtomicLong/LongAdder；DCL 必加 volatile（禁止 new 三步重排）；volatile 写之前的普通写对读方可见（happens-before 传递性）
 
 ## 集合体系速览
 
