@@ -19,6 +19,8 @@
 ├── jvm/                    # JVM 面试笔记（内存、GC、类加载、JMM、调优 — P7 备战）
 ├── 计算机网络/              # 计算机网络面试题笔记（分层、TCP、HTTP/HTTPS、IP、DNS/CDN — P7 备战）
 ├── Mybatis/                # MyBatis 面试题笔记（架构执行流程、缓存、动态SQL、插件 — P7 备战）
+├── dubbo/                  # Dubbo 面试题笔记（架构流程、SPI、注册发现、容错负载均衡、通信线程模型 — P7 备战）
+├── io/                     # IO 面试题笔记（IO模型、NIO多路复用、零拷贝、Netty — P7 备战）
 ├── java/                   # Java 技术笔记
 ├── agentscope-java/        # AgentScope Java 2.0 设计思想源码解读
 ├── 自媒体/                # 自媒体技术分享文章（微信公众号、微博）
