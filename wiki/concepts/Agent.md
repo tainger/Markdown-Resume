@@ -23,7 +23,7 @@ updated: 2026-08-30
 
 ## 知识骨架
 
-- **工具调用**：Function Calling / MCP 协议；工具是 Agent 的手脚
+- **工具调用**：Function Calling / MCP 协议（详见 [[wiki/entities/MCP]]）；工具是 Agent 的手脚
 - **记忆三层**：工作记忆（上下文）/ 情景记忆（会话）/ 语义记忆（知识库，可外挂 RAG）
 - **可观测**：中断、回放、审计是生产级 Agent 的底线
 - **评测**：见 [[自媒体/微信公众号/探小虎/AI应用评测]]
@@ -31,4 +31,5 @@ updated: 2026-08-30
 ## 关联
 
 - [[wiki/concepts/RAG]]、[[wiki/concepts/ContextEngineering]]
+- 工具接入协议：[[wiki/entities/MCP]]
 - 本库 wiki 层本身就是「Agent 长期记忆」的个人级实践（见根目录 AGENTS.md）

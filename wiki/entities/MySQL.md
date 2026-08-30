@@ -15,6 +15,7 @@ updated: 2026-08-30
 - [[mysql/存储引擎与架构]]（InnoDB vs MyISAM、SQL 执行流程）
 - [[mysql/SQL优化与调优]]（explain/慢查询）
 - [[mysql/深分页优化]]
+- [[mysql/笛卡尔积]]（JOIN 语义 vs 物理、JOIN 放大分页/COUNT、先收敛再放大）
 - [[mysql/分库分表]]
 - [[mysql/多租户设计]]
 - 原理层：[[数据结构/B+树]]（见 [[wiki/comparisons/B树与B+树]]）

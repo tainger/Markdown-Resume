@@ -51,9 +51,9 @@ updated: 2026-08-30
 |:---|:---|
 | [[wiki/concepts/RAG]] | 检索增强：双混合检索、切片、重排 |
 | [[wiki/concepts/Agent]] | 智能体框架、MCP、记忆、安全 |
-| [[wiki/concepts/ContextEngineering]] | 上下文工程 |
+| [[wiki/concepts/ContextEngineering]] | 上下文工程（含提示词工程子集） |
 
-## 四、实体页（后端组件）
+## 四、实体页（后端组件 + AI）
 
 | 页面 | 定位 |
 |:---|:---|
@@ -65,6 +65,7 @@ updated: 2026-08-30
 | [[wiki/entities/Spring生态]] | IOC/AOP/事务/Cloud + MyBatis |
 | [[wiki/entities/Dubbo]] | 架构/SPI/容错/通信 |
 | [[wiki/entities/网络与IO]] | TCP/HTTP/HTTPS + IO模型/Netty |
+| [[wiki/entities/MCP]] | 工具接入协议：架构/原语/传输/安全 |
 
 ## 五、对比页
 

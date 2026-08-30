@@ -29,3 +29,7 @@ updated: 2026-08-30
 - **[output]** usage.md 扩充至 12 个 Case，新增：复盘回流 Backflow（真题喂回实体页）、JD Gap 分析（三档覆盖清单）、Locator 定位器、简历背书审计、新主题播种 Seed；日常节奏表同步扩充。
 - **[output]** 按「单页 ≤200 行」纪律拆分手册：新建 [[wiki/usage-advanced]] 进阶卷，新增 8 个 Case：考前速记包、答案评分器（五段式）、闪卡+遗忘曲线、踩坑本聚合（hot100 个人总结复用）、对比页工厂、全站死链巡检（补 ignoreDeadLinks 盲区）、选题日历、健康度报告；usage.md 改名「核心卷」。
 - **[ingest]** 执行 Case 16 踩坑本聚合：扫 leetcode-hot100 全部 75 个含「## 个人总结」文件（有效 59 / 占位 16）→ 产出 [[wiki/synthesis/高频踩坑本]]（Top 10 高频模式 + 13 簇速查 + 待补坑清单）。已挂载：index 综合主线、P7面试复习主线 刷题保温、usage-advanced Case 16 标记已执行。**lint 发现**：16 篇个人总结为占位符待补，列表见踩坑本末节。
+- **[ingest]** 消化 [[AI应用开发/MCP协议]]（经人类授权代起草的 raw 成稿，217 行：M×N→M+N 接入经济学 / 三角色与生命周期 / 六大原语 / JSON-RPC 与 Streamable HTTP / Spring AI @McpTool 落地 / 三态 Hook 复用 / 追问链 / 易错点）→ 新建 [[wiki/entities/MCP]] 实体页（含追问链 + 扣分项）；挂载 [[wiki/concepts/Agent]] 工具调用行与关联区、index 实体表（标题扩为「后端组件 + AI」）。口径锚点：T14 骨架、SpringAI 篇版本基线（SSE 废弃 / 1.1 原生注解）。
+- **[ingest]** 消化 [[mysql/笛卡尔积]]（经人类授权代整理的 raw 成稿，10 题面试题：意外产生场景 / CROSS JOIN 正经用途 / JOIN 语义=笛卡尔积+过滤 vs 物理永远避免 / JOIN 放大分页与 COUNT「先收敛再放大」/ 防线机制化）→ 挂载 [[wiki/entities/MySQL]] 核心笔记。联动：深分页优化（分页错乱根因区分）、SQL优化与调优（JOIN 算法）。
+- **[output]** 经授权更新 [[mysql/README]] 索引：目录表新增「🔗 笛卡尔积」行（置于深分页之后）、板块描述改八大、必背清单补「JOIN 放大：先收敛再放大」。
+- **[ingest]** 消化 [[AI应用开发/提示词工程]]（经人类授权代起草的 raw 成稿，10 题面试题：提示词 ⊂ 上下文工程 / 五段模板与指令-数据物理隔离 / CoT 有效原理（输出 token = 额外计算时间）与有害场景 / System 信任边界 + 前缀缓存 / 结构化输出三层 / prompt 即代码（版本化+评测集回归+灰度）/ 注入防御最终靠权限）→ 挂载 [[wiki/concepts/ContextEngineering]] 核心笔记与知识骨架、index 覆盖描述。口径锚点：T2/T21/T22/T23、LLM安全与工程化（Judge 固化、三层防线）。

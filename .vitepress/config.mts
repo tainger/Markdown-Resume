@@ -10,6 +10,7 @@ export const INCLUDE_DIRS: { text: string; dir: string }[] = [
   { text: '数据结构', dir: '数据结构' },
   { text: '分布式', dir: '分布式' },
   { text: '系统设计', dir: '系统设计' },
+  { text: '权限设计', dir: '权限设计' },
   { text: 'AI应用开发', dir: 'AI应用开发' },
   { text: 'DeepSeek Harness', dir: 'DeepSeek Harness' },
   { text: 'MySQL', dir: 'mysql' },
@@ -31,7 +32,7 @@ export const INCLUDE_DIRS: { text: string; dir: string }[] = [
 // dirs 里的值必须能在 INCLUDE_DIRS 中找到
 export const NAV_GROUPS: { text: string; dirs: string[] }[] = [
   { text: '算法', dirs: ['算法思想', 'leetcode-hot100', '华为OD机试', '数据结构'] },
-  { text: '后端', dirs: ['分布式', '系统设计', 'mysql', 'redis', 'rocketMq', 'Mybatis', 'dubbo'] },
+  { text: '后端', dirs: ['分布式', '系统设计', '权限设计', 'mysql', 'redis', 'rocketMq', 'Mybatis', 'dubbo'] },
   { text: '基础', dirs: ['java', 'jvm', 'io', '计算机网络'] },
   { text: '更多', dirs: ['AI应用开发', 'DeepSeek Harness', '面试', '面试准备', '英语能力', '自媒体/微信公众号/探小虎'] },
 ]
