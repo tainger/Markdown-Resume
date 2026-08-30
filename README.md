@@ -9,6 +9,8 @@
 ├── resume.html             # 简历（HTML 渲染版）
 ├── assets/                 # 简历用到的图标、头像等静态资源
 ├── jd/                     # 意向岗位 JD 收集
+├── wiki/                   # LLM Wiki 知识编译层（AI Agent 维护，详见下方「LLM Wiki」）
+├── AGENTS.md               # wiki 层维护规范（所有权 / 页面类型 / 双链 / 工作流）
 ├── leetcode-hot100/        # Hot 100 刷题笔记（含题解、代码、踩坑总结）
 ├── 华为OD机试/              # 华为 OD 机试高频真题 + 题解（100/200/300 分）
 ├── 分布式/                 # 分布式系统面试笔记（事务、一致性、高可用、服务治理、锁 — P7 备战）
@@ -77,6 +79,51 @@ pip install markitdown
 # 简历 HTML → Markdown 双向维护
 ./mdconvert resume.html resume.md
 ```
+
+## LLM Wiki（Agent 知识编译层）
+
+灵感来自 Karpathy 的 LLM Wiki 模式（完整调研见 [LLM Wiki 技术调研](自媒体/微信公众号/探小虎/%20LLM%20Wiki%20技术调研.md)）：知识让 LLM **编译一次、持续积累**，而不是每次查询从零推导。本仓库落地为三层：
+
+| 层 | 位置 | 所有者 | 说明 |
+|:---|:---|:---|:---|
+| Schema | `AGENTS.md` | 共同 | wiki 层维护规范：所有权划分、页面类型、双链语法、工作流 |
+| raw | 除 `wiki/` 外所有笔记目录 | 人类 | LLM **只读**，禁止修改任何现有笔记 |
+| wiki | `wiki/` | LLM | 知识编译层：索引 + 一句话总结 + 双链，人类可随时推翻 |
+
+### wiki 目录结构
+
+```
+wiki/
+├── index.md        # 全局索引（入口先看这里）
+├── log.md          # 操作日志（append-only，记录每次 ingest/lint/决策）
+├── concepts/       # 概念页：算法思想与技术机制（滑动窗口、动态规划、RAG、Agent…）
+├── entities/       # 实体页：具体组件（HashMap、Redis、MySQL、RocketMQ、JVM…）
+├── comparisons/    # 对比页（B树 vs B+树 vs 跳表…）
+└── synthesis/      # 综合页：跨目录面试主线（P7 复习主线、高并发库存扣减、缓存一致性…）
+```
+
+### 怎么用：对 AI 编码助手说四条指令
+
+AI 助手（Trae / Claude Code 等）会自动读取根目录 `AGENTS.md` 获知规范：
+
+| 指令 | 场景 | Agent 动作 |
+|:---|:---|:---|
+| `消化 <笔记路径>` | 写完/改完一篇笔记 | 读 raw → 更新相关 wiki 页 → 维护双链 → 记 log（增量，git diff 驱动） |
+| 直接提问 | 平时问技术问题 | 优先基于 wiki 已编译知识回答并附来源双链，有价值的结论沉淀回 wiki |
+| `lint wiki` | 定期体检 | 死链 / 矛盾 / 孤立页 / 过期检查，输出「更新/合并/标过期」三动作 |
+| `从 wiki 出草稿` | 写公众号文章 | 从 synthesis/comparison 蒸馏草稿，**新建文件**，不动已定稿旧文 |
+
+> 实战 Case 演示：核心 12 个见 [wiki/usage.md](wiki/usage.md)，进阶 8 个见 [wiki/usage-advanced.md](wiki/usage-advanced.md)。
+
+### 纪律（为什么它不会把仓库搞乱）
+
+1. **所有权隔离**：LLM 永不改 raw 笔记，只写 `wiki/`
+2. **不虚构**：wiki 每个论断都有 `[[双链]]` 指回 raw 原文，raw 里没有的标「待补充」
+3. **不发布**：`wiki/**` 与 `AGENTS.md` 已加入 VitePress `srcExclude`，站上不渲染，仅作 AI 工作记忆
+
+### 首批资产（2026-08-30 初始化）
+
+26 个页面：index/log + 12 concept + 8 entity + 1 comparison + 4 synthesis。首轮 lint 处理了 `算法思想/` 与 `数据结构/` 的 6 对同名笔记（2 对真重复已合并删除、4 对确认为「结构 vs 套路」差异化双篇），决策记录见 `wiki/log.md`。
 
 ## LeetCode Hot 100
 

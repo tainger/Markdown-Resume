@@ -24,3 +24,7 @@ updated: 2026-08-30
   - `算法思想/{哈希表,栈,队列,链表}` ↔ `数据结构/{同名}` → **差异化双篇**（套路篇 vs 结构篇，README 尾注已注明定位），全部保留。
   - 同步修复入链 9 处：`算法思想/{循环,数组,统计,哈希表,图论专题}`、`面试/算法面试实战指南.md`、`算法思想/README.md`。
   - wiki 侧：concepts/前缀和与差分、concepts/并查集、concepts/链表技巧、concepts/单调栈与单调队列、entities/HashMap 已同步更新。
+- **[output]** 根目录 README.md 新增「LLM Wiki（Agent 知识编译层）」章节（三层架构/四条指令/纪律），目录树补入 `wiki/` 与 `AGENTS.md`。
+- **[output]** 新建 [[wiki/usage]] 使用手册：7 个实战 Case（Ingest/Query/Drill/Lint/Output/Plan/Deep-dive）+ 指令速查 + 日常节奏；index、README、AGENTS.md 三处已挂入口。
+- **[output]** usage.md 扩充至 12 个 Case，新增：复盘回流 Backflow（真题喂回实体页）、JD Gap 分析（三档覆盖清单）、Locator 定位器、简历背书审计、新主题播种 Seed；日常节奏表同步扩充。
+- **[output]** 按「单页 ≤200 行」纪律拆分手册：新建 [[wiki/usage-advanced]] 进阶卷，新增 8 个 Case：考前速记包、答案评分器（五段式）、闪卡+遗忘曲线、踩坑本聚合（hot100 个人总结复用）、对比页工厂、全站死链巡检（补 ignoreDeadLinks 盲区）、选题日历、健康度报告；usage.md 改名「核心卷」。

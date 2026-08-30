@@ -18,6 +18,8 @@
 ```
 wiki/
 ├── index.md        # 全局索引（每次 ingest 后保持最新）
+├── usage.md        # 使用手册：12 个核心 Case（面向使用者）
+├── usage-advanced.md # 进阶手册：8 个低频高价值 Case（速记包/评分/闪卡/审计…）
 ├── log.md          # 操作日志（append-only，记录每次 ingest/lint/output）
 ├── concepts/       # 概念页：算法思想、技术机制、方法论
 ├── entities/       # 实体页：具体组件/工具/系统（HashMap、Redis…）
