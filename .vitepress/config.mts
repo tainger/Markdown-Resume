@@ -88,6 +88,9 @@ export default defineConfig({
     'resume.md',
     'resume (copy).md',
     'README.md',
+    // LLM Wiki 层：Agent 维护的知识编译层，仅作 AI 工作记忆，不在站上发布
+    'wiki/**',
+    'AGENTS.md',
     'node_modules/**',
     '.venv/**',
     '**/node_modules/**',

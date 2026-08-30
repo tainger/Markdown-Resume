@@ -34,6 +34,7 @@
 │
 │  ── D. 反思 / 架构选型 ──────────────────────────────────
 ├── 什么时候不该用Agent.md                               # 过度 Agent 化反模式
+├── 万物皆可markdown.md                                  # Markdown 在 AI 时代的地位
 │
 └── images/                                            # 文章配图(16 张)
     ├── 01-spec-driven-workflow.jpg                     # OpenSpec 头图
@@ -91,12 +92,14 @@
 | C1 | [RAG 实战:从朴素拼接到工程化检索增强](file:///Users/rocky/study/profile/Markdown-Resume/自媒体/微信公众号/探小虎/RAG实战.md) | RAG 的本质是精准召回此刻需要的最小片段,不是拼接;chunking/embedding/检索/重排/评测,任一环节偷懒全链路崩。 |
 | C2 | [AI 应用评测怎么做:别只靠「感觉不错」](file:///Users/rocky/study/profile/Markdown-Resume/自媒体/微信公众号/探小虎/AI应用评测.md) | 非确定 + 长尾 + 全局波及让感觉失灵;离线 golden set / 回归评测 / 线上监控三层缺一不可;LLM-as-judge 要给具体 rubric。 |
 | C3 | [AI Agent 的安全:提示注入、越权与防护](file:///Users/rocky/study/profile/Markdown-Resume/自媒体/微信公众号/探小虎/AIAgent安全.md) | Agent 安全边界从「输出层」挪到「执行层」;提示注入防不住但后果能兜住,靠权限分级 + 沙箱让被骗也干不成大事。 |
+| C4 | [LLM Wiki 技术调研:LLM + 知识库的三条路线](file:///Users/rocky/study/profile/Markdown-Resume/自媒体/微信公众号/探小虎/%20LLM%20Wiki%20技术调研.md) | 知识库死循环拆成生产/检索/维护三环节,先做检索;Wiki 结构是检索质量的放大器,沉淀走抽取→挂载→冲突检测→人审流程。 |
 
 ### D. 反思 / 架构选型
 
 | # | 文章 | 核心观点 |
 |:---:|:---|:---|
 | D1 | [什么时候不该用 Agent:被过度 Agent 化的场景](file:///Users/rocky/study/profile/Markdown-Resume/自媒体/微信公众号/探小虎/什么时候不该用Agent.md) | Agent 是「用推理替代硬编码」,本身引入不确定性;把确定任务交给 Agent = 凭空引入故障。判断标准:任务要精确,别上 Agent。 |
+| D2 | [万物皆可 Markdown:人机通用协议的诞生](file:///Users/rocky/study/profile/Markdown-Resume/自媒体/微信公众号/探小虎/万物皆可markdown.md) | Markdown 已从排版语法进化为人机通用协议:模型母语、输出 UI、上下文载体、Agent 记忆格式、轻量结构化输出五位一体;散文用 Markdown,数据用 JSON,强隔离段落借 XML。 |
 
 ## 写作原则
 
