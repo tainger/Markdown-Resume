@@ -28,3 +28,4 @@ updated: 2026-08-30
 - **[output]** 新建 [[wiki/usage]] 使用手册：7 个实战 Case（Ingest/Query/Drill/Lint/Output/Plan/Deep-dive）+ 指令速查 + 日常节奏；index、README、AGENTS.md 三处已挂入口。
 - **[output]** usage.md 扩充至 12 个 Case，新增：复盘回流 Backflow（真题喂回实体页）、JD Gap 分析（三档覆盖清单）、Locator 定位器、简历背书审计、新主题播种 Seed；日常节奏表同步扩充。
 - **[output]** 按「单页 ≤200 行」纪律拆分手册：新建 [[wiki/usage-advanced]] 进阶卷，新增 8 个 Case：考前速记包、答案评分器（五段式）、闪卡+遗忘曲线、踩坑本聚合（hot100 个人总结复用）、对比页工厂、全站死链巡检（补 ignoreDeadLinks 盲区）、选题日历、健康度报告；usage.md 改名「核心卷」。
+- **[ingest]** 执行 Case 16 踩坑本聚合：扫 leetcode-hot100 全部 75 个含「## 个人总结」文件（有效 59 / 占位 16）→ 产出 [[wiki/synthesis/高频踩坑本]]（Top 10 高频模式 + 13 簇速查 + 待补坑清单）。已挂载：index 综合主线、P7面试复习主线 刷题保温、usage-advanced Case 16 标记已执行。**lint 发现**：16 篇个人总结为占位符待补，列表见踩坑本末节。

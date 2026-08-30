@@ -26,6 +26,7 @@ updated: 2026-08-30
 | 页面 | 一句话 |
 |:---|:---|
 | [[wiki/synthesis/P7面试复习主线]] | 面试前 24 小时的总入口 |
+| [[wiki/synthesis/高频踩坑本]] | hot100 全部「个人总结」聚合的 Top 10 踩坑模式 + 分簇速查 |
 | [[wiki/synthesis/高并发库存扣减]] | 秒杀主线：redis+mysql+mq+分布式锁 |
 | [[wiki/synthesis/缓存体系与一致性]] | 穿透/击穿/雪崩/污染 + 一致性方案 |
 | [[wiki/synthesis/分布式事务选型]] | 2PC/TCC/本地消息表/事务消息怎么选 |
