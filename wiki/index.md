@@ -37,8 +37,8 @@ updated: 2026-08-30
 | [[wiki/concepts/二分查找]] | 边界写法 + 3 道 hot100 |
 | [[wiki/concepts/回溯]] | 排列/组合/子集模板 |
 | [[wiki/concepts/单调栈与单调队列]] | 每日温度、接雨水 |
-| [[wiki/concepts/前缀和与差分]] | 子数组和 + 树上前缀和（⚠️ raw 有重复，见 log） |
-| [[wiki/concepts/并查集]] | 连通性问题（⚠️ raw 有重复） |
+| [[wiki/concepts/前缀和与差分]] | 子数组和 + 树上前缀和 |
+| [[wiki/concepts/并查集]] | 连通性问题 |
 | [[wiki/concepts/链表技巧]] | 反转/快慢指针/合并 |
 | [[wiki/concepts/二叉树遍历]] | 递归/层序/序列化 |
 
