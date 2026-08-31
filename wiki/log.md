@@ -33,3 +33,6 @@ updated: 2026-08-30
 - **[ingest]** 消化 [[mysql/笛卡尔积]]（经人类授权代整理的 raw 成稿，10 题面试题：意外产生场景 / CROSS JOIN 正经用途 / JOIN 语义=笛卡尔积+过滤 vs 物理永远避免 / JOIN 放大分页与 COUNT「先收敛再放大」/ 防线机制化）→ 挂载 [[wiki/entities/MySQL]] 核心笔记。联动：深分页优化（分页错乱根因区分）、SQL优化与调优（JOIN 算法）。
 - **[output]** 经授权更新 [[mysql/README]] 索引：目录表新增「🔗 笛卡尔积」行（置于深分页之后）、板块描述改八大、必背清单补「JOIN 放大：先收敛再放大」。
 - **[ingest]** 消化 [[AI应用开发/提示词工程]]（经人类授权代起草的 raw 成稿，10 题面试题：提示词 ⊂ 上下文工程 / 五段模板与指令-数据物理隔离 / CoT 有效原理（输出 token = 额外计算时间）与有害场景 / System 信任边界 + 前缀缓存 / 结构化输出三层 / prompt 即代码（版本化+评测集回归+灰度）/ 注入防御最终靠权限）→ 挂载 [[wiki/concepts/ContextEngineering]] 核心笔记与知识骨架、index 覆盖描述。口径锚点：T2/T21/T22/T23、LLM安全与工程化（Judge 固化、三层防线）。
+- **[ingest]** 消化 [[mysql/SQL优化的实际场景]]（经人类授权代整理的 raw 成稿，10 题场景化面试题：万能五步排查骨架 / 索引失效实战场景（区分写法失效 vs 优化器代价弃用）/ 时快时慢分诊（Buffer Pool 冷热/执行计划漂移/刷脏/锁等待）/ 大表批量导入 / CPU 100% 定位 / Lock wait timeout 排查 / 动态筛选联合索引设计 / 报表实时化分层（预聚合）/ 2000 万扫描逐层优化 / 慢 SQL 治理体系）→ 挂载 [[wiki/entities/MySQL]] 核心笔记与追问链。定位：与 SQL优化与调优（手段层）互为犄角的「场景层」。
+- **[output]** 经授权更新 [[mysql/README]] 索引：目录表新增「🩺 SQL 优化实际场景」行、板块描述改九大、必背清单补「场景排查五步」。
+- **[fix]** 修复 [[自媒体/微信公众号/探小虎/万物皆可markdown]] 第 13 行失效图片引用：`markdown-everything.jpg`（不存在）→ `context-engineering.jpg`（实际存在），alt 改为「Markdown 是人与 AI 的通用协议」。Vercel 构建坏链阻断已解除。

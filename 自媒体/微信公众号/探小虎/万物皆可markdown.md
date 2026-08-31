@@ -10,7 +10,7 @@
 
 Markdown 诞生于 2004 年，初衷是「让不懂 HTML 的人也能写出结构化的文章」——那时候它的读者是人。二十年后，它最大的读者群变成了模型。
 
-![万物皆可 Markdown](images/markdown-everything.jpg)
+![Markdown 是人与 AI 的通用协议](images/context-engineering.jpg)
 
 这篇文章想聊清楚一件事：**Markdown 已经不只是「写文档的语法」，而是人与 AI 之间的通用协议。** 想明白这一点，你在做提示词、上下文工程、Agent 记忆设计时的很多选型，会突然变得有依据。
 
