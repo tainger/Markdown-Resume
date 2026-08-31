@@ -20,6 +20,8 @@ Java 核心类库源码分析、语言特性与工程实践笔记，风格与 `l
 | 12 | [反射与动态代理](反射与动态代理.md) | 反射性能与优化、JDK Proxy vs CGLIB、Spring AOP 选型、事务失效 | ✅ |
 | 13 | [Stream 与 Lambda](Stream与Lambda.md) | 函数式接口、invokedynamic 原理、惰性求值、并行流的坑、Optional | ✅ |
 | 14 | [volatile 关键字面试题](volatile关键字.md) | 三大特性、原子性反证、DCL、传递可见性、内存屏障速答 | ✅ |
+| 15 | [线程面试题](线程面试题.md) | 创建方式、6 状态转换、wait/notify、sleep/wait/yield/join、synchronized 锁升级、死锁、中断、daemon、单例模式 | ✅ |
+| 16 | [线程池面试题](线程池面试题.md) | 队列选型深度对比、动态调参、监控告警、Spring Boot @Async 坑、ForkJoinPool 对比、线程池隔离、生产事故复盘 | ✅ |
 
 > 状态图例：⬜ 待整理 · 🟡 整理中 · ✅ 已完成
 
@@ -34,6 +36,9 @@ Java 核心类库源码分析、语言特性与工程实践笔记，风格与 `l
 - **JDK 代理 vs CGLIB**：接口+反射 vs 子类+FastClass；Spring Boot 默认 CGLIB；@Transactional 自调用失效 = 绕过代理
 - **并行流公共 ForkJoinPool 只给 CPU 密集**；toMap 必给 merge 函数
 - **volatile 保证可见性 + 有序性、不保证原子性**：`i++` 仍丢更新，计数用 AtomicLong/LongAdder；DCL 必加 volatile（禁止 new 三步重排）；volatile 写之前的普通写对读方可见（happens-before 传递性）
+- **synchronized 锁升级**：偏向锁（Mark Word 存线程ID）→ 轻量级锁（CAS 自旋）→ 重量级锁（Monitor EntryList+WaitSet）；重入计数 `_count++`；wait/notify 操作 WaitSet，必须在 synchronized 内调（JVM 校验 Monitor）
+- **sleep 不释放锁 vs wait 释放锁**；yield 不是阻塞（仍是 RUNNABLE）；join 底层是 `while(isAlive()) wait(0)` 会释放锁；中断是协作式（`interrupt()` 发标志位，`catch InterruptedException` 后必须重新设中断标志）
+- **线程池生产必做**：队列必须有界（ArrayBQ，LinkedBQ 默认 MAX_VALUE 无界=OOM）、线程必须命名（ThreadFactory 前缀）、拒绝策略必须明确（核心业务 CallerRunsPolicy 降级、非核心可 DiscardOldest）；CPU 密集 core=Ncpu+1、IO 密集 core=2~5×Ncpu；Executors 三工厂全禁用（阿里规约）；动态调参不能换队列；submit 超时后任务仍在跑，必须 `cancel(true)`
 
 ## 集合体系速览
 
