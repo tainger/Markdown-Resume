@@ -257,6 +257,6 @@ Spring IOC 以 **ApplicationContext** 为生产入口，按「实例化 → 属�
 
 | 主题 | 笔记 |
 |:---|:---|
-| AOP 动态代理（BeanPostProcessor.postProcessAfterInitialization 生成代理） | [AOP与事务.md](AOP与事务.md) |
+| AOP 动态代理（BeanPostProcessor.postProcessAfterInitialization 生成代理） | [AOP.md](AOP.md) |
 | Spring Boot 启动时何时创建 ApplicationContext | [自动配置与启动流程.md](自动配置与启动流程.md) |
 | Spring MVC 的 DispatcherServlet 是特殊 Bean（WebApplicationContext） | [SpringMVC与Web.md](SpringMVC与Web.md) |

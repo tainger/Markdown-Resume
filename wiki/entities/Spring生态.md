@@ -11,8 +11,8 @@ updated: 2026-08-30
 ## 核心笔记
 
 - [[Spring/IOC与Bean生命周期]]
-- [[Spring/AOP与事务]]（动态代理失效场景）
-- [[Spring/事务]]（传播行为）
+- [[Spring/AOP]]（动态代理机制与失效场景）
+- [[Spring/事务]]（原理层 + 场景层：传播行为 / 失效场景 / 锁包事务）
 - [[Spring/自动配置与启动流程]]（@EnableAutoConfiguration/SPI）
 - [[Spring/SpringMVC与Web]]
 - [[Spring/SpringCloud微服务]]

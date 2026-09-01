@@ -338,6 +338,6 @@ Spring Cloud 体系选型首推**「Nacos（注册+配置，AP+CP 可切换） +
 
 | 主题 | 笔记 |
 |:---|:---|
-| 本地事务 + 传播行为（Seata AT 一阶段的本地事务仍要遵循） | [AOP与事务.md](AOP与事务.md) |
+| 本地事务 + 传播行为（Seata AT 一阶段的本地事务仍要遵循） | [事务.md](事务.md) |
 | MySQL redo/undo/binlog 两阶段提交（Seata XA 模式就是扩展 2PC 协议） | [MySQL/存储引擎与架构.md](../mysql/存储引擎与架构.md) |
 | Nacos 启动时 EnvironmentPostProcessor 拉配置（Spring Boot 自动配置扩展点） | [自动配置与启动流程.md](自动配置与启动流程.md) |

@@ -348,6 +348,6 @@ Spring Boot 现在是**单容器架构**（无父子容器），DispatcherServle
 | 主题 | 笔记 |
 |:---|:---|
 | Spring Boot onRefresh 阶段创建内嵌 Tomcat + WebApplicationContext | [自动配置与启动流程.md](自动配置与启动流程.md) |
-| `@Transactional` 在拦截器 preHandle 之前还是之后？——AOP 代理在 Bean 创建生命周期 afterInitialization 生成，HandlerAdapter 调用时命中 | [AOP与事务.md](AOP与事务.md) |
+| `@Transactional` 在拦截器 preHandle 之前还是之后？——AOP 代理在 Bean 创建生命周期 afterInitialization 生成，HandlerAdapter 调用时命中 | [事务.md](事务.md) |
 | Bean 创建/代理流程（HandlerMethod 调用的 Controller 对象实际是 AOP 代理对象） | [IOC与Bean生命周期.md](IOC与Bean生命周期.md) |
 | 微服务层 API 网关（Gateway Netty WebFlux vs Spring MVC） | [SpringCloud微服务.md](SpringCloud微服务.md) |
