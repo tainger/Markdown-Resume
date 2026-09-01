@@ -23,6 +23,7 @@
 ├── 计算机网络/              # 计算机网络面试题笔记（分层、TCP、HTTP/HTTPS、IP、DNS/CDN — P7 备战）
 ├── Mybatis/                # MyBatis 面试题笔记（架构执行流程、缓存、动态SQL、插件 — P7 备战）
 ├── dubbo/                  # Dubbo 面试题笔记（架构流程、SPI、注册发现、容错负载均衡、通信线程模型 — P7 备战）
+├── elasticsearch/          # ElasticSearch 面试题笔记（倒排索引、写入近实时、搜索评分、深分页调优、高可用 — P7 备战）
 ├── io/                     # IO 面试题笔记（IO模型、NIO多路复用、零拷贝、Netty — P7 备战）
 ├── java/                   # Java 技术笔记
 ├── agentscope-java/        # AgentScope Java 2.0 设计思想源码解读
