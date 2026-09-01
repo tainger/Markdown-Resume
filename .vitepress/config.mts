@@ -26,6 +26,7 @@ export const INCLUDE_DIRS: { text: string; dir: string }[] = [
   { text: '面试准备', dir: '面试准备' },
   { text: '英语能力', dir: '英语能力' },
   { text: '探小虎', dir: '自媒体/微信公众号/探小虎' },
+  { text: '每日记录', dir: '每日记录' },
 ]
 
 // 顶部导航栏分组（下拉菜单）：目录太多平铺会溢出，按类折叠
@@ -34,7 +35,7 @@ export const NAV_GROUPS: { text: string; dirs: string[] }[] = [
   { text: '算法', dirs: ['算法思想', 'leetcode-hot100', '华为OD机试', '数据结构'] },
   { text: '后端', dirs: ['分布式', '系统设计', '权限设计', 'mysql', 'redis', 'rocketMq', 'Mybatis', 'dubbo'] },
   { text: '基础', dirs: ['java', 'jvm', 'io', '计算机网络'] },
-  { text: '更多', dirs: ['AI应用开发', 'DeepSeek Harness', '面试', '面试准备', '英语能力', '自媒体/微信公众号/探小虎'] },
+  { text: '更多', dirs: ['AI应用开发', 'DeepSeek Harness', '面试', '面试准备', '英语能力', '自媒体/微信公众号/探小虎', '每日记录'] },
 ]
 
 export default defineConfig({
