@@ -1,0 +1,480 @@
+# MySQL 8.0 新特性
+
+> **定位**：MySQL 8.0 是 5.7 之后的大版本（2018 发布，2023 起 5.7 EOL），面试考察两类：① **业务开发层**——窗口函数、CTE、INSTANT DDL、隐藏索引（高频，会写 SQL）；② **架构原理层**——查询缓存移除、数据字典事务化、原子 DDL、Hash Join（P7 加分）。本文系统梳理，已在其他笔记深入讲过的特性回链不重复。
+
+---
+
+## 一、新特性总览（按面试频率排序）
+
+| 特性 | 版本 | 类别 | 高频度 |
+|:---|:---:|:---|:---:|
+| **窗口函数** | 8.0.0 | SQL | ⭐⭐⭐⭐⭐ |
+| **CTE（WITH 公用表表达式）** | 8.0.0 | SQL | ⭐⭐⭐⭐⭐ |
+| **INSTANT ADD COLUMN** | 8.0.12 | DDL | ⭐⭐⭐⭐ |
+| **隐藏索引（Invisible Index）** | 8.0.0 | 索引 | ⭐⭐⭐⭐ |
+| **原子 DDL** | 8.0.0 | DDL | ⭐⭐⭐⭐ |
+| **Hash Join** | 8.0.18 | 优化器 | ⭐⭐⭐⭐ |
+| **EXPLAIN ANALYZE** | 8.0.18 | 调优 | ⭐⭐⭐⭐ |
+| **查询缓存移除** | 8.0.0 | 架构 | ⭐⭐⭐⭐ |
+| **数据字典事务化** | 8.0.0 | 架构 | ⭐⭐⭐ |
+| **降序索引** | 8.0.0 | 索引 | ⭐⭐⭐ |
+| **函数索引** | 8.0.13 | 索引 | ⭐⭐⭐ |
+| **多值索引（Multi-Valued）** | 8.0.17 | 索引 | ⭐⭐ |
+| **角色（Roles）** | 8.0.0 | 权限 | ⭐⭐ |
+| **caching_sha2_password 默认认证** | 8.0.0 | 安全 | ⭐⭐ |
+| **默认字符集 utf8mb4** | 8.0.0 | 字符集 | ⭐⭐ |
+| **Skip Scan 索引跳跃扫描** | 8.0.13 | 优化器 | ⭐⭐（已详述→[索引.md](索引.md)） |
+
+---
+
+## 二、窗口函数（必考 Top 1）
+
+### 是什么
+
+窗口函数在**结果集的"窗口"（一组相关行）上做聚合/计算，但不把多行折叠成一行**——与 GROUP BY 的本质区别。
+
+```
+GROUP BY：5 行输入 → 聚合后 1 行输出（折叠）
+窗口函数：5 行输入 → 每行都有计算值输出（保留明细）
+```
+
+### 语法
+
+```sql
+函数名([参数]) OVER (
+    [PARTITION BY 分区列]     -- 分窗口（类比 GROUP BY，但不折叠）
+    [ORDER BY 排序列]          -- 窗口内排序
+    [ROWS/RANGE BETWEEN 边界]  -- 窗口帧（可选）
+)
+```
+
+### 排名三兄弟（必考）
+
+| 函数 | 行为 | 示例（分数 100,100,90） |
+|:---|:---|:---:|
+| `ROW_NUMBER()` | 连续编号，无并列 | 1, 2, 3 |
+| `RANK()` | 并列同号，**跳号** | 1, 1, **3** |
+| `DENSE_RANK()` | 并列同号，**不跳号** | 1, 1, **2** |
+
+```sql
+-- 经典题：每个部门工资最高的前 3 名
+select * from (
+    select
+        name, dept, salary,
+        dense_rank() over (
+            partition by dept
+            order by salary desc
+        ) as rk
+    from employee
+) t
+where rk <= 3;
+```
+
+> **经典陷阱**：「第 N 高」问题（LeetCode 177 第 N 高的薪水）——用 `dense_rank` + `where rk = N`，注意 N 超过实际排名数要返回 NULL 而非空集。
+
+### 偏移函数 LAG / LEAD
+
+```sql
+-- 每行取窗口内上/下第 N 行的值
+lag(col, n, default)  over (order by ...)  -- 往前第 n 行
+lead(col, n, default) over (order by ...)  -- 往后第 n 行
+
+-- 经典题：计算环比（本月 vs 上月）
+select
+    month, sales,
+    lag(sales, 1) over (order by month) as prev_sales,
+    sales - lag(sales, 1) over (order by month) as mom_growth
+from monthly_sales;
+```
+
+### 聚合窗口函数 + 帧
+
+```sql
+-- 累计求和（running total）
+select
+    day, amount,
+    sum(amount) over (order by day) as cumulative   -- 默认 RANGE 到当前行
+from daily_sales;
+
+-- 移动平均（3 天均值）
+select
+    day, amount,
+    avg(amount) over (
+        order by day
+        rows between 1 preceding and 1 following   -- 前一行到后一行
+    ) as ma3
+from daily_sales;
+```
+
+**窗口帧边界**：
+
+| 语法 | 含义 |
+|:---|:---|
+| `unbounded preceding` | 分区第一行 |
+| `n preceding` | 当前行前 n 行 |
+| `current row` | 当前行 |
+| `n following` | 当前行后 n 行 |
+| `unbounded following` | 分区最后一行 |
+
+### 窗口函数 vs GROUP BY vs 子查询
+
+```sql
+-- 需求：每个部门最高工资 + 该部门所有人的工资都要显示
+
+-- ❌ 旧写法（5.7）：JOIN 子查询
+select e.* from employee e
+join (select dept, max(salary) ms from employee group by dept) m
+  on e.dept = m.dept and e.salary = m.ms;
+
+-- ✅ 8.0 窗口函数：一次扫描
+select * from (
+    select *, max(salary) over (partition by dept) as max_sal
+    from employee
+) t where salary = max_sal;
+```
+
+---
+
+## 三、CTE 公用表表达式
+
+### 非 CTE
+
+```sql
+with cte as (select id, name from user where age > 18)
+select c.* from cte c join orders o on c.id = o.uid;
+```
+
+- **提升可读性**：复杂多层子查询拆成命名段落，替代可读性差的嵌套
+- CTE 作用域仅当前语句，可引用多次（派生表不行）
+
+### 递归 CTE（必考）
+
+```sql
+-- 经典题：查组织架构树（某员工的所有下属）
+with recursive subordinates as (
+    -- 锚点：起点
+    select id, name, manager_id from employee where id = 100
+    union all
+    -- 递归部分：找上一轮结果的下级
+    select e.id, e.name, e.manager_id
+    from employee e
+    join subordinates s on e.manager_id = s.id
+)
+select * from subordinates;
+```
+
+**执行机制**：
+
+```
+锚点结果集 → 放入工作表
+    ↓ 循环
+用工作表驱动递归部分 → 新结果 → 替换工作表
+    ↓ 直到递归部分返回空集
+union all 各轮结果 = 最终结果
+```
+
+**经典应用**：
+
+| 场景 | 写法 |
+|:---|:---|
+| 组织架构树 / 分类树 | `join` 自身外键 |
+| 斐波那契 / 1~100 序列 | 锚点 1，递归 `select n+1` |
+| 省市区级联 | `parent_id` 自关联 |
+| 排班表 / 日历生成 | 日期 +1 递归 |
+
+### CTE 陷阱
+
+1. **默认 `union all` 不去重**，`union distinct` 去重但会物化临时表，树有环时必须用 distinct + 防死循环
+2. **`cte_max_recursion_depth` 默认 1000**——超过报错（递归层数深需 `set session cte_max_recursion_depth = 100000`）
+3. 优化器对 CTE 的处理：被引用多次会**物化**，单次引用可能内联合并（与派生表同策略）
+
+---
+
+## 四、DDL 增强：INSTANT + 原子 DDL
+
+### INSTANT ADD COLUMN（8.0.12+，必考）
+
+**改变**：加列从「重建全表（小时级）」变成「只改元数据（毫秒级）」。
+
+| DDL 类型 | 5.7 | 8.0 |
+|:---|:---|:---|
+| 加列 | **INPLACE 重建表**（拷贝全表数据，锁写） | ✅ **INSTANT**，仅改元数据 |
+| 删列 | INPLACE 重建 | INSTANT（8.0.29+） |
+| 改列类型 | COPY 全表 | COPY（仍慢） |
+| 加索引 | INPLACE（允许并发 DML） | INPLACE（同 5.7） |
+
+```
+5.7 加列原理（INPLACE）：
+  新建带新列的表 → 逐行拷贝旧数据 → rename 替换
+  大表 = 小时级 + 占双倍磁盘 + 主从延迟
+
+8.0 INSTANT 原理：
+  行格式引入「即时列」元数据，新列值不物理存储
+  读取时：旧行 + 默认值 拼装
+  → 只改数据字典，毫秒完成，不锁表
+```
+
+> **生产意义**：大表加字段不再需要 pt-online-schema-change（8.0.12+ 加列场景）。但**改列类型、改字符集**仍是 COPY，还是得走 gh-ost。
+
+### 原子 DDL（8.0.0）
+
+**改变**：DDL 语句要么全成功、要么全失败，崩溃后不会留下半成品。
+
+```
+5.7 的问题：
+  DDL 分多步（字典修改 → 数据文件 → 重命名 .frm）
+  中途崩溃 → 表存在但没有数据文件 / .frm 残留 → 需要人工修复
+
+8.0 原子 DDL：
+  DDL 的中间状态写入 DDL log（由 InnoDB 执行）
+  崩溃重启 → 服务端读 DDL log 回滚未完成的 DDL
+  → 不会出现半成品表
+```
+
+**要点**：
+
+- 原子 DDL 只针对**单个语句**（`drop table t1, t2` 仍是两个操作，非一个事务）
+- **不支持分布式/跨引擎**：`create table ... select` 在 8.0 不再是原子的（binlog 保证）
+
+---
+
+## 五、索引增强
+
+### 隐藏索引（Invisible Index，必考）
+
+```sql
+-- 把索引设为不可见：优化器忽略它，但索引仍维护
+alter table t alter index idx_name invisible;
+alter table t alter index idx_name visible;
+
+-- 查看可见性
+select index_name, is_visible
+from information_schema.statistics
+where table_name = 't';
+```
+
+**生产用法：安全删索引三步**
+
+```
+1. invisible（观察 1~2 周：性能无变化 → 说明真没人用）
+2. drop index（确认无用）
+3. 若误判 → alter ... visible 秒级恢复（不用重建索引！）
+```
+
+> **对比 5.7**：删索引 = 重建才能恢复（大索引重建小时级）。8.0 隐藏索引让「清理无用索引」零风险，也常用于排查某索引是否真的被查询用到。
+
+### 降序索引（Descending Index）
+
+```sql
+create table t (
+  a int,
+  b int,
+  index idx_ab (a asc, b desc)   -- 8.0 真正支持 b 降序物理存储
+);
+
+-- 5.7 的问题：语法支持但被忽略，索引仍全升序
+--   order by a asc, b desc → 8.0 前需要 filesort
+-- 8.0：索引物理上按 a 升序 b 降序存储 → 直接顺序扫，无 filesort
+```
+
+### 函数索引（Functional Index，8.0.13+）
+
+```sql
+create table t (
+  created_at datetime,
+  index idx_date ((date(created_at)))    -- 对表达式建索引
+);
+
+-- 以前：函数包列 → 索引失效（详见 explain详解.md）
+select * from t where date(created_at) = '2026-09-01';
+-- 5.7：type=ALL
+-- 8.0：✅ 走 idx_date（虚拟列机制的语法糖）
+```
+
+> 函数索引本质是「自动帮你建虚拟列 + 索引」，省去手动生成列的步骤（详见 [数据类型选型.md](数据类型选型.md) JSON 虚拟列一节）。
+
+### 多值索引（Multi-Valued Index，8.0.17+）
+
+```sql
+-- JSON 数组字段建索引
+create table users (
+  hobbies json,
+  index idx_hobby ((cast(hobbies as char(20) array)))
+);
+
+-- contals 查询能走索引
+select * from users where 'swim' member of (hobbies);
+```
+
+### Skip Scan（8.0.13+，已详述）
+
+联合索引 `(a,b)`，`where b = 2` 可部分绕过最左前缀（第一列基数低时）。详见 [索引.md](索引.md) 索引跳跃扫描一节。
+
+---
+
+## 六、优化器增强：Hash Join（8.0.18+）
+
+```
+Nested Loop Join（有索引时）：
+  驱动表每一行 → 走被驱动表索引查一次 → 快
+
+无索引时（5.7）：
+  Block Nested-Loop（BNL）：驱动表分块进 join buffer，被驱动表全表扫一遍
+  → 被驱动表被扫 N 块次，慢
+
+8.0.18+ Hash Join：
+  ① 用驱动表（小表）构建哈希表（内存）
+  ② 扫被驱动表（大表）每一行 → 哈希查找匹配
+  → 被驱动表只扫一遍，复杂度从 O(M×N) 降到 O(M+N)
+```
+
+| 对比 | BNL（5.7） | Hash Join（8.0.18+） |
+|:---|:---|:---|
+| 触发条件 | join 列无索引 | 同左（等值 join） |
+| 大表扫描次数 | 多次（每块一次） | **一次** |
+| 内存要求 | join_buffer_size | hash 内存（超出落盘） |
+| 适用 | 全部 | 等值 join（非等值仍走 BNL → 8.0.20 后走老实现） |
+
+> **已详述**：Hash Join 触发场景与 explain 表现详见 [explain详解.md](explain详解.md) 多表 JOIN 一节与 [笛卡尔积.md](笛卡尔积.md)。
+
+---
+
+## 七、EXPLAIN ANALYZE（8.0.18+，调优利器）
+
+```sql
+explain analyze select * from t where id between 1 and 100;
+-- 输出真实执行信息：实际行数、实际耗时、循环次数
+--   （explain 只给估算，explain analyze 真跑一遍给实际值）
+```
+
+| 工具 | 数据来源 | 用途 |
+|:---|:---|:---|
+| `explain` | 优化器估算 | 看计划（不执行） |
+| `explain analyze` | **真实执行统计** | 验证估算是否失真、定位耗时算子 |
+| `explain format=tree` | 优化器 | 8.0 树状展示计划 |
+| `optimizer_trace` | 优化器决策 | 看为什么选这个计划（详见 [explain详解.md](explain详解.md)） |
+
+**典型用法**：SQL 慢但 explain 里 rows 估算很小、走对了索引 → explain analyze 看实际行数（估算失真 → `analyze table` 更新统计信息）。
+
+---
+
+## 八、架构级变化
+
+### 查询缓存移除（8.0.0，必考）
+
+```
+5.7 查询缓存问题：
+  ① 表任何一行更新 → 该表所有缓存全部失效
+  ② 命中率低、加锁竞争激烈 → 并发下反而更慢
+  ③ SQL 一字不差才命中（空格都算不同）
+→ 8.0 彻底删除，官方建议用 Redis/应用层缓存替代
+```
+
+详见 [存储引擎与架构.md](存储引擎与架构.md)。
+
+### 数据字典事务化（8.0.0）
+
+```
+5.7：表结构信息存在 .frm 文件（文件系统，非事务）
+8.0：数据字典存进 InnoDB 表（事务化 + 崩溃安全）
+     → 这是「原子 DDL」能实现的基础
+     → drop table 后 .frm 不再存在，information_schema 直接查字典表（更快）
+```
+
+### 其他架构变化
+
+| 变化 | 说明 |
+|:---|:---|
+| **redo/undo 线程无锁化** | redo log 写入从全局锁改为 lock-free 设计，写并发大幅提升 |
+| **共享表空间清理** | 默认独立表空间（.ibd），5.7 默认不变 |
+| **undo log 独立表空间** | 8.0 默认 2 个 undo 表空间，支持 truncate 回收 |
+| **utf8mb4 默认字符集** | 8.0 默认 `utf8mb4` + `utf8mb4_0900_ai_ci`（5.7 是 latin1） |
+
+---
+
+## 九、安全与管理
+
+### 角色 Roles（8.0.0）
+
+```sql
+-- 创建角色并授权
+create role 'app_read', 'app_write';
+grant select on mydb.* to 'app_read';
+grant insert, update, delete on mydb.* to 'app_write';
+
+-- 用户绑定角色
+create user 'tom'@'%' identified by 'xxx';
+grant 'app_read', 'app_write' to 'tom'@'%';
+set default role all to 'tom'@'%';
+```
+
+> 解决 5.7 权限「逐用户 grant」的重复管理问题，权限按角色聚合。
+
+### caching_sha2_password（8.0 默认认证插件）
+
+```
+5.7 默认：mysql_native_password（sha1，安全性弱）
+8.0 默认：caching_sha2_password（sha256 + 全量 TLS/RSA）
+```
+
+> **生产高频坑**：老客户端（5.7 JDBC 驱动、旧版 Navicat、旧版 PHP/Python 客户端）连 8.0 报 `Authentication plugin 'caching_sha2_password' cannot be loaded`。解决办法：升级客户端驱动，或临时改回 `identified with mysql_native_password by 'xxx'`（不建议）。
+
+### 资源组（Resource Group，8.0.3+）
+
+```sql
+-- 把线程绑定 CPU 核 / 调整优先级，隔离批处理与在线查询
+create resource group batch type=user vcpu=0-1 thread_priority=19;
+set resource group batch for 123;
+```
+
+---
+
+## 十、版本升级注意（生产视角）
+
+| 注意点 | 说明 |
+|:---|:---|
+| **认证插件** | 老驱动连不上 → 升级驱动或改插件（见上） |
+| **保留字增加** | `rank`、`groups`、`row`、`rows` 等成为保留字 → 表名/列名需反引号 |
+| **GROUP BY 隐式排序移除** | 5.7 `group by` 默认排序，8.0 不保证 → 依赖排序的 SQL 必须显式 `order by` |
+| **查询缓存没了** | 依赖 QC 的「性能优化」全部失效 |
+| **utf8 → utf8mb3** | 8.0.28+ `utf8` 别名指向 utf8mb3，迁移前确认字符集 |
+| **默认值表达式** | 8.0 允许 `default (表达式)`，迁移后行为差异 |
+| **密码策略** | 默认 `validate_password` 组件开启，弱密码被拒绝 |
+
+---
+
+## 十一、易错点
+
+| 易错点 | 说明 |
+|:---|:---|
+| **以为窗口函数=GROUP BY** | 窗口函数不折叠行，每行都保留明细；GROUP BY 折叠 |
+| **rank vs dense_rank 分不清** | rank 并列跳号（1,1,3），dense_rank 并列不跳（1,1,2） |
+| **递归 CTE 忘记写 recursive** | 有递归部分必须 `with recursive`，否则报错 |
+| **递归 CTE 忘记终止条件** | 树有环时 union all 无限循环 → `cte_max_recursion_depth` 报错兜底 |
+| **以为 GROUP BY 还默认排序** | 8.0 移除隐式排序，需要排序必须显式 order by |
+| **以为 INSTANT 适用所有 DDL** | 只有加列/改列名/设默认值等元数据操作；改类型仍是 COPY |
+| **隐藏索引不省空间** | invisible 的索引仍物理存在、仍随写维护，只是优化器不用 |
+| **降序索引 5.7 也写了没报错** | 5.7 语法被忽略（仍升序），8.0 才真正物理降序 |
+| **以为 Hash Join 取代一切 JOIN** | 只针对**无索引等值 join**；有索引仍走 NLJ |
+| **explain analyze 有代价** | 真实执行 SQL，慢查询/写操作慎用（写会真执行！） |
+| **老客户端连 8.0 报认证错** | caching_sha2_password 不兼容旧驱动，升级驱动 |
+| **rank 列名撞保留字** | 8.0 `rank/row/groups` 是保留字，列名要加反引号 |
+
+---
+
+## 十二、一句话总结
+
+MySQL 8.0 新特性按层背：**SQL 层**窗口函数（排名三兄弟 row_number/rank/dense_rank + lag/lead + 聚合帧，不折叠行）和递归 CTE（`with recursive` 锚点+递归查树）；**DDL 层** INSTANT 加列（8.0.12 毫秒级，只改元数据）和原子 DDL（DDL log 崩溃回滚，数据字典进 InnoDB 是基础）；**索引层**隐藏索引（安全删索引三步：invisible→drop→秒级恢复）、降序索引、函数索引；**优化器层** Hash Join（8.0.18 无索引等值 join 从 O(M×N) 降到 O(M+N)）和 EXPLAIN ANALYZE（真实执行统计验证估算）；**架构层**查询缓存移除（更新即失效命中率低）。生产升级三大坑：caching_sha2_password 认证、保留字 rank/groups、GROUP BY 不再隐式排序。
+
+---
+
+## 十三、相关笔记
+
+| 主题 | 笔记 |
+|:---|:---|
+| Skip Scan 跳跃扫描（联合索引绕过最左前缀） | [索引.md](索引.md) |
+| Hash Join 触发场景 + explain 表现 | [explain详解.md](explain详解.md) / [笛卡尔积.md](笛卡尔积.md) |
+| 查询缓存移除背景 + InnoDB 架构 | [存储引擎与架构.md](存储引擎与架构.md) |
+| 函数包列导致索引失效 vs 函数索引 | [SQL优化的实际场景.md](SQL优化的实际场景.md) |
+| JSON 虚拟列 + 多值索引（函数索引本质） | [数据类型选型.md](数据类型选型.md) |
+| 大表 DDL 治理（gh-ost / pt-osc） | [SQL优化的实际场景.md](SQL优化的实际场景.md) |
