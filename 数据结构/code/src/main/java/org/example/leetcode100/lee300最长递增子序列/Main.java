@@ -27,9 +27,10 @@ public class Main {
      * @param nums
      * @return
      */
-    public int lengthOfLIS(int[] nums) {
+    public int lengthOfLIS2(int[] nums) {
 
 
+        return 1;
     }
 
 
