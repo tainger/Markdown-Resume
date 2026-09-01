@@ -7,10 +7,11 @@
 | # | 主题 | 笔记 | 核心考点 |
 |:---:|:---|:---|:---|
 | 1 | 🧩 IOC 与 Bean 生命周期 | [IOC与Bean生命周期.md](IOC与Bean生命周期.md) | BeanFactory/ApplicationContext、作用域、循环依赖三级缓存、实例化 vs 初始化、生命周期钩子 |
-| 2 | 🔒 AOP 与事务 | [AOP与事务.md](AOP与事务.md) | JDK/CGLIB 代理、@Transactional、7 种传播行为、失效场景、自调用陷阱 |
-| 3 | 🏗️ 自动配置与启动流程 | [自动配置与启动流程.md](自动配置与启动流程.md) | @SpringBootApplication 拆解、SpringFactories / AutoConfiguration.imports、starter 原理、后置处理器扩展点 |
-| 4 | 🌐 Spring MVC 与 Web | [SpringMVC与Web.md](SpringMVC与Web.md) | DispatcherServlet 9 步流程、拦截器 vs Filter、参数解析、异常处理、SpringBoot WebFlux 对比 |
-| 5 | ⚙️ Spring Cloud 微服务 | [SpringCloud微服务.md](SpringCloud微服务.md) | 注册/配置中心（Nacos/Eureka/Consul/CAP）、Feign、Gateway、Sentinel、分布式事务 Seata |
+| 2 | 🔒 AOP 与事务（原理层） | [AOP与事务.md](AOP与事务.md) | JDK/CGLIB 代理、@Transactional、7 种传播行为、失效场景、自调用陷阱 |
+| 3 | 🔒 事务（场景层） | [事务.md](事务.md) | 注解 7 属性生产配置、编程式 vs 声明式、多数据源、长事务排查、Redis 一致性、TransactionalEventListener、连接池打爆、分布式事务边界、响应式栈 |
+| 4 | 🏗️ 自动配置与启动流程 | [自动配置与启动流程.md](自动配置与启动流程.md) | @SpringBootApplication 拆解、SpringFactories / AutoConfiguration.imports、starter 原理、后置处理器扩展点 |
+| 5 | 🌐 Spring MVC 与 Web | [SpringMVC与Web.md](SpringMVC与Web.md) | DispatcherServlet 9 步流程、拦截器 vs Filter、参数解析、异常处理、SpringBoot WebFlux 对比 |
+| 6 | ⚙️ Spring Cloud 微服务 | [SpringCloud微服务.md](SpringCloud微服务.md) | 注册/配置中心（Nacos/Eureka/Consul/CAP）、Feign、Gateway、Sentinel、分布式事务 Seata |
 
 ## 高频「必背」清单（速查）
 
@@ -20,6 +21,8 @@
 - **AOP 底层**：Spring 默认 JDK 动态代理（接口）+ CGLIB（类）；SpringBoot 2.0 后默认 `spring.aop.proxy-target-class=true` 即 CGLIB 优先
 - **7 种事务传播行为核心**：`REQUIRED`（默认，有则加入/无则新建）、`REQUIRES_NEW`（挂起外层/新建事务）、`NESTED`（savepoint 嵌套）
 - **@Transactional 失效场景 Top 5**：① 非 public 方法 ② 类内部自调用（this 绕过代理）③ 捕获异常没回抛 ④ 数据库引擎不支持事务（MyISAM）⑤ 多线程/事务方法被 final 修饰
+- **@Transactional 生产配置三铁律**：① `rollbackFor = Exception.class` 必写（默认只回 RuntimeException）② 只读方法必加 `readOnly=true`（免费优化）③ 跨 DataSource 本地事务保证不了原子性 → 上 Seata 或本地消息表
+- **事务边界 + 连接池思维**：@Transactional 方法只做 DB 操作；REQUIRES_NEW 嵌套 N 层 = N 个连接（慎用）；事务外副作用（Redis/MQ）用 `@TransactionalEventListener(AFTER_COMMIT)` 替代事务内同步刷
 - **@SpringBootApplication 三件套**：`@Configuration` + `@EnableAutoConfiguration` + `@ComponentScan`
 - **自动配置核心开关**：Spring Boot 2.7 前 `META-INF/spring.factories`；Spring Boot 3.0+ 改为 `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`
 - **DispatcherServlet 9 步简化记**：请求到 → HandlerMapping 找 Handler → HandlerAdapter 适配 → 拦截器 pre → 调用 Controller → 响应返回前 post → 渲染视图 → 触发 afterCompletion
