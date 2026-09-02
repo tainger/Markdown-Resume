@@ -10,7 +10,6 @@ hero:
     - theme: brand
       text: 开始刷算法
       link: /算法思想/README
-    - theme: alt
       text: LeetCode Hot100
       link: /leetcode-hot100/1. 两数之和
 
