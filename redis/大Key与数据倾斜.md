@@ -1,0 +1,306 @@
+# Redis 大 Key 与数据倾斜面试题
+
+Redis 生产事故的两大经典元凶：**大 Key**（单个 key 体积过大）和**数据倾斜**（集群分片冷热不均）。两者常互为因果——大 Key 挤占单个节点内存形成倾斜，倾斜又让大 Key 的影响放大。面试高频追问：怎么发现、怎么治理、两者什么关系。
+
+---
+
+## 一、大 Key（Big Key）
+
+### 1.1 什么是大 Key
+
+| 类型 | 判定标准（经验值） | 典型场景 |
+|:---|:---|:---|
+| **String 大 Key** | value > 10KB，或 > 1MB 必查 | 长文章内容、Base64 图片、大 JSON |
+| **Hash 大 Key** | field 数 > 5000，或总大小 > 10MB | 用户全量属性、商品全部 SKU |
+| **List 大 Key** | 元素数 > 5000，或总大小 > 10MB | 消息队列、粉丝列表、时间线 |
+| **Set 大 Key** | 元素数 > 5000 | 标签集合、已读用户列表 |
+| **ZSet 大 Key** | 元素数 > 5000 | 排行榜、延迟队列 |
+
+> 口诀：**String 看字节，容器看元素数**。不同类型风险不同，String 大 value 主要是网络/复制阻塞，容器大结构主要是命令复杂度（O(N)）阻塞主线程。
+
+### 1.2 大 Key 的四大危害
+
+```
+┌─────────────────── 大 Key 危害传导链 ───────────────────┐
+│                                                           │
+│  ① 阻塞主线程                                             │
+│     ├─ DEL 大 key 同步释放内存（O(N) 遍历元素）          │
+│     ├─ HGETALL / LRANGE 全量拉取（O(N)）                 │
+│     └─ 迁移时单 key 过大卡在 slot 迁移                     │
+│          ↓                                                │
+│  ② 网络阻塞 + 复制延迟                                    │
+│     ├─ 同步写大 value 占满客户端连接                      │
+│     └─ 主从复制时大 key 一次性传输 → 从库短暂不可用      │
+│          ↓                                                │
+│  ③ 内存不均 → 触发数据倾斜                                 │
+│     └─ 单个大 key 可能撑满 16384 个槽中的几个槽            │
+│          ↓                                                │
+│  ④ 淘汰困难 + 持久化阻塞                                   │
+│     ├─ LRU/LFU 淘汰时遍历大 key 元素，代价高              │
+│     └─ RDB/AOF 重写时处理大 key 阻塞 fork 后的子进程      │
+│                                                           │
+└───────────────────────────────────────────────────────────┘
+```
+
+### 1.3 如何识别大 Key
+
+| 工具/命令 | 用法 | 优缺点 |
+|:---|:---|:---|
+| **redis-cli --bigkeys** | `redis-cli --bigkeys` | ✅ 快速概览每类最大 key；❌ 只给 TOP 1，不扫全量，期间采样有轻微负载 |
+| **MEMORY USAGE** | `MEMORY USAGE key SAMPLES 0` | ✅ 精确到字节；❌ 需要先知道 key，不适合批量 |
+| **SCAN + 类型抽样** | `SCAN 0 COUNT 1000` → `TYPE` → 容器类 `HLEN/LLEN/SCARD/ZCARD` | ✅ 不阻塞，生产巡检首选；❌ 需脚本配合 |
+| **RdbTools** | 离线分析 RDB 文件 | ✅ 全量精确；❌ 非实时，需解析 dump.rdb |
+| **客户端埋点** | 在 Redis 代理层（如 Codis/Predixy）统计 | ✅ 在线持续监控；❌ 需要中间件支持 |
+
+```bash
+# 生产巡检脚本骨架（伪代码）
+cursor=0
+while true; do
+  result=$(redis-cli SCAN $cursor COUNT 1000)
+  cursor=$(echo $result | head -1)
+  keys=$(echo $result | tail -1)
+  for key in $keys; do
+    type=$(redis-cli TYPE $key)
+    case $type in
+      hash|list|set|zset)
+        count=$(redis-cli $([ $type = hash ] && echo HLEN || echo ${type^^}LEN) $key)
+        [ $count -gt 5000 ] && echo "BIG KEY: $type $key count=$count"
+        ;;
+      string)
+        size=$(redis-cli MEMORY USAGE $key SAMPLES 0)
+        [ $size -gt 1048576 ] && echo "BIG KEY: string $key size=${size}B"
+        ;;
+    esac
+  done
+  [ "$cursor" = "0" ] && break
+done
+```
+
+### 1.4 治理方案
+
+#### 方案 A：拆分（治本）
+
+| 大 Key 类型 | 拆分手法 | 示例 |
+|:---|:---|:---|
+| **Hash** | 分桶（按 field 哈希散到 N 个子 hash） | `user:1001:attrs` → `user:1001:attrs:0` ~ `:15`，field 加前缀 |
+| **List** | 按时间/页码分段 | `timeline:uid` → `timeline:uid:20260902`、`:20260901` |
+| **Set/ZSet** | 分片 + 路由层聚合 | `rank:global` → `rank:0` ~ `rank:15`，查询时归并 |
+| **String 大 JSON** | 拆成多个 String + 关联 key | `product:1:full` → `product:1:basic` + `product:1:desc` + `product:1:sku` |
+
+```java
+// 大 Hash 分桶模板（Java + Lettuce）
+public void putBigHash(String bigKey, String field, String value, int buckets) {
+    int idx = Math.abs(field.hashCode()) % buckets;
+    String subKey = bigKey + ":" + idx;
+    commands.hset(subKey, field, value);
+}
+
+// 读取：先查本地缓存，再并发查各桶
+public Map<String, String> getAllBigHash(String bigKey, int buckets) {
+    Map<String, String> result = new HashMap<>();
+    List<CompletableFuture<Map<String, String>>> futures = new ArrayList<>();
+    for (int i = 0; i < buckets; i++) {
+        final String subKey = bigKey + ":" + i;
+        futures.add(CompletableFuture.supplyAsync(() -> commands.hgetall(subKey)));
+    }
+    futures.forEach(f -> result.putAll(f.join()));
+    return result;
+}
+```
+
+#### 方案 B：异步删除（止血）
+
+```bash
+# ❌ 同步删大 key（阻塞主线程 O(N)）
+DEL big:hash:key
+
+# ✅ 异步删（Redis 4.0+ UNLINK，后台线程释放内存）
+UNLINK big:hash:key
+
+# 容器类大 key 用渐进式删除（分批 SCAN + 删）
+HSCAN big:hash:key 0 COUNT 1000   # 循环删除，避免单次阻塞
+```
+
+> **UNLINK vs DEL**：DEL 同步释放（主进程阻塞）；UNLINK 只是把 key 从字典摘掉，真正释放丢给后台 BIO 线程，对大 key 友好。生产删大 key 一律用 UNLINK。
+
+#### 方案 C：压缩与优化
+
+- Hash 容器控制在 `hash-max-ziplist-entries 512` 以下，用 ziplist 紧凑存储
+- String 大 JSON 改用 Protobuf/MessagePack 序列化，体积可降 50%~80%
+- 冷数据迁移到 TTL 短的临时 key 或直接落 MySQL
+
+---
+
+## 二、数据倾斜（Data Skew）
+
+### 2.1 什么是数据倾斜
+
+Redis Cluster 把 key 按 `CRC16(key) % 16384` 分到 16384 个哈希槽，分布到多个主节点。**正常情况下每个节点承担相近数量的槽和数据**。数据倾斜指某些节点的 key 数量/内存/QPS 远高于其他节点，形成「热节点」。
+
+```
+正常分布                      数据倾斜
+┌──────────┐               ┌──────────┐
+│ Node A   │ 25%           │ Node A   │ 10%
+│ 4096 slot│               │ 1638 slot│
+├──────────┤               ├──────────┤
+│ Node B   │ 25%           │ Node B   │ 10%
+│ 4096 slot│               │ 1638 slot│
+├──────────┤               ├──────────┤
+│ Node C   │ 25%           │ Node C   │ 80%  ← 热节点！
+│ 4096 slot│               │ 13107 slot│
+├──────────┤               ├──────────┤
+│ Node D   │ 25%           │ Node D   │ 0%
+│ 4096 slot│               │ 0 slot   │
+└──────────┘               └──────────┘
+```
+
+### 2.2 四大成因
+
+| 成因 | 说明 | 典型案例 |
+|:---|:---|:---|
+| **大 Key 占满单槽** | 单个大 key 及其附属数据被固定路由到某槽 | `user:1:biglist` 占 10MB，全压在一个节点 |
+| **热点 Key 集中访问** | 少量 key 承担绝大部分 QPS | 秒杀库存 key、微博热搜、明星超话 |
+| **Hash Tag 滥用** | 设计阶段用 hash tag 强制同槽，但 tag 分布不均 | `user:1001:{profile}` 所有用户都用 `{profile}` 标签 |
+| **业务 Key 天然不均** | key 设计未考虑分布，某些前缀数据量爆炸 | 按省份分 `province:gd:xxx` 广东数据远多于西藏 |
+
+### 2.3 数据倾斜的危害
+
+| 层面 | 表现 |
+|:---|:---|
+| **容量** | 热节点内存先满 → 触发淘汰或 OOM → 冷节点资源闲置 |
+| **性能** | 热节点 CPU/带宽打满 → RT 飙升 → 集群整体性能被单节点拖累 |
+| **可用性** | 热节点故障 → 影响面被放大（承载 80% 流量），故障转移更危险 |
+| **扩展性** | 加节点只能迁槽，若大 key/热 key 不解决，倾斜依旧 |
+
+### 2.4 治理方案
+
+#### 治本：设计阶段规避
+
+```
+┌─────────────── 数据倾斜治理决策树 ───────────────┐
+│                                                    │
+│  新业务设计？                                      │
+│    ├─ 是 → ① key 命名加随机后缀/序号打散           │
+│    │        ② 热点数据独立分片（不混在主集群）      │
+│    │        ③ 慎用 hash tag，需评估 tag 分布        │
+│    │        ④ 按业务维度预分片（如按 user_id % N） │
+│    │                                               │
+│    └─ 现有集群倾斜？                                │
+│         ├─ 容量倾斜（单节点内存大）→ 拆大 Key      │
+│         │    + 迁移部分槽到冷节点                  │
+│         │                                          │
+│         ├─ QPS 倾斜（单节点 CPU 高）→ 热 Key 治理  │
+│         │    ├─ 客户端本地缓存兜底（Caffeine）     │
+│         │    ├─ 读写分离（热 key 走从库读）        │
+│         │    ├─ 多副本（同一热 key 存多份随机后缀）│
+│         │    └─ 热 key 迁移到独立小集群             │
+│         │                                          │
+│         └─ 两者都有 → 组合治理 + 监控告警           │
+│                                                    │
+└────────────────────────────────────────────────────┘
+```
+
+#### 方案 A：热 Key 本地缓存兜底（最常用）
+
+```java
+// 多级缓存：本地 Caffeine → Redis → DB
+// 热 key 直接命中本地，不打 Redis
+CaffeineCache<String, String> localCache = Caffeine.newBuilder()
+    .maximumSize(10_000)
+    .expireAfterWrite(1, TimeUnit.SECONDS)  // 短 TTL 保证一致性
+    .build();
+
+public String getHotKey(String key) {
+    String val = localCache.getIfPresent(key);
+    if (val != null) return val;           // 本地命中，0 网络开销
+    val = redis.get(key);                  // Redis 兜底
+    if (val != null) localCache.put(key, val);
+    return val;
+}
+```
+
+> 关键点：**本地缓存 TTL 要短（1~5s）**，否则脏数据窗口过大；多实例部署时本地缓存天然分散热 key 的 QPS。
+
+#### 方案 B：热 Key 多副本打散
+
+```bash
+# 同一个热 key 存 N 份，加随机后缀
+SET stock:item:1001:replica:0 100 EX 60
+SET stock:item:1001:replica:1 100 EX 60
+...
+# 读时随机选一份
+GET stock:item:1001:replica:<random 0..N-1>
+```
+
+- 优点：简单粗暴，读 QPS 直接除以 N
+- 缺点：写操作要写 N 份（一致性成本），适合读多写少场景
+
+#### 方案 C：拆大 Key（容量倾斜治本）
+
+详见第一章大 Key 治理，**拆分后的子 key 散到不同槽**，自然消除容量倾斜。
+
+#### 方案 D：读写分离
+
+热 key 读多写少时，对该 key 开启从库读：
+
+```java
+// Lettuce 读写分离路由
+LettuceClientConfiguration config = LettuceClientConfiguration.builder()
+    .readFrom(ReadFrom.REPLICA_PREFERRED)  // 优先从库读
+    .build();
+```
+
+> 注意：从库有复制延迟，对一致性要求高的场景（如库存扣减）不能用。
+
+### 2.5 热 Key 检测
+
+| 方法 | 说明 |
+|:---|:---|
+| **redis-cli --hotkeys** | 4.0+ 开启 LFU 淘汰策略后可用，统计热点 key TOP N |
+| **客户端埋点** | 在 SDK/代理层统计 key 访问次数，上报 Prometheus |
+| **slowlog + monitor** | 临时排查，`SLOWLOG GET` 看慢命令，`MONITOR` 看实时访问 |
+| **Codis/Predixy 监控** | 代理层天然统计每个 key 的 QPS |
+
+---
+
+## 三、大 Key 与数据倾斜的关系
+
+| 关系 | 说明 |
+|:---|:---|
+| **大 Key 是数据倾斜的核心成因** | 单个大 key 占满单 slot/单节点 → 容量倾斜 |
+| **数据倾斜放大大 Key 危害** | 热节点故障时，其上的大 key 一起丢失/阻塞，影响面放大 |
+| **治理优先级** | 先拆大 Key（治本）→ 再治热 key（兜底）→ 最后调槽分布（运维） |
+| **监控联动** | 大 Key 告警 + 节点内存/QPS 倾斜告警应联动排查 |
+
+---
+
+## 四、易错点
+
+| 易错点 | 说明 |
+|:---|:---|
+| **用 DEL 删大 Key** | DEL 同步释放阻塞主线程；生产用 `UNLINK` 异步删 |
+| **--bigkeys 扫完就当没事** | 它只给每类 TOP1 大 key，可能漏；需配合 SCAN 脚本全量巡检 |
+| **拆了大 Key 不更新所有引用** | 分桶后读路径必须同步改造，否则旧 key 残留继续倾斜 |
+| **hash tag 乱用导致更严重倾斜** | 设计 hash tag 时只看「多 key 操作方便」，不评估 tag 的分布均匀度 |
+| **本地缓存 TTL 设太长** | 热 key 兜底缓存 TTL > 30s，业务脏数据窗口不可接受 |
+| **读写分离当万能药** | 从库有延迟，库存/余额等强一致场景不能用；热 key 写多读少时读写分离无效 |
+| **集群扩容能解决倾斜** | 扩容只能迁槽，若大 key/热 key 本身不拆分，倾斜依旧（同一个大 key 迁过去还是大） |
+| **只看内存不看 QPS** | 倾斜分容量倾斜和流量倾斜，两者都要监控；内存均匀但 QPS 倾斜照样打挂节点 |
+
+---
+
+## 五、一句话总结
+
+**大 Key** 是「单个 key 体积/元素数过大」，危害是阻塞主线程、复制延迟、淘汰困难，治理靠**拆分（分桶/分段）+ UNLINK 异步删 + 压缩**；**数据倾斜**是「集群分片冷热不均」，成因是大 key/热 key/hash tag/业务分布不均，治理靠**设计阶段打散 key + 本地缓存兜底热 key + 拆大 key 治本 + 读写分离**。两者互为因果，治理优先级：**先拆大 Key → 再治热 key → 最后调槽分布**，全程靠监控巡检发现。
+
+---
+
+## 六、相关笔记
+
+| 主题 | 笔记 |
+|:---|:---|
+| 集群分片与 hash tag | [高可用与集群.md](高可用与集群.md) |
+| 内存淘汰与大 key 淘汰困难 | [过期与内存淘汰.md](过期与内存淘汰.md) |
+| 热 key 击穿与本地缓存兜底 | [缓存问题与实战.md](缓存问题与实战.md) |
+| Redis 数据类型底层复杂度 | [数据类型与底层结构.md](数据类型与底层结构.md) |
+| 生产问题排查（大key阻塞/容量倾斜治理） | [生产问题与排查手册.md](生产问题与排查手册.md) |

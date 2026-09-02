@@ -2,7 +2,7 @@
 
 > 面向工作 6 年、冲击 P7 的 Java 工程师——从 5 种数据类型的底层优化到 Cluster 哈希槽分片，成体系地理解 Redis「为什么快、怎么持久化、内存不够怎么办、怎么扛高可用、怎么当缓存/锁」。
 
-按「**数据类型与底层 → 持久化 → 过期与内存淘汰 → 高可用与集群 → 缓存实战**」的主线组织，每篇均含对比表、ASCII 图解、易错点、一句话总结。回答默认以 **7.x** 为准（ziplist 被 listpack 取代、Set 支持 listpack 编码）。
+按「**数据类型与底层 → 持久化 → 过期与内存淘汰 → 高可用与集群 → 缓存实战 → 大 Key 与数据倾斜治理 → 生产问题排查**」的主线组织，每篇均含对比表、ASCII 图解、易错点、一句话总结。回答默认以 **7.x** 为准（ziplist 被 listpack 取代、Set 支持 listpack 编码）。
 
 ## 目录
 
@@ -13,6 +13,8 @@
 | 3 | ⏰ 过期与内存淘汰 | [过期与内存淘汰.md](过期与内存淘汰.md) | 过期字典、**惰性删除+定期删除（随机抽样+25%阈值）**、**8 种淘汰策略**（volatile-/allkeys- × lru/lfu/random/ttl）、近似 LRU 采样、**LFU 概率递增+时间衰减** |
 | 4 | 🌐 高可用与集群 | [高可用与集群.md](高可用与集群.md) | 主从**全量复制（RDB+repl buffer）**、**增量复制（repl_backlog+offset）**、哨兵**主观/客观下线**+Raft选Leader+故障转移选新主依据、**Cluster 16384 哈希槽**（CRC16%16384）、hash tag |
 | 5 | 🔥 缓存问题与实战 | [缓存问题与实战.md](缓存问题与实战.md) | **缓存三兄弟（穿透/击穿/雪崩）**对比与解法、Cache Aside **先更新库再删缓存**+延迟双删、binlog订阅最终一致、**分布式锁（SET NX EX+唯一value+Lua解锁）**、Redisson看门狗续期、RedLock争议 |
+| 6 | 📊 大 Key 与数据倾斜 | [大Key与数据倾斜.md](大Key与数据倾斜.md) | **大 Key 判定**（String 看字节/容器看元素数）、四大危害（阻塞主线程/复制延迟/容量倾斜/淘汰困难）、识别（--bigkeys/SCAN 巡检/MEMORY USAGE）、治理（**分桶拆分 + UNLINK 异步删 + 压缩**）、**数据倾斜四成因**（大key/热key/hash tag/业务分布）、热 key 本地缓存兜底 + 多副本打散 + 读写分离 |
+| 7 | 🚨 生产问题与排查手册 | [生产问题与排查手册.md](生产问题与排查手册.md) | **7 大故障域**实战排查：阻塞类（慢命令/大key/fork/Lua）、内存类（OOM/碎片率/淘汰）、连接类（maxclients/泄漏）、持久化类（AOF损坏/RDB失败/IO瓶颈）、高可用类（主从延迟/脑裂/cluster迁移）、一致性类（双写/异步丢数据/缓存三兄弟）、性能类（CPU/网络/热key）；每个统一「现象→排查命令→根因→方案」+ **排查命令速查表** |
 
 ## P7 必背清单（速查）
 
@@ -44,10 +46,24 @@
 - **双写一致性结论**：无法强一致，只能**最终一致**；常规「**先更新DB，再删缓存** + 缓存过期兜底」；高要求上**Canal订阅binlog异步删缓存**；延迟双删是补充手段不是银弹
 - **分布式锁五要素**：`SET lock_key unique_value NX EX 30` → NX保证互斥、EX过期防死锁、**唯一value防误删别人的锁**、**Lua脚本保证判断+删除原子**、Redisson**看门狗每10秒续期到30秒**防提前过期
 - **RedLock 有争议**：向多个独立Redis节点加锁，多数成功才算拿到；时钟漂移、节点崩溃恢复可能导致双持；强一致场景优先考虑 ZooKeeper/etcd
+- **大 Key 判定标准**：String value > 10KB 或 > 1MB 必查；Hash/List/Set/ZSet 元素数 > 5000；口诀「**String 看字节，容器看元素数**」
+- **大 Key 四大危害**：阻塞主线程（DEL 同步释放/HGETALL O(N)）、复制延迟（大 value 传输）、容量倾斜（单 slot 被撑满）、淘汰与持久化困难
+- **大 Key 治理三板斧**：① **拆分**（Hash 分桶、List 按时间段、String 大 JSON 拆多 key）② **UNLINK 异步删**（4.0+ 后台线程释放，不用 DEL）③ **压缩**（Protobuf/MessagePack + ziplist 阈值）
+- **大 Key 识别**：`redis-cli --bigkeys` 快速概览（只给 TOP1 会漏）→ `SCAN + TYPE + HLEN/LLEN` 全量巡检脚本 → `MEMORY USAGE key` 精确字节
+- **数据倾斜四成因**：① 大 key 占满单槽 ② 热点 key 集中访问 ③ hash tag 滥用（tag 分布不均）④ 业务 key 天然不均（如按省份分）
+- **数据倾斜治理优先级**：先拆大 Key（治本）→ 再治热 key 兜底（本地 Caffeine 缓存短 TTL + 多副本随机后缀 + 读写分离）→ 最后调槽分布（运维）
+- **热 Key 本地缓存兜底**：Caffeine maximumSize + expireAfterWrite 1~5s 短 TTL 保证一致性，多实例天然分散 QPS；强一致场景（库存/余额）不能用读写分离
+- **Redis 生产排查闭环**：现象 → 故障域（阻塞/内存/连接/持久化/高可用/一致性/性能）→ 命令 → 根因 → 止血+根治；阻塞首查 SLOWLOG+CLIENT LIST，内存首查 INFO memory+MEMORY USAGE，连接首查 INFO clients
+- **慢命令四大元凶**：KEYS * / HGETALL 全量 / DEL 大key / Lua 阻塞；生产禁用 KEYS+FLUSHALL，大命令改 SCAN 系列，删大key 用 UNLINK
+- **fork 阻塞根因与治理**：fork 复制**页表**（只读共享非复制数据），大内存实例页表大 fork 慢；治理：实例<10GB、关 THP、vm.overcommit_memory=1、低峰调度 bgsave
+- **内存碎片率高**：mem_fragmentation_ratio>1.5，jemalloc 碎片；治理：activedefrag yes 自动整理 + DEBUG MEMORY PURGE 临时 + 低峰重启
+- **连接数打满根因**：maxclients reached 根因是连接泄漏/慢命令堆积，调大 maxclients 只治标；排查 CLIENT LIST idle 字段修连接池
+- **主从同步延迟大**：主从 offset 差是从库单线程回放跟不上/大key同步/网络；延迟敏感请求走主库 + 拆大key + 半同步复制
+- **异步复制会丢数据**：主库写完立即返回不等待从库ACK；半同步复制 WAIT numreplicas timeout 缓解，金融强一致用 ZooKeeper/etcd
 
 ## 学习/复习建议
 
-1. 按 1→5 顺序建立体系：**「为什么快」是纲**，数据结构优化→持久化→淘汰→高可用→缓存实战都是这条纲上的展开。
+1. 按 1→7 顺序建立体系：**「为什么快」是纲**，数据结构优化→持久化→淘汰→高可用→缓存实战→大Key/倾斜治理→生产排查实战都是这条纲上的展开。
 2. 必须能白板画的三张图：SDS结构与quicklist结构图、bgsave写时复制示意图、哨兵故障转移全流程、Cluster哈希槽路由。
 3. 三大对比追问要答到原理级：「RDB vs AOF vs 混合持久化选型」「LRU vs LFU 场景差异」「主从/哨兵/Cluster三级递进边界」。
 4. 「易错点」是 P7 面试反套路区：AOF写后日志与MySQL WAL区别、定期删除是随机抽样而非全扫、默认策略是noeviction、哈希槽是16384不是65536、哨兵必须≥3奇数。
