@@ -1,0 +1,280 @@
+# A2A 协议（Agent2Agent Protocol）
+
+> **P7 面试的差异化加分点**：「A2A 和 MCP 什么关系？什么时候用 A2A 什么时候用 MCP？跨厂商 Agent 怎么协作？」——A2A 是 Google 于 2025-04 发布的**跨 Agent 通信标准协议**，与 Anthropic 的 MCP（工具接入）互补：**MCP 解决 Agent↔工具，A2A 解决 Agent↔Agent**。答不出「N²→N 的集成经济学」和「A2A/MCP 是正交两轴」的关系，等于没做过跨平台 Agent 生态。
+> 本文是 [MCP协议](MCP协议.md) 的**姊妹篇**，与 [Agent智能体框架](Agent智能体框架.md)（多智能体协作）、[SpringAI与LangChain4j](SpringAI与LangChain4j.md)（框架层落地）互为犄角。版本口径：**2025-04 发布 v0.1，2025-08 与 IBM ACP 合并，2026-03 v1.0 稳定版（含签名 Agent Card / 多租户 / 企业级安全）**。
+
+---
+
+## 一、A2A 是什么：从 N² 到 N
+
+**一句话定义**：Agent2Agent Protocol，Google 于 2025-04 发布的**跨 Agent 通信开放标准**——让不同框架、不同厂商构建的 AI Agent 之间能发现彼此能力、委派任务、流式交换多模态结果，**无需暴露各自的内部状态、记忆或工具**。类比「**AI Agent 之间的 HTTP**」。
+
+**它解决的是跨厂商 Agent 集成的组合爆炸问题**：
+
+```
+没有 A2A：N 个 Agent 两两对接 = C(N,2) = N(N-1)/2 条胶水代码 → O(N²) 扩展噩梦
+有 A2A：每个 Agent 实现一次协议 = N 条标准接口            → O(N) 线性扩展
+
+         Agent A ──┐                Agent A ──┐
+         Agent B ──┼── 互连        Agent B ──┼── A2A 协议
+         Agent C ──┘ (3 条胶水)      Agent C ──┘ (各实现一次)
+```
+
+| | 没有 A2A（点对点对接） | 有 A2A（协议化互通） |
+|:---|:---|:---|
+| 接入成本 | N 个 Agent = **O(N²) 条胶水** | 每个实现一次 = **O(N) 条** |
+| 透明性 | 必须暴露内部状态/工具/推理 | **不共享内部状态**，只暴露能力与结果 |
+| 生态 | Agent 锁死在单一平台 | 跨框架跨厂商即插即用（LangGraph/CrewAI/AutoGen…） |
+| 治理 | 各自鉴权，审计碎片化 | 统一认证（OpenAPI-like）+ 标准任务追踪 |
+
+> **与 MCP 的接入经济学对比**：MCP 把「M 个应用 × N 个工具」的 M×N 压成 M+N（工具接入轴）；A2A 把「N 个 Agent 两两对接」的 N² 压成 N（Agent 协作轴）。**两个协议在不同维度上解决同构问题**。
+
+---
+
+## 二、五大设计原则（Google 官方）
+
+| 原则 | 含义 | 面试关键词 |
+|:---|:---|:---|
+| **拥抱 Agent 天然能力** | Agent 以自然、非结构化的方式协作，不共享记忆/工具/上下文 | 「不是把 Agent 当工具，而是当协作者」 |
+| **基于现有标准** | HTTP + SSE + JSON-RPC 2.0，兼容企业现有 IT 栈 | 不发明新轮子 |
+| **默认安全** | 企业级认证授权，对标 OpenAPI 认证体系 | Bearer/Basic/APIKey |
+| **支持长任务** | 从秒级到小时甚至天级，人在回路 | Task 生命周期 + 实时反馈 |
+| **模态无关** | 不限于文本，支持音视频流式 | FilePart / DataPart |
+
+> 面试话术：**「A2A 不要求 Agent 之间共享内部状态——它把 Agent 当作不透明的黑盒，只通过标准化的任务和消息来协作，这和 MCP 把工具当黑盒是同一个设计哲学。」**
+
+---
+
+## 三、架构：Client Agent / Remote Agent + Agent Card
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ Client Agent（发起方，如：AgentMate 的编排 Agent）            │
+│   1. 发现：GET /.well-known/agent.json → 拿到 Remote 的名片   │
+│   2. 委派：POST /tasks/send → 创建 Task，发初始 Message       │
+│   3. 跟进：SSE 流式接收 / 轮询 / Push Notification            │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ JSON-RPC 2.0 over HTTPS
+                           │ (SSE for streaming)
+┌──────────────────────────▼──────────────────────────────────┐
+│ Remote Agent（执行方，如：Salesforce 的订单 Agent）           │
+│   ├─ Agent Card：JSON 名片（能力 + 端点 + 鉴权 + Skills）     │
+│   ├─ Task 管理器：创建/追踪/完成有状态任务                      │
+│   └─ 内部黑盒：自己的 LLM + 工具 + 记忆（Client 看不到）      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+| 角色 | 职责 | 类比 |
+|:---|:---|:---|
+| **Client Agent** | 发现能力 → 发送任务 → 接收结果 | 微服务 Consumer |
+| **Remote Agent** | 接收任务 → 执行 → 返回 Artifact | 微服务 Provider |
+| **Agent Card** | JSON 元数据名片，发布在 `/.well-known/agent.json` | `robots.txt` / Eureka 注册信息 |
+
+### Agent Card 详解（必背）
+
+```json
+{
+  "name": "订单查询 Agent",
+  "description": "查询订单状态、物流轨迹、退换货进度",
+  "url": "https://orders.example.com/a2a",
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": true
+  },
+  "authentication": {
+    "schemes": ["Bearer"]
+  },
+  "skills": [
+    { "id": "query_order", "name": "订单查询", "description": "按订单号查状态" }
+  ]
+}
+```
+
+- **发布位置**：`/.well-known/agent.json`（类比网站 `robots.txt`）——Client Agent 只要知道 Remote 的域名就能发现它的能力。
+- **v0.2 增强**：正式纳入 `authentication` 字段，对齐 OpenAPI 认证体系（Bearer/Basic/ApiKey），Client 可提前知道如何安全连接。
+- **v1.0 增强**：签名 Agent Card（防止名片被篡改/伪造）+ 多租户支持。
+
+> 一句话：**Agent Card = Agent 的数字名片 + API 文档 + 鉴权说明，发在固定路径让任何 Client 自动发现。**
+
+---
+
+## 四、核心概念：Task / Message / Part / Artifact
+
+```
+Task（有状态工作单元，Server 生成唯一 id）
+├── state: submitted → working → input-required → completed/failed/canceled
+├── history: [Message, Message, ...]    ← 多轮对话记录
+├── artifacts: [Artifact, ...]          ← 最终产出
+└── contextId: 关联任务组（编排场景）
+
+Message（一轮对话）
+├── role: "user" | "agent"
+└── parts: [Part, Part, ...]            ← 内容零件
+
+Part（最小内容单元，模态无关）
+├── TextPart:  纯文本
+├── FilePart:  二进制（base64 或 URI）
+└── DataPart:  结构化 JSON
+
+Artifact（不可变产出）
+└── parts: [Part, ...]                  ← 产出也是多模态的
+```
+
+### Task 生命周期（必背，能画状态机）
+
+```
+        ┌──────────┐
+        │ submitted │ ← Client 发送 message/send，Server 收到
+        └────┬─────┘
+             │
+        ┌────▼─────┐
+        │ working  │ ← Agent 正在处理
+        └────┬─────┘
+             │
+   ┌─────────┼─────────┐
+   │         │         │
+┌──▼───┐ ┌──▼──────┐ ┌─▼────────┐
+│input-│ │completed│ │  failed  │
+│req   │ │ (产出   │ │ (出错)   │
+│(追问)│ │ Artifact)│ └──────────┘
+└──┬───┘ └─────────┘
+   │ Client 补充输入
+   └──► 回到 working
+                 ┌──────────┐
+                 │ canceled │ ← Client/系统终止
+                 └──────────┘
+```
+
+| 状态 | 含义 | Client 该做什么 |
+|:---|:---|:---|
+| `submitted` | Server 收到任务 | 等待 |
+| `working` | Agent 正在执行 | 监听 SSE / 等轮询 |
+| `input-required` | 需要补充信息 | 发后续 Message |
+| `completed` | 成功完成，产出 Artifact | 取结果 |
+| `failed` | 执行失败 | 错误处理 / 重试 |
+| `canceled` | 被终止 | 释放资源 |
+
+---
+
+## 五、传输层：HTTP(S) + JSON-RPC 2.0 + SSE
+
+| 技术 | 角色 | 说明 |
+|:---|:---|:---|
+| **HTTP(S)** | 传输层 | 生产必须 HTTPS + 现代 TLS |
+| **JSON-RPC 2.0** | 报文格式 | 与 MCP 同构：请求(有 id)/响应/通知(无 id) |
+| **SSE** | 流式传输 | `message/stream` 方法建立 SSE 连接，实时推送状态更新 |
+
+**核心 JSON-RPC 方法**：
+
+| 方法 | 语义 | 对应场景 |
+|:---|:---|:---|
+| `message/send` | 同步发送一条 Message | 短任务 / 启动长任务后轮询 |
+| `message/stream` | 建立 SSE 流式连接 | 长任务实时更新 |
+| `tasks/get` | 查询任务状态 | 轮询模式 |
+| `tasks/cancel` | 取消任务 | 终止长任务 |
+
+> **为什么 SSE 而不是 WebSocket**：SSE 单向、防火墙友好、实现简单；Agent 的流式场景以「服务端推送状态」为主，不需要双向。**A2A 选择简单而非强大**，与 MCP 的 Streamable HTTP 选择同源。
+
+---
+
+## 六、A2A ⚔️ MCP：正交两轴，互补不竞争（最高频面试题）
+
+**标准答法：MCP 是 Agent 接工具的 USB-C，A2A 是 Agent 之间协作的 HTTP——两条正交的轴。**
+
+| 维度 | MCP（Anthropic 2024-11） | A2A（Google 2025-04） |
+|:---|:---|:---|
+| **解决什么轴** | Agent ↔ 工具/数据源 | Agent ↔ Agent |
+| **核心抽象** | tools / resources / prompts | Task / Message / Artifact |
+| **交互模型** | Host-Client-Server（1:1 连接） | Client Agent - Remote Agent |
+| **透明性** | Server 暴露工具给 Host | Agent 不暴露内部状态，只暴露能力 |
+| **Agent 地位** | 工具是 Agent 的「手脚」 | 每个 Agent 都是平等的协作者 |
+| **状态管理** | 无状态工具调用（Streamable HTTP 管会话） | 有状态 Task 生命周期 |
+| **典型场景** | 「帮我查 SLB 指标」（Agent 调工具） | 「帮我问销售 Agent 这个客户能否加急」（Agent 委托 Agent） |
+| **传输** | JSON-RPC 2.0 + stdio / Streamable HTTP | JSON-RPC 2.0 + HTTP + SSE |
+
+```
+         ┌─── MCP 轴（Agent ↔ 工具）───┐
+         │                            │
+    Agent A ──tools──► MySQL           │
+         │                            │
+         │──tools──► Git CLI           │
+         │                            │
+         └─── A2A 轴（Agent ↔ Agent）──┘
+                │
+           Agent B ──tools──► Salesforce
+```
+
+**一句话区分**：MCP 让 Agent **会用手**（工具），A2A 让 Agent **会找人**（其他 Agent）。一个 Agent 同时是 MCP Host（接工具）和 A2A Client/Remote（协作）。
+
+---
+
+## 七、推送通知：解耦的企业级通知
+
+A2A 的 `PushNotificationService` 让 Agent 能在 Client 断开连接后继续推送任务更新：
+
+```
+Remote Agent ──(JWT 签名)──► PushNotificationService ──► Client Webhook
+         │                        │                      │
+    生成 JWT(payload:             认证 + 转发到           验证 JWT 签名
+    iss/aud/iat/exp/jti/taskId)   pub-sub/邮件/API       取 taskId 拉结果
+```
+
+- **JWT 双向认证**：Server 用私钥签 JWT，Client 从 JWKS 端点取公钥验签——防伪造推送。
+- **PushNotificationService 是独立中间层**：不是 Client 本身，而是可信代理（类比移动推送基础设施）。
+- **Client 可选 token**：在 `PushNotificationConfig` 里带一个自己生成的 `token`，Server 推送时原样带回，Client 可二次校验。
+
+> 面试加分项：能答出「推送通知不是 Server 直连 Client，而是走一个独立的、JWT 认证的中间层」——体现对企业级安全架构的理解。
+
+---
+
+## 八、安全与信任
+
+| 风险 | 场景 | 防御 |
+|:---|:---|:---|
+| **伪造 Agent Card** | 恶意 Agent 发布假名片骗 Client 委派任务 | v1.0 **签名 Agent Card**（防篡改） |
+| **越权委派** | Client Agent 把不该委派的任务发给了 Remote | Agent Card 的 skills 白名单 + Remote 侧权限校验 |
+| **推送伪造** | 伪造任务完成通知骗 Client | JWT 签名 + JWKS 公钥验证 |
+| **数据泄露** | Agent 间交换敏感信息被中间人截获 | HTTPS + TLS + 按 role 控制消息可见性 |
+| **审计缺失** | 出事无法追溯谁在什么时候委派了什么 | 全量 Task 生命周期日志 |
+
+**AgentMate 复用思路**：已有的 [三态 Hook](LLM安全与工程化.md)（pre/do/post）同样适用于 A2A 场景——pre 阶段校验目标 Agent Card 的签名和 skills 白名单；do 阶段监控任务执行时长和轮次；post 阶段对返回的 Artifact 做 PII 脱敏。
+
+---
+
+## 九、高频追问链（面试演练）
+
+1. **A2A 和 MCP 什么关系？** → 正交两轴：MCP=Agent↔工具，A2A=Agent↔Agent（§六）。一个 Agent 同时是 MCP Host 和 A2A 端点。
+2. **为什么不直接用 HTTP RPC 让 Agent 互相调？** → 透明性：A2A 不要求共享内部状态/工具/推理，Agent 作为黑盒协作；且 A2A 带有状态 Task 生命周期、多模态 Part、SSE 流式、推送通知——这些是裸 HTTP RPC 没有的。
+3. **Agent Card 和 MCP 的 tools/list 什么区别？** → Agent Card 是静态能力广告（发布在固定 URI，不登录就知道），tools/list 是运行时动态发现（需先建立 MCP 连接）；前者是「我是谁我会什么」，后者是「连上后给你哪些工具」。
+4. **长任务怎么处理？** → Task 有 `working → input-required → completed/failed` 状态机；长任务用 `message/stream` 建 SSE 实时更新，或配 PushNotificationService 断连后推送。
+5. **A2A 和 Dubbo 这种 RPC 框架什么区别？** → Dubbo 面向程序员，契约是强类型 Java 接口；A2A 面向 **Agent**，契约是自然语言 description + JSON Agent Card + 多模态 Part，且 Agent 是不透明黑盒。此外 A2A 有状态 Task 生命周期、SSE 流式、人在回路——这些都是 RPC 框架没有的。
+6. **跨厂商 Agent 怎么保证安全？** → Agent Card 的 authentication 字段声明鉴权方案 + HTTPS/TLS + JWT 推送签名 + v1.0 签名 Agent Card 防篡改 + skills 白名单防越权委派。
+7. **A2A 支持多模态吗？** → 支持。Part 有 TextPart/FilePart/DataPart 三型；FilePart 可以是 base64 或 URI；Artifact 产出也是多模态的——可以返回文本报告 + 图片 + 结构化 JSON。
+
+---
+
+## 十、易错点
+
+1. **把 A2A 说成 MCP 的替代** —— 它们是正交两轴，不是竞争。MCP 管 Agent 接工具，A2A 管 Agent 之间协作。
+2. **把 Agent Card 等同于 MCP tools/list** —— 前者是静态发布的能力广告（固定 URI、未连接就可见），后者是运行时动态发现（需先建连）。
+3. **漏掉 Task 生命周期** —— A2A 不是无状态 RPC，核心是**有状态 Task**（submitted→working→completed/failed），长任务靠状态机 + SSE/Push 追踪。
+4. **说 A2A 用 WebSocket** —— 用 SSE，不是 WebSocket。A2A 选择简单而非强大（单向流式场景足够）。
+5. **把 Agent 间协作说成需要共享内部状态** —— A2A 的核心设计就是不透明黑盒协作，Agent 之间不共享记忆/工具/推理，只通过标准 Message 和 Artifact 交互。
+6. **不知道 A2A 已经 v1.0** —— 2025-04 是 v0.1，2025-08 与 IBM ACP 合并，2026-03 v1.0 稳定版。面试答「还在草案阶段」是过时的。
+
+---
+
+## 十一、一句话总结
+
+**A2A = Agent 间协作的 HTTP：把 N² 的两两胶水压成 N 条标准接口，用 Agent Card 做发现、Task 状态机做长任务追踪、JSON-RPC + SSE 做传输、JWT 做推送认证——让跨厂商 Agent 作为不透明黑盒安全协作；与 MCP 正交：MCP 管 Agent↔工具，A2A 管 Agent↔Agent。**
+
+---
+
+## 相关笔记
+
+- 姊妹篇：[MCP协议](MCP协议.md)（工具接入的 USB-C，M×N→M+N）
+- 多智能体协作：[Agent智能体框架](Agent智能体框架.md)（ReAct vs 状态机、多 Agent 分工）
+- 框架落地：[SpringAI与LangChain4j](SpringAI与LangChain4j.md)（Java 生态 A2A Client/Server 支持）
+- 安全纵深：[LLM安全与工程化](LLM安全与工程化.md)（三态 Hook 可复用到 A2A 层）
+- 速查骨架：[AI高频面试题速查](AI高频面试题速查.md)
