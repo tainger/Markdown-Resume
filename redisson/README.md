@@ -10,6 +10,7 @@
 
 | # | 主题 | 笔记 | 核心考点 |
 |:---:|:---|:---|:---|
+| 0 | 🚀 入门指南（5 分钟上手） | [入门指南.md](入门指南.md) | 加依赖→3 种模式 YAML 配置抄作业→Hello World（纯Java+SpringBoot）→**最常用 API 速查表**（锁/Map/队列/限流 20 个）→**10 个入门必踩坑 FAQ** |
 | 1 | 🏛️ 核心架构与使用方式 | [核心架构与使用方式.md](核心架构与使用方式.md) | **Jedis vs Lettuce vs Redisson 三选一**、Netty NIO 线程模型、连接池、4 种部署模式（单/哨兵/集群/主从）YAML 配置 |
 | 2 | 🔒 分布式锁全家桶原理 | [分布式锁全家桶原理.md](分布式锁全家桶原理.md) | **可重入锁 RLock（Hash 计数 Lua）**、**看门狗 1/3 TTL 续期源码**、公平锁（List 排队）、读写锁分模式、联锁 MultiLock、红锁 RedLock（N/2+1）、信号量 RSemaphore、闭锁 RCountDownLatch |
 | 3 | 🗂️ 分布式对象与集合 API | [分布式对象与集合API.md](分布式对象与集合API.md) | **RLocalCachedMap 本地缓存（一级缓存一致性）**、RMapCache 带 TTL 字段、RBloomFilter 布隆过滤器、RDelayedQueue 延迟队列、RRateLimiter 令牌桶限流、RAtomicLong、RSortedSet |
