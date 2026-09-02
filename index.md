@@ -38,11 +38,11 @@ features:
     title: Redis
     details: 持久化、高可用与集群、缓存问题等面试要点。
     link: /redis/README
-  - icon: �
+  - icon: 🔓
     title: Redisson
     details: 分布式锁全家桶（RLock/看门狗）、二级缓存、Spring 集成与事务坑。
     link: /redisson/README
-  - icon: �📮
+  - icon: 📮
     title: RocketMQ
     details: 架构与角色、可靠性与高可用等消息队列笔记。
     link: /rocketMq/README

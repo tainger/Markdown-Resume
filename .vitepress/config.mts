@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitepress'
 import mathjax3 from 'markdown-it-mathjax3'
-import { generateSidebar } from './sidebar.mts'
+import { generateSidebar, firstDoc } from './sidebar.mts'
 
 // 只收录这些学习笔记目录（按导航栏顺序）
 export const INCLUDE_DIRS: { text: string; dir: string }[] = [
@@ -113,7 +113,7 @@ export default defineConfig({
         text: g.text,
         items: g.dirs.map((dir) => ({
           text: INCLUDE_DIRS.find((d) => d.dir === dir)?.text ?? dir,
-          link: firstDocLink(dir),
+          link: firstDoc(dir),
         })),
       })),
     ],
