@@ -48,5 +48,5 @@
 - 分布式基础（CAP、一致性）→ [../分布式/README.md](../分布式/README.md)
 - 缓存与检索互补（Redis 数据类型与实战）→ [../redis/README.md](../redis/README.md)
 - 消息中间件削峰写入（RocketMQ 存储机制）→ [../rocketMq/存储机制与刷盘.md](../rocketMq/存储机制与刷盘.md)
-- MySQL 索引与分库分表（数据迁移到 ES 的源端）→ [../mysql/索引.md](../mysql/索引.md)、[../mysql/分库分表.md](../mysql/分库分表.md)
+- MySQL 索引与分库分表（数据迁移到 ES 的源端）→ [../mysql/4.%20索引.md](../mysql/4.%20索引.md)、[../mysql/12.%20分库分表.md](../mysql/12.%20分库分表.md)
 - 系统设计（Feed 流、日志平台类设计）→ [../系统设计/README.md](../系统设计/README.md)

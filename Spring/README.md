@@ -39,5 +39,5 @@
 ## 相关笔记
 
 - JVM 双亲委派打破：Spring Boot LaunchedURLClassLoader 的双亲委派打破策略与自定义类加载（可串联 [JVM/类加载机制.md](../jvm/类加载机制.md)）
-- MySQL 事务隔离级别与 MVCC：与 [MySQL/事务与锁.md](../mysql/事务与锁.md) 联动，Spring `@Transactional(isolation = DEFAULT)` 继承 DB 默认隔离
-- 分布式事务 Seata AT/TCC 与 MySQL 两阶段提交：可串联 [MySQL/存储引擎与架构.md](../mysql/存储引擎与架构.md) 的 redo/binlog 两阶段提交
+- MySQL 事务隔离级别与 MVCC：与 [MySQL/事务与锁.md](../mysql/5.%20事务与锁.md) 联动，Spring `@Transactional(isolation = DEFAULT)` 继承 DB 默认隔离
+- 分布式事务 Seata AT/TCC 与 MySQL 两阶段提交：可串联 [MySQL/存储引擎与架构.md](../mysql/3.%20存储引擎与架构.md) 的 redo/binlog 两阶段提交

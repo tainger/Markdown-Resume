@@ -366,7 +366,7 @@ jstat -gcutil 12345 1000    # 每秒看一次 YGC/FGC 次数和耗时
 - undo / redo / binlog 三者区别？（undo=回滚+MVCC版本链、redo=崩溃恢复保证持久性、binlog=逻辑归档用于主从复制/恢复）
 - 什么场景会发生死锁？怎么排查？（互斥+占有并等待+不可抢占+循环等待；`SHOW ENGINE INNODB STATUS` 看 LATEST DETECTED DEADLOCK）
 
-**详情页**：[MySQL / 事务与锁](../mysql/事务与锁.md)、[MySQL / 索引](../mysql/索引.md)
+**详情页**：[MySQL / 事务与锁](../mysql/5.%20事务与锁.md)、[MySQL / 索引](../mysql/4.%20索引.md)
 
 ---
 

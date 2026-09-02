@@ -43,7 +43,7 @@ WHERE name LIKE #{kw}
 <!-- ❌ WHERE name LIKE '%${keyword}%' → 注入 -->
 ```
 
-> 索引提示：前缀 `%` 的 like 无法走普通索引，需要覆盖索引或搜索引擎（ES）。见 [../mysql/索引.md](../mysql/索引.md)。
+> 索引提示：前缀 `%` 的 like 无法走普通索引，需要覆盖索引或搜索引擎（ES）。见 [../mysql/4.%20索引.md](../mysql/4.%20索引.md)。
 
 ---
 
@@ -171,6 +171,6 @@ List<User> search(@Param("name") String name, @Param("minAge") Integer minAge);
 | 主题 | 笔记 |
 |:---|:---|
 | 执行流程（占位符谁在什么时候绑定） | [核心架构与执行流程.md](核心架构与执行流程.md) |
-| like '%x%' 走不走索引 | [../mysql/索引.md](../mysql/索引.md) |
-| 批量写与锁（update where 无索引→锁全表） | [../mysql/事务与锁.md](../mysql/事务与锁.md) |
+| like '%x%' 走不走索引 | [../mysql/4.%20索引.md](../mysql/4.%20索引.md) |
+| 批量写与锁（update where 无索引→锁全表） | [../mysql/5.%20事务与锁.md](../mysql/5.%20事务与锁.md) |
 | 分页插件与拦截器改写 SQL | [插件机制与高级特性.md](插件机制与高级特性.md) |

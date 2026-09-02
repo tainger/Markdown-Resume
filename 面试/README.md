@@ -69,8 +69,8 @@
 | 5 | 线程池 7 大参数 + 拒绝策略？为什么不能用 Executors？ | core/max/queue/keepAlive/threadFactory/rejected；OOM 风险 | [JUC](../java/JUC并发包.md) 线程池小节 |
 | 6 | ThreadLocal 原理？为什么内存泄漏？ | ThreadLocalMap + 线性探测；key 弱引用 value 强引用；finally remove | [ThreadLocal](../java/ThreadLocal源码分析.md) |
 | 7 | JVM 内存结构 + 垃圾回收算法对比？ | 堆/栈/方法区；标记清除/复制/标记整理；CMS vs G1 | [JVM 内存结构](../jvm/内存结构.md)、[GC 算法](../jvm/垃圾回收算法.md) |
-| 8 | MySQL 索引为什么用 B+ 树不用 B 树/哈希？ | 磁盘友好；叶子链表范围查；哈希只支持等值 | [MySQL/索引](../mysql/索引.md) |
-| 9 | MVCC + 事务隔离级别 + 间隙锁？ | 隐藏列+undo 版本链+ReadView；可重复读 = 快照读+间隙锁防幻读 | [MySQL/事务与锁](../mysql/事务与锁.md) |
+| 8 | MySQL 索引为什么用 B+ 树不用 B 树/哈希？ | 磁盘友好；叶子链表范围查；哈希只支持等值 | [MySQL/索引](../mysql/4.%20索引.md) |
+| 9 | MVCC + 事务隔离级别 + 间隙锁？ | 隐藏列+undo 版本链+ReadView；可重复读 = 快照读+间隙锁防幻读 | [MySQL/事务与锁](../mysql/5.%20事务与锁.md) |
 | 10 | 缓存穿透 / 击穿 / 雪崩？ | 空值缓存/布隆过滤器；互斥锁/永不过期；多级缓存+Jitter | [Redis/缓存问题](../redis/缓存问题与实战.md) |
 | 11 | Redis 分布式锁 + Redisson 看门狗？ | SETNX+过期+Lua；看门狗续期 30s → 10s；看门狗=兜底 | [分布式/分布式锁](../分布式/分布式锁.md) |
 | 12 | MQ 消息不丢 / 不重复 / 有序？ | 生产端 confirm + 落盘 + 消费端 ACK；幂等（去重表/唯一键） | [RocketMQ](../rocketMq/可靠性与高可用.md) |
