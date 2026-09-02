@@ -12,5 +12,8 @@
   "devDependencies": {
     "markdown-it-mathjax3": "^4.3.2",
     "vitepress": "^1.6.3"
+  },
+  "dependencies": {
+    "mermaid": "^11.17.2"
   }
 }

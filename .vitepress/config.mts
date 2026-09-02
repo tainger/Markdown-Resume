@@ -76,6 +76,11 @@ export default defineConfig({
 
       const defaultFence = md.renderer.rules.fence!
       md.renderer.rules.fence = (tokens, idx, options, env, self) => {
+        // Mermaid 代码块 → 交给 Mermaid Vue 组件渲染脑图/流程图
+        const token = tokens[idx]
+        if (token.info.trim() === 'mermaid') {
+          return `<Mermaid code=${JSON.stringify(token.content)} />`
+        }
         return escapeCurly(defaultFence(tokens, idx, options, env, self))
       }
     },
