@@ -15,6 +15,7 @@ export const INCLUDE_DIRS: { text: string; dir: string }[] = [
   { text: 'DeepSeek Harness', dir: 'DeepSeek Harness' },
   { text: 'MySQL', dir: 'mysql' },
   { text: 'Redis', dir: 'redis' },
+  { text: 'Redisson', dir: 'redisson' },
   { text: 'RocketMQ', dir: 'rocketMq' },
   { text: 'ElasticSearch', dir: 'ElasticSearch' },
   { text: 'MyBatis', dir: 'Mybatis' },
@@ -35,7 +36,7 @@ export const INCLUDE_DIRS: { text: string; dir: string }[] = [
 // dirs 里的值必须能在 INCLUDE_DIRS 中找到
 export const NAV_GROUPS: { text: string; dirs: string[] }[] = [
   { text: '算法', dirs: ['算法思想', 'leetcode-hot100', '华为OD机试', '数据结构'] },
-  { text: '后端', dirs: ['分布式', '系统设计', '权限设计', 'mysql', 'redis', 'rocketMq', 'ElasticSearch', 'Mybatis', 'dubbo', 'Spring'] },
+  { text: '后端', dirs: ['分布式', '系统设计', '权限设计', 'mysql', 'redis', 'redisson', 'rocketMq', 'ElasticSearch', 'Mybatis', 'dubbo', 'Spring'] },
   { text: '基础', dirs: ['java', 'jvm', 'io', '计算机网络'] },
   { text: '更多', dirs: ['AI应用开发', 'DeepSeek Harness', '面试', '面试准备', '英语能力', '自媒体/微信公众号/探小虎', '每日记录'] },
 ]
@@ -79,7 +80,7 @@ export default defineConfig({
         // Mermaid 代码块 → 交给 Mermaid Vue 组件渲染脑图/流程图
         const token = tokens[idx]
         if (token.info.trim() === 'mermaid') {
-          return `<Mermaid code=${JSON.stringify(token.content)} />`
+          return `<Mermaid :code='${JSON.stringify(token.content)}' />`
         }
         return escapeCurly(defaultFence(tokens, idx, options, env, self))
       }
