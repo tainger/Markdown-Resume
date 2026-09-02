@@ -15,6 +15,7 @@
 | 2 | 🔒 分布式锁全家桶原理 | [分布式锁全家桶原理.md](分布式锁全家桶原理.md) | **可重入锁 RLock（Hash 计数 Lua）**、**看门狗 1/3 TTL 续期源码**、公平锁（List 排队）、读写锁分模式、联锁 MultiLock、红锁 RedLock（N/2+1）、信号量 RSemaphore、闭锁 RCountDownLatch |
 | 3 | 🗂️ 分布式对象与集合 API | [分布式对象与集合API.md](分布式对象与集合API.md) | **RLocalCachedMap 本地缓存（一级缓存一致性）**、RMapCache 带 TTL 字段、RBloomFilter 布隆过滤器、RDelayedQueue 延迟队列、RRateLimiter 令牌桶限流、RAtomicLong、RSortedSet |
 | 4 | 🌱 Spring 集成与生产调优 | [Spring集成与生产调优.md](Spring集成与生产调优.md) | **Spring Cache @Cacheable 注解接入**、`@Transactional + 分布式锁` 顺序坑（事务外加锁）、Starter 自动配置、序列化选型（Kryo vs Jackson vs JDK）、Netty 线程/连接池调优、生产三大红线 |
+| 5 | ⚡ 进阶：高级特性、源码内幕与生产排障 | [进阶：高级特性、源码内幕与生产排障.md](进阶：高级特性、源码内幕与生产排障.md) | **RStream 消费组 ACK / ReliableTopic 至少一次 / GEO 空间查询**、**RRemoteService Redis RPC / RLiveObject ROS / RExecutorService 分布式调度**、**WriteThrough/WriteBehind 三模式 + RScript/RFunction**、**命令执行全链路 ASCII 7 步图 + 看门狗精确调用栈 + Cluster 拓扑刷新**、**Micrometer+Prometheus 15 必盯指标**、**⭐ 7 大生产排障战役 STAR 讲法（看门狗失效/锁泄漏/PubSub脏读/Kryo版本冲突/MOVED抖动/连接池耗尽/红锁脑裂双持）** |
 
 ---
 
