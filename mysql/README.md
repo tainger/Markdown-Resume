@@ -22,7 +22,7 @@
 | 12 | 🗂️ 分库分表 | [12. 分库分表.md](12.%20分库分表.md) | 拆分时机、分片键与基因法、预分槽扩容、跨片查询/分页、平滑迁移、ShardingSphere |
 | 13 | 🏢 多租户设计 | [13. 多租户设计.md](13.%20多租户设计.md) | 三种隔离方案、ThreadLocal 上下文、MyBatis 拦截器改写、分片结合、串库事故 |
 | 14 | 🆕 MySQL 8.0 新特性 | [14. MySQL8新特性.md](14.%20MySQL8新特性.md) | 窗口函数、递归 CTE、INSTANT ADD COLUMN、原子 DDL、隐藏/降序/函数索引、Hash Join、EXPLAIN ANALYZE、查询缓存移除、数据字典事务化、升级坑 |
-| 15 | 🛤️ SQL 执行底层全链路 | [15.一个sql执行底层mysql发生了哪些事情?.md](15.一个sql执行底层mysql发生了哪些事情%3F.md) | **一条 SQL 全流程图**：连接器→分析器→预处理器→优化器（Cost 决策）→执行器→InnoDB Buffer Pool；写操作两阶段提交时序图（redo prepare→binlog→redo commit）；读 vs 写对比 + 15 个高频追问速查 |
+| 15 | 🛤️ SQL 执行底层全链路 | [15. SQL执行底层全链路.md](15.%20SQL执行底层全链路.md) | **一条 SQL 全流程图**：连接器→分析器→预处理器→优化器（Cost 决策）→执行器→InnoDB Buffer Pool；写操作两阶段提交时序图（redo prepare→binlog→redo commit）；读 vs 写对比 + 15 个高频追问速查 |
 
 ## 高频「必背」清单
 
