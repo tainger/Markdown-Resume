@@ -103,6 +103,7 @@ export default defineConfig({
     'jd/**',
     '公司赔偿/**',
     '简历/**',
+    '软考系统架构师复习指南/**',
     'README.md',
     // LLM Wiki 层：Agent 维护的知识编译层，仅作 AI 工作记忆，不在站上发布
     'wiki/**',

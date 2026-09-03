@@ -14,6 +14,7 @@
 | connector | 万物皆可集成的连接器项目 | https://github.com/tainger/connector.git |
 | agentscope-java | AgentScope 的 Java 实现：多智能体编排框架，支持 MCP 协议与工具调用 | https://github.com/agentscope-ai/agentscope-java.git |
 | deepseek-harness | DeepSeek 官方开源的 agent harness（`dsh`），一切皆插件，基于 Cordis 架构 | https://github.com/deepseek-ai/deepseek-harness.git |
+| mybatis-3 | MyBatis 官方核心框架源码，SqlSession / Executor / Mapper 映射原理，源码阅读常备 | https://github.com/mybatis/mybatis-3.git |
 
 ## 一键 Clone
 
@@ -26,6 +27,7 @@ git clone https://github.com/tainger/OpenBI-front.git
 git clone https://github.com/tainger/connector.git
 git clone https://github.com/agentscope-ai/agentscope-java.git
 git clone https://github.com/deepseek-ai/deepseek-harness.git
+git clone https://github.com/mybatis/mybatis-3.git
 ```
 
 ## 备注
