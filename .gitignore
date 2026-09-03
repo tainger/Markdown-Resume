@@ -1,6 +1,5 @@
 lover/
 .venv/
-repo/agentscope-java/
 
 # Node / VitePress
 node_modules/
@@ -8,5 +7,6 @@ node_modules/
 .vitepress/cache/
 .vercel/
 
-#repo
-repo/
+# repo 目录下仅保留 README.md，其他子仓库全部忽略
+repo/*
+!repo/README.md
