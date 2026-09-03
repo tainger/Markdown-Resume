@@ -5,9 +5,7 @@
 ## 目录结构
 
 ```
-├── resume.md               # 简历（Markdown 源文件）
-├── resume.html             # 简历（HTML 渲染版）
-├── assets/                 # 简历用到的图标、头像等静态资源
+├── 简历/                    # 简历目录（Markdown 源文件 + HTML 渲染版 + assets 静态资源）
 ├── jd/                     # 意向岗位 JD 收集
 ├── wiki/                   # LLM Wiki 知识编译层（AI Agent 维护，详见下方「LLM Wiki」）
 ├── AGENTS.md               # wiki 层维护规范（所有权 / 页面类型 / 双链 / 工作流）
@@ -82,7 +80,7 @@ pip install markitdown
 ./mdconvert ~/Downloads/Java高级工程师.pdf jd/Java高级工程师.md
 
 # 简历 HTML → Markdown 双向维护
-./mdconvert resume.html resume.md
+./mdconvert 简历/resume.html 简历/resume.md
 ```
 
 ## LLM Wiki（Agent 知识编译层）

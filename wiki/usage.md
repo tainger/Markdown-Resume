@@ -165,7 +165,7 @@ io/NIO与多路复用（主战场：select/poll/epoll 对比）
 
 **你说**：
 
-> 审计 resume.md，哪些技术点经不起深挖
+> 审计 简历/resume.md，哪些技术点经不起深挖
 
 **Agent 做**：提简历每个技术关键词 → 查 wiki/raw 支撑度 → 三档表：
 

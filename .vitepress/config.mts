@@ -101,10 +101,8 @@ export default defineConfig({
     'lover/**',
     'agentscope-java/**',
     'jd/**',
-    'assets/**',
     '公司赔偿/**',
-    'resume.md',
-    'resume (copy).md',
+    '简历/**',
     'README.md',
     // LLM Wiki 层：Agent 维护的知识编译层，仅作 AI 工作记忆，不在站上发布
     'wiki/**',
