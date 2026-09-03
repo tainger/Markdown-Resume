@@ -7,7 +7,9 @@
 | 文件 | 说明 |
 |:---|:---|
 | [resume.md](./resume.md) | 简历 Markdown 源文件（v1） |
+| [resumev2.md](./resumev2.md) | 简历 Markdown 源文件（v2，最新） |
 | [resume.html](./resume.html) | 简历 HTML 渲染版 |
+| [自我介绍.md](./自我介绍.md) | 面试自我介绍（2 分钟标准版 + 30 秒电梯版 + 追问预演） |
 | assets/ | 简历静态资源（图标、头像等） |
 
 ## 项目与源码映射
