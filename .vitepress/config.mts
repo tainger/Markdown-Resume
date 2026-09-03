@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitepress'
 import mathjax3 from 'markdown-it-mathjax3'
+import { vitepressPluginLegend } from 'vitepress-plugin-legend'
 import { generateSidebar, firstDoc } from './sidebar.mts'
 
 // 只收录这些学习笔记目录（按导航栏顺序）
@@ -53,6 +54,13 @@ export default defineConfig({
     // 支持 \(...\)、$$...$$ 等 LaTeX 数学公式渲染
     config: (md) => {
       md.use(mathjax3 as any)
+
+      // 集成 markmap 脑图插件（XMind 风格可交互脑图）
+      // 只启用 markmap，mermaid 继续走下方自定义 Mermaid 组件逻辑
+      vitepressPluginLegend(md, {
+        markmap: { showToolbar: true },
+        mermaid: false,
+      })
 
       // 笔记正文里含 {{ }} 花括号（如 Java 数组 {{1,0},{0,1}}），
       // 会被 Vue 当成模板插值导致构建报错。这里在渲染时把它转义成
