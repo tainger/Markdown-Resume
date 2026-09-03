@@ -22,6 +22,8 @@ Java 核心类库源码分析、语言特性与工程实践笔记，风格与 `l
 | 14 | [volatile 关键字面试题](volatile关键字.md) | 三大特性、原子性反证、DCL、传递可见性、内存屏障速答 | ✅ |
 | 15 | [线程面试题](线程面试题.md) | 创建方式、6 状态转换、wait/notify、sleep/wait/yield/join、synchronized 锁升级、死锁、中断、daemon、单例模式 | ✅ |
 | 16 | [线程池面试题](线程池面试题.md) | 队列选型深度对比、动态调参、监控告警、Spring Boot @Async 坑、ForkJoinPool 对比、线程池隔离、生产事故复盘 | ✅ |
+| 17 | [守护线程](守护线程.md) | JVM 退出机制、setDaemon 源码、Shutdown Hook、5 大坑点、GC/JIT/监控实战 | ✅ |
+| 18 | [虚拟线程](虚拟线程.md) | Carrier+Continuation M:N 调度、unmount/mount 机制、Pinned 问题、ScopedValue、Go goroutine 对比、AgentMate 实战 | ✅ |
 
 > 状态图例：⬜ 待整理 · 🟡 整理中 · ✅ 已完成
 
