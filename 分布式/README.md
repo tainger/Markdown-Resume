@@ -39,4 +39,4 @@
 - Spring 事务基础：[@Transactional 7 种传播行为与失效场景](../Spring/事务.md)（分布式事务是本地事务的跨服务延伸）
 - MySQL 两阶段提交：[redo/undo/binlog 两阶段提交保证数据一致性](../mysql/3.%20存储引擎与架构.md)（Seata XA 的底层思想同源）
 - RocketMQ 事务消息：[事务消息 half + 事务回查](../rocketMq/消息类型与发送.md)（本地消息表的消息队列版）
-- Redis 分布式锁扩展：[缓存击穿互斥锁 + Redisson 看门狗续期](../redis/缓存问题与实战.md)
+- Redis 分布式锁扩展：[缓存击穿互斥锁 + Redisson 看门狗续期](../redis/6. 缓存问题与实战.md)

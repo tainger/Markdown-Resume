@@ -43,5 +43,5 @@
 
 - SQL 层原理（索引、事务、锁）→ [../mysql/README.md](../mysql/README.md)
 - 慢 SQL 排查与优化 → [../mysql/8.%20SQL优化与调优.md](../mysql/8.%20SQL优化与调优.md)
-- 应用层缓存选型（穿透/击穿/雪崩）→ [../redis/缓存问题与实战.md](../redis/缓存问题与实战.md)
+- 应用层缓存选型（穿透/击穿/雪崩）→ [../redis/6. 缓存问题与实战.md](../redis/6. 缓存问题与实战.md)
 - ThreadLocal 原理（PageHelper 泄漏的底层）→ [../java/ThreadLocal源码分析.md](../java/ThreadLocal源码分析.md)

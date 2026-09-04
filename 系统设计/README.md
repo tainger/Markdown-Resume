@@ -44,7 +44,7 @@
 - 分布式锁防重复：[Redis/ZK/DB 三方案选型](../分布式/分布式锁.md)（秒杀防重复下单、Feed 推送去重）
 - 高可用限流熔断：[Sentinel 4 种限流算法 + 熔断降级](../分布式/高可用设计.md)（秒杀接入层限流、网关熔断）
 - 一致性协议：[Raft/Paxos 强一致](../分布式/一致性协议.md)（发号器多机房一致性、Feed 元数据存储）
-- Redis 缓存实战：[缓存击穿/穿透/雪崩](../redis/缓存问题与实战.md)（短链缓存击穿布隆过滤、秒杀热 key）
-- Redis 数据结构：[ZSet/Hash/Bitmap 底层](../redis/数据类型与底层结构.md)（Feed Timeline ZSet、秒杀库存 Hash）
+- Redis 缓存实战：[缓存击穿/穿透/雪崩](../redis/6. 缓存问题与实战.md)（短链缓存击穿布隆过滤、秒杀热 key）
+- Redis 数据结构：[ZSet/Hash/Bitmap 底层](../redis/2. 数据类型与底层结构.md)（Feed Timeline ZSet、秒杀库存 Hash）
 - RocketMQ 削峰：[事务消息 + 顺序消费](../rocketMq/消息类型与发送.md)（秒杀异步下单、Feed 推送解耦）
 - MySQL 索引与锁：[行锁/间隙锁/索引优化](../mysql/5.%20事务与锁.md)（秒杀库存行锁、短链短码唯一索引）

@@ -402,4 +402,4 @@ codec: !<org.redisson.codec.JsonJacksonCodec> {}   # 跨语言
 | Spring @Transactional 底层原理（AOP 切面/事务边界） | [../Spring/事务.md](../Spring/事务.md) |
 | Spring Boot 自动配置（RedissonAutoConfiguration 原理类似） | [../Spring/自动配置与启动流程.md](../Spring/自动配置与启动流程.md) |
 | 二级缓存 RLocalCachedMap（Spring Cache 本地缓存版） | [分布式对象与集合API.md](分布式对象与集合API.md) |
-| 缓存三兄弟（@Cacheable sync=true 解决的就是击穿） | [../redis/缓存问题与实战.md](../redis/缓存问题与实战.md) |
+| 缓存三兄弟（@Cacheable sync=true 解决的就是击穿） | [../redis/6. 缓存问题与实战.md](../redis/6. 缓存问题与实战.md) |
