@@ -100,6 +100,7 @@
 | 6 | ☕ **Spring AI 与 LangChain4j** | [SpringAI与LangChain4j.md](SpringAI与LangChain4j.md) | Java 生态落地层：ChatClient 门面、Advisor 责任链（≈MyBatis 插件）、Tool Calling 循环、RAG 组件化、AiServices 动态代理（≈Mapper）、选型对比 |
 | 7 | 🧩 **如何编写一份 skill.md** | [如何编写一份skill.md](如何编写一份skill.md) | Skill vs Tool vs Prompt、标准结构（frontmatter+body）、编写核心原则、AgentMate 实战（值班查询/研发周报异步模式）、生命周期、双引擎回归测试、Trae Skill 对照、面试追问链 |
 | 8 | 🔮 **幻觉、幻觉审计、幻觉治理、幻觉评测** | [幻觉，幻觉审计，幻觉治理，幻觉评测.md](幻觉，幻觉审计，幻觉治理，幻觉评测.md) | 幻觉四大成因 + 不能根除的本质、三道审计关口（输入P0-P4分级/生成检索质量/输出事实校验）、pre/do/post Hook 全链路拦截、三层治理防线（预防/检测/兜底）、双引擎回归测试守门、badcase 数据飞轮 |
+| 9 | 🔗 **RAG 如何与大模型集成** | [rag如何与大模型集成.md](rag如何与大模型集成.md) | **集成架构层**（区别于检索策略层）：Context 构建（XML格式化+Token预算管理+去重压缩）、三种 Prompt 注入方式、流式 SSE 调用、错误降级策略、Spring AI vs LangChain4j 集成对比、AgentMate 实战集成细节 |
 
 ---
 
