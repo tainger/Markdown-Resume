@@ -88,20 +88,56 @@
 
 ---
 
-## 三、目录
+## 三、目录（由浅入深，同类型归类）
 
-| # | 主题 | 笔记 | 核心考点 & 落地经验 |
+### 📘 基础入门（1-2）
+
+| # | 主题 | 笔记 | 核心考点 |
 |:---:|:---|:---|:---|
-| 1 | 🗂️ **RAG 检索增强生成** | [RAG检索增强生成.md](RAG检索增强生成.md) | Dual 双层混合检索、Cross-Encoder 重排、Markdown 标题切片策略、P0-P4 分级检索、查询改写同义词、点赞点踩迭代闭环 |
-| 2 | 🤖 **Agent 智能体框架** | [Agent智能体框架.md](Agent智能体框架.md) | ReAct 发散 vs 过程式状态机（AutoDev 五阶段）、Skill 体系建设、Git WorktreeManager 并发隔离、钉钉 Stream 异步消息 |
-| 3 | 🧠 **大模型工程基础** | [大模型工程基础.md](大模型工程基础.md) | Transformer 架构要点、LoRA/QLoRA 微调原理、推理优化（量化/KV Cache）、Embedding 选型、SDXL 相似度量化闭环 |
-| 4 | 🛡️ **LLM 安全与工程化** | [LLM安全与工程化.md](LLM安全与工程化.md) | 5 类 PII 正则脱敏、pre/do/post 三态 Hook 架构、LLM-as-Judge 双引擎回归、SSE 粘包半包容错、越权拦截 |
-| 5 | ⚡ **AI 高频面试题速查** | [AI高频面试题速查.md](AI高频面试题速查.md) | 面试前一晚速背版：30 道高频题骨架 + 追问链（RAG vs 微调、幻觉治理、状态机 vs ReAct、双引擎评测、成本优化）+ 场景设计题模板 + P7 必背十条 |
-| 6 | ☕ **Spring AI 与 LangChain4j** | [SpringAI与LangChain4j.md](SpringAI与LangChain4j.md) | Java 生态落地层：ChatClient 门面、Advisor 责任链（≈MyBatis 插件）、Tool Calling 循环、RAG 组件化、AiServices 动态代理（≈Mapper）、选型对比 |
-| 7 | 🧩 **如何编写一份 skill.md** | [如何编写一份skill.md](如何编写一份skill.md) | Skill vs Tool vs Prompt、标准结构（frontmatter+body）、编写核心原则、AgentMate 实战（值班查询/研发周报异步模式）、生命周期、双引擎回归测试、Trae Skill 对照、面试追问链 |
-| 8 | 🔮 **幻觉、幻觉审计、幻觉治理、幻觉评测** | [幻觉，幻觉审计，幻觉治理，幻觉评测.md](幻觉，幻觉审计，幻觉治理，幻觉评测.md) | 幻觉四大成因 + 不能根除的本质、三道审计关口（输入P0-P4分级/生成检索质量/输出事实校验）、pre/do/post Hook 全链路拦截、三层治理防线（预防/检测/兜底）、双引擎回归测试守门、badcase 数据飞轮 |
-| 9 | 🔗 **RAG 如何与大模型集成** | [rag如何与大模型集成.md](rag如何与大模型集成.md) | **集成架构层**（区别于检索策略层）：Context 构建（XML格式化+Token预算管理+去重压缩）、三种 Prompt 注入方式、流式 SSE 调用、错误降级策略、Spring AI vs LangChain4j 集成对比、AgentMate 实战集成细节 |
-| 10 | 🧠 **LLM Wiki 如何优化传统 RAG** | [LLMWIKI 如何优化传统rag.md](LLMWIKI%20如何优化传统rag.md) | **优化演进层**：传统 RAG 五大痛点、四种高级范式（Agentic/Self/Corrective/Graph）、LLM Wiki 预编译模式解决知识碎片化、本仓库 AGENTS.md 实践、四种范式组合策略、AgentMate RAG 演进路径 |
+| 1 | 🧠 **大模型工程基础** | [1. 大模型工程基础.md](1.%20大模型工程基础.md) | Transformer 架构要点、LoRA/QLoRA 微调原理、推理优化（量化/KV Cache）、Embedding 选型、SDXL 相似度量化闭环 |
+| 2 | 📝 **提示词工程** | [2. 提示词工程.md](2.%20提示词工程.md) | System/User/Assistant 分层、CoT/ToT、结构化输出、Prompt Caching、LLM-as-Judge 固化、注入防御三层 |
+
+### 🔍 RAG 系列（3-6，由浅入深）
+
+| # | 主题 | 笔记 | 核心考点 |
+|:---:|:---|:---|:---|
+| 3 | 🗂️ **RAG 检索增强生成** | [3. RAG检索增强生成.md](3.%20RAG检索增强生成.md) | **检索策略层**：Dual 双层混合检索、Cross-Encoder 重排、Markdown 标题切片、P0-P4 分级检索、查询改写、点赞点踩迭代闭环 |
+| 4 | 🔗 **RAG 如何与大模型集成** | [4. rag如何与大模型集成.md](4.%20rag如何与大模型集成.md) | **集成架构层**：Context 构建（XML格式化+Token预算+去重压缩）、三种 Prompt 注入、流式 SSE、错误降级、Spring AI vs LangChain4j 集成 |
+| 5 | � **LLM Wiki 如何优化传统 RAG** | [5. LLMWIKI 如何优化传统rag.md](5.%20LLMWIKI%20如何优化传统rag.md) | **优化演进层**：传统 RAG 五大痛点、四种高级范式（Agentic/Self/Corrective/Graph）、LLM Wiki 预编译模式、本仓库 AGENTS.md 实践、组合策略 |
+| 6 | 🔮 **幻觉、审计、治理、评测** | [6. 幻觉，幻觉审计，幻觉治理，幻觉评测.md](6.%20幻觉，幻觉审计，幻觉治理，幻觉评测.md) | 幻觉四大成因 + 不能根除的本质、三道审计关口、pre/do/post Hook 全链路拦截、三层治理防线、双引擎回归守门、badcase 数据飞轮 |
+
+### �🤖 Agent 系列（7-9，由浅入深）
+
+| # | 主题 | 笔记 | 核心考点 |
+|:---:|:---|:---|:---|
+| 7 | 🤖 **Agent 智能体框架** | [7. Agent智能体框架.md](7.%20Agent智能体框架.md) | ReAct 发散 vs 过程式状态机（AutoDev 五阶段）、多智能体分工、Git WorktreeManager 并发隔离、钉钉 Stream 异步消息 |
+| 8 | � **如何编写一份 skill.md** | [8. 如何编写一份skill.md](8.%20如何编写一份skill.md) | Skill vs Tool vs Prompt、标准结构（frontmatter+body）、编写核心原则、AgentMate 实战（值班查询/研发周报异步模式）、生命周期、双引擎回归、Trae Skill 对照 |
+| 9 | � **沙箱机制** | [9. 沙箱机制.md](9.%20沙箱机制.md) | 进程隔离/容器沙箱、Code Interpreter 安全边界、资源限制、逃逸防护、Agent 工具执行安全 |
+
+### ☕ 框架落地（10）
+
+| # | 主题 | 笔记 | 核心考点 |
+|:---:|:---|:---|:---|
+| 10 | ☕ **Spring AI 与 LangChain4j** | [10. SpringAI与LangChain4j.md](10.%20SpringAI与LangChain4j.md) | Java 生态落地：ChatClient 门面、Advisor 责任链（≈MyBatis 插件）、Tool Calling 循环、RAG 组件化、AiServices 动态代理（≈Mapper）、选型对比 |
+
+### 📡 协议层（11-12，由浅入深）
+
+| # | 主题 | 笔记 | 核心考点 |
+|:---:|:---|:---|:---|
+| 11 | 🔌 **MCP 协议** | [11. MCP协议.md](11.%20MCP协议.md) | Model Context Protocol：USB-C 类比、Client/Server 架构、Tools/Prompts/Resources 三原语、Streamable HTTP vs SSE、Spring AI 1.1 GA 原生支持、安全混淆代理 |
+| 12 | 🌐 **A2A 协议** | [12. A2A协议.md](12.%20A2A协议.md) | Agent-to-Agent：v0.1→v1.0 演进、Agent Card 签名、多租户、任务编排、与 MCP 互补（MCP 是 Agent↔工具，A2A 是 Agent↔Agent）、三态 Hook 复用 |
+
+### 🛡️ 安全与工程（13）
+
+| # | 主题 | 笔记 | 核心考点 |
+|:---:|:---|:---|:---|
+| 13 | �️ **LLM 安全与工程化** | [13. LLM安全与工程化.md](13.%20LLM安全与工程化.md) | 5 类 PII 正则脱敏、pre/do/post 三态 Hook 架构、LLM-as-Judge 双引擎回归、SSE 粘包半包容错、越权拦截 |
+
+### ⚡ 面试速查（14）
+
+| # | 主题 | 笔记 | 核心考点 |
+|:---:|:---|:---|:---|
+| 14 | ⚡ **AI 高频面试题速查** | [14. AI高频面试题速查.md](14.%20AI高频面试题速查.md) | 面试前一晚速背版：30 道高频题骨架 + 追问链（RAG vs 微调、幻觉治理、状态机 vs ReAct、双引擎评测、成本优化）+ 场景设计题模板 + P7 必背十条 |
 
 ---
 
