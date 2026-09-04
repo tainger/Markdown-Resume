@@ -24,6 +24,7 @@ Java 核心类库源码分析、语言特性与工程实践笔记，风格与 `l
 | 16 | [线程池面试题](线程池面试题.md) | 队列选型深度对比、动态调参、监控告警、Spring Boot @Async 坑、ForkJoinPool 对比、线程池隔离、生产事故复盘 | ✅ |
 | 17 | [守护线程](守护线程.md) | JVM 退出机制、setDaemon 源码、Shutdown Hook、5 大坑点、GC/JIT/监控实战 | ✅ |
 | 18 | [虚拟线程](虚拟线程.md) | Carrier+Continuation M:N 调度、unmount/mount 机制、Pinned 问题、ScopedValue、Go goroutine 对比、AgentMate 实战 | ✅ |
+| 19 | [匿名内部类和 Lambda 表达式的区别](匿名内部类和lamada%20表达式的区别.md) | 编译产物差异（独立 class vs invokedynamic）、this 引用陷阱（指向自身 vs 外部类）、变量捕获 final 原因、功能能力对比、选型决策树 | ✅ |
 
 > 状态图例：⬜ 待整理 · 🟡 整理中 · ✅ 已完成
 
