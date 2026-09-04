@@ -99,6 +99,7 @@
 | 5 | ⚡ **AI 高频面试题速查** | [AI高频面试题速查.md](AI高频面试题速查.md) | 面试前一晚速背版：30 道高频题骨架 + 追问链（RAG vs 微调、幻觉治理、状态机 vs ReAct、双引擎评测、成本优化）+ 场景设计题模板 + P7 必背十条 |
 | 6 | ☕ **Spring AI 与 LangChain4j** | [SpringAI与LangChain4j.md](SpringAI与LangChain4j.md) | Java 生态落地层：ChatClient 门面、Advisor 责任链（≈MyBatis 插件）、Tool Calling 循环、RAG 组件化、AiServices 动态代理（≈Mapper）、选型对比 |
 | 7 | 🧩 **如何编写一份 skill.md** | [如何编写一份skill.md](如何编写一份skill.md) | Skill vs Tool vs Prompt、标准结构（frontmatter+body）、编写核心原则、AgentMate 实战（值班查询/研发周报异步模式）、生命周期、双引擎回归测试、Trae Skill 对照、面试追问链 |
+| 8 | 🔮 **幻觉、幻觉审计、幻觉治理、幻觉评测** | [幻觉，幻觉审计，幻觉治理，幻觉评测.md](幻觉，幻觉审计，幻觉治理，幻觉评测.md) | 幻觉四大成因 + 不能根除的本质、三道审计关口（输入P0-P4分级/生成检索质量/输出事实校验）、pre/do/post Hook 全链路拦截、三层治理防线（预防/检测/兜底）、双引擎回归测试守门、badcase 数据飞轮 |
 
 ---
 
