@@ -98,6 +98,7 @@
 | 4 | 🛡️ **LLM 安全与工程化** | [LLM安全与工程化.md](LLM安全与工程化.md) | 5 类 PII 正则脱敏、pre/do/post 三态 Hook 架构、LLM-as-Judge 双引擎回归、SSE 粘包半包容错、越权拦截 |
 | 5 | ⚡ **AI 高频面试题速查** | [AI高频面试题速查.md](AI高频面试题速查.md) | 面试前一晚速背版：30 道高频题骨架 + 追问链（RAG vs 微调、幻觉治理、状态机 vs ReAct、双引擎评测、成本优化）+ 场景设计题模板 + P7 必背十条 |
 | 6 | ☕ **Spring AI 与 LangChain4j** | [SpringAI与LangChain4j.md](SpringAI与LangChain4j.md) | Java 生态落地层：ChatClient 门面、Advisor 责任链（≈MyBatis 插件）、Tool Calling 循环、RAG 组件化、AiServices 动态代理（≈Mapper）、选型对比 |
+| 7 | 🧩 **如何编写一份 skill.md** | [如何编写一份skill.md](如何编写一份skill.md) | Skill vs Tool vs Prompt、标准结构（frontmatter+body）、编写核心原则、AgentMate 实战（值班查询/研发周报异步模式）、生命周期、双引擎回归测试、Trae Skill 对照、面试追问链 |
 
 ---
 
