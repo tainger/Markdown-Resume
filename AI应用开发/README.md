@@ -138,7 +138,7 @@
 
 | # | 主题 | 笔记 | 核心考点 |
 |:---:|:---|:---|:---|
-| 15 | 🦞 **OpenClaw 技术架构与 AI Agent 技术解析** | [15. OpenClaw技术架构与AI Agent技术解析.md](15.%20OpenClaw技术架构与AI%20Agent技术解析.md) | 2025 爆火开源个人 Agent 运行时（145k stars）：微内核网关四层架构、ReAct Agentic Loop、模型无关 Provider 抽象、SOUL.md 配置优先、Skills/ClawHub 生态、Hooks 生命周期、**ContextEngine 插件接口 + Compaction Pipeline（自适应分块/工具调用对保护/三级预算阈值）**、OpenClaw vs AgentMate 对比 |
+| 15 | 🦞 **OpenClaw 技术架构与 AI Agent 技术解析** | [openclaw/15. OpenClaw技术架构与AI Agent技术解析.md](openclaw/15.%20OpenClaw技术架构与AI%20Agent技术解析.md) | 2025 爆火开源个人 Agent 运行时（145k stars）：微内核网关四层架构、ReAct Agentic Loop、模型无关 Provider 抽象、SOUL.md 配置优先、Skills/ClawHub 生态、Hooks 生命周期、**ContextEngine 插件接口 + Compaction Pipeline（自适应分块/工具调用对保护/三级预算阈值）**、OpenClaw vs AgentMate 对比 |
 
 ### ⚡ 面试速查（14）
 
