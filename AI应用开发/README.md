@@ -134,11 +134,12 @@
 |:---:|:---|:---|:---|
 | 13 | 🛡️ **LLM 安全与工程化** | [13. LLM安全与工程化.md](13.%20LLM安全与工程化.md) | 5 类 PII 正则脱敏、pre/do/post 三态 Hook 架构、LLM-as-Judge 双引擎回归、SSE 粘包半包容错、越权拦截 |
 
-### 📚 开源框架参考（15）
+### 📚 开源框架参考（15-16）
 
 | # | 主题 | 笔记 | 核心考点 |
 |:---:|:---|:---|:---|
 | 15 | 🦞 **OpenClaw 技术架构与 AI Agent 技术解析** | [openclaw/15. OpenClaw技术架构与AI Agent技术解析.md](openclaw/15.%20OpenClaw技术架构与AI%20Agent技术解析.md) | 2025 爆火开源个人 Agent 运行时（145k stars）：微内核网关四层架构、ReAct Agentic Loop、模型无关 Provider 抽象、SOUL.md 配置优先、Skills/ClawHub 生态、Hooks 生命周期、**ContextEngine 插件接口 + Compaction Pipeline（自适应分块/工具调用对保护/三级预算阈值）**、OpenClaw vs AgentMate 对比 |
+| 16 | 📐 **OpenClaw 上下文工程设计经验** | [openclaw/16. OpenClaw上下文工程设计经验.md](openclaw/16.%20OpenClaw上下文工程设计经验.md) | 从源码提炼的 10 条可复用设计模式：可插拔接口、安全净化前置、工具调用对原子保护、token 估算安全边距、多源预算降级链、进程级缓存代际替换、超大消息优雅降级、LLM 行为显式控制、压缩重试策略分离、生命周期四要素 |
 
 ### ⚡ 面试速查（14）
 

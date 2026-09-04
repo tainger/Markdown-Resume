@@ -7,6 +7,7 @@
 | # | 主题 | 笔记 | 核心考点 |
 |:---:|:---|:---|:---|
 | 15 | 🦞 **OpenClaw 技术架构与 AI Agent 技术解析** | [15. OpenClaw技术架构与AI Agent技术解析.md](15.%20OpenClaw技术架构与AI%20Agent技术解析.md) | 微内核网关四层架构、ReAct Agentic Loop、模型无关 Provider 抽象、SOUL.md 配置优先、Skills/ClawHub 生态、Hooks 生命周期、**ContextEngine 插件接口 + Compaction Pipeline（自适应分块/工具调用对保护/三级预算阈值）**、OpenClaw vs AgentMate 对比 |
+| 16 | 📐 **OpenClaw 上下文工程设计经验** | [16. OpenClaw上下文工程设计经验.md](16.%20OpenClaw上下文工程设计经验.md) | 从源码提炼的 10 条可复用设计模式：可插拔接口、安全净化前置、工具调用对原子保护、token 估算安全边距、多源预算降级链、进程级缓存代际替换、超大消息优雅降级、LLM 行为显式控制、压缩重试策略分离、生命周期四要素 |
 
 ## 源码路径
 
