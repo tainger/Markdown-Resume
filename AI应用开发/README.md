@@ -90,12 +90,13 @@
 
 ## 三、目录（由浅入深，同类型归类）
 
-### 📘 基础入门（1-2）
+### 📘 基础入门（1-2.5）
 
 | # | 主题 | 笔记 | 核心考点 |
 |:---:|:---|:---|:---|
 | 1 | 🧠 **大模型工程基础** | [1. 大模型工程基础.md](1.%20大模型工程基础.md) | Transformer 架构要点、LoRA/QLoRA 微调原理、推理优化（量化/KV Cache）、Embedding 选型、SDXL 相似度量化闭环 |
 | 2 | 📝 **提示词工程** | [2. 提示词工程.md](2.%20提示词工程.md) | System/User/Assistant 分层、CoT/ToT、结构化输出、Prompt Caching、LLM-as-Judge 固化、注入防御三层 |
+| 2.5 | 📦 **上下文工程** | [2.5 上下文工程.md](2.5%20上下文工程.md) | **P7 分水岭**：管理 context window 全生命周期——Packing 动态预算+防 lost-in-the-middle、Compression（LLMLingua/滚动摘要/外置RAG）、Caching（前缀缓存1/10价+三层缓存）、Eviction（多轮淘汰+工具结果截断+长期记忆分层） |
 
 ### 🔍 RAG 系列（3-6，由浅入深）
 
