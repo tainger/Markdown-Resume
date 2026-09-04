@@ -106,7 +106,7 @@
 | 4 | 🔗 **RAG 如何与大模型集成** | [4. rag如何与大模型集成.md](4.%20rag如何与大模型集成.md) | **集成架构层**：Context 构建（XML格式化+Token预算+去重压缩）、三种 Prompt 注入、流式 SSE、错误降级、Spring AI vs LangChain4j 集成 |
 | 5 | � **LLM Wiki 如何优化传统 RAG** | [5. LLMWIKI 如何优化传统rag.md](5.%20LLMWIKI%20如何优化传统rag.md) | **优化演进层**：传统 RAG 五大痛点、四种高级范式（Agentic/Self/Corrective/Graph）、LLM Wiki 预编译模式、本仓库 AGENTS.md 实践、组合策略 |
 | 6 | 🔮 **幻觉、审计、治理、评测** | [6. 幻觉，幻觉审计，幻觉治理，幻觉评测.md](6.%20幻觉，幻觉审计，幻觉治理，幻觉评测.md) | 幻觉四大成因 + 不能根除的本质、三道审计关口、pre/do/post Hook 全链路拦截、三层治理防线、双引擎回归守门、badcase 数据飞轮 |
-| 6.1 | 🔬 **讲下一次 RAG 查询底层发生了什么事情？** | [6.1 讲下一次RAG查询底层发生了什么事情?.md](6.1%20%E8%AE%B2%E4%B8%8B%E4%B8%80%E6%AC%A1RAG%E6%9F%A5%E8%AF%A2%E5%BA%95%E5%B1%82%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88%E4%BA%8B%E6%83%85%3F.md) | **全链路实战**：6 阶段深度剖析（Query Processing/HyDE → Embedding → ANN 检索 HNSW/IVF → Cross-Encoder Reranking → Context Assembly → LLM Generation）、端到端延迟分布、常见问题排查、6 道面试高频问答 |
+| 6.1 | 🔬 **讲下一次 RAG 查询底层发生了什么事情？** | [6.1 讲下一次RAG查询底层发生了什么事情.md](6.1%20%E8%AE%B2%E4%B8%8B%E4%B8%80%E6%AC%A1RAG%E6%9F%A5%E8%AF%A2%E5%BA%95%E5%B1%82%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88%E4%BA%8B%E6%83%85.md) | **全链路实战**：6 阶段深度剖析（Query Processing/HyDE → Embedding → ANN 检索 HNSW/IVF → Cross-Encoder Reranking → Context Assembly → LLM Generation）、端到端延迟分布、常见问题排查、6 道面试高频问答 |
 
 ### 🤖 Agent 系列（7-9，由浅入深）
 
