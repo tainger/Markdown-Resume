@@ -13,6 +13,7 @@ DeepSeek Harness（`dsh`）是 DeepSeek AI 开发的开源 Agent Harness，基�
 | # | 主题 | 笔记 | 核心考点 |
 |:---:|:---|:---|:---|
 | 17 | 🐋 **DeepSeek-Harness 技术架构源码解析** | [17. DeepSeek-Harness技术架构源码解析.md](17.%20DeepSeek-Harness技术架构源码解析.md) | Cordis 插件树架构、Profile/Bundle 组合机制、**Model-visible ⟺ Logged 核心原则**、Turn/Step 模型、**能力缝三角色模式**、Surface 模型压缩、工具调用对增量 BalanceCache、压缩事务生命周期、KV Cache 优化、**Request-Reconstruction Invariant 运行时断言**、RuntimeContextProjection 动态投影、与 OpenClaw 对比 |
+| 18 | 📐 **DeepSeek-Harness 上下文工程设计经验** | [18. DeepSeek-Harness上下文工程设计经验.md](18.%20DeepSeek-Harness上下文工程设计经验.md) | 从源码提炼的 10 条可复用设计模式：日志优先（Event Sourcing）、运行时不变量断言、Surface 投影模型（MVCC）、增量平衡缓存（代际失效）、差量注入（CDC）、KV Cache 前缀复用、结构化摘要 + Checkpoint Framing、压缩事务 + 乐观并发、分层配置 + 加载校验、Waterfall 事件语义（责任链） |
 
 ## 源码路径
 
