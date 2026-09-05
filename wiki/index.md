@@ -1,7 +1,7 @@
 ---
 type: index
 status: stable
-updated: 2026-08-30
+updated: 2026-09-05
 ---
 
 # Wiki 全局索引
@@ -49,9 +49,10 @@ updated: 2026-08-30
 
 | 页面 | 覆盖 |
 |:---|:---|
-| [[wiki/concepts/RAG]] | 检索增强：双混合检索、切片、重排 |
-| [[wiki/concepts/Agent]] | 智能体框架、MCP、记忆、安全 |
-| [[wiki/concepts/ContextEngineering]] | 上下文工程（含提示词工程子集） |
+| [[wiki/concepts/RAG]] | 检索增强：双混合检索、切片、重排、6 阶段查询全链路 |
+| [[wiki/concepts/Agent]] | 智能体框架、MCP、记忆、安全、OpenClaw vs dsh 对比 |
+| [[wiki/concepts/ContextEngineering]] | 上下文工程（含提示词工程子集）、OpenClaw + dsh 十大设计模式 |
+| [[wiki/concepts/量化交易]] | 仓位管理 / 风险管理 / 策略回测 |
 
 ## 四、实体页（后端组件 + AI）
 
@@ -77,7 +78,9 @@ updated: 2026-08-30
 
 | 板块 | 目录 | 入口 |
 |:---|:---|:---|
-| 算法 | 算法思想 / leetcode-hot100 / 华为OD机试 / 数据结构 | 各目录 README.md |
+| 算法 | 算法思想 / leetcode-hot100 / 华为OD机试 / 数据结构 / 剑指offer | 各目录 README.md |
 | 后端 | 分布式 / 系统设计 / mysql / redis / rocketMq / Mybatis / dubbo | 各目录 README.md |
 | 基础 | java / jvm / io / 计算机网络 | 各目录 README.md |
-| 更多 | AI应用开发 / DeepSeek Harness / 面试 / 面试准备 / 英语能力 / 自媒体/微信公众号/探小虎 | 各目录 README.md |
+| AI | AI应用开发（含 openclaw/ 和 deepseek-harness/ 子目录） | AI应用开发/README.md |
+| 量化 | 量化交易（仓位管理/风险管理/策略回测） | 量化交易/README.md |
+| 更多 | 面试 / 面试准备 / 英语能力 / 自媒体/微信公众号/探小虎 | 各目录 README.md |

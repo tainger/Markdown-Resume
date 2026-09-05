@@ -1,12 +1,24 @@
 ---
 type: log
 status: stable
-updated: 2026-08-30
+updated: 2026-09-05
 ---
 
 # 操作日志（append-only）
 
 > 只追加不修改。每条记录：日期 | 动作 | 摘要。
+
+## 2026-09-05
+
+- **[ingest]** 批量消化 08-30 后新增的 13 篇 raw 笔记（停更一周补回）：
+  - AI应用开发 5 篇：openclaw/#15-16、deepseek-harness/#17-18、6.1 RAG查询全链路
+  - 剑指offer 5 篇：#09/#24/#25/#32/#42
+  - 量化交易 3 篇：仓位管理/风险管理/策略回测框架
+- **[concept 更新]** RAG.md 补入 6.1 查询全链路 6 阶段；ContextEngineering.md 补入 OpenClaw + dsh 双框架对比 + 十大设计模式；Agent.md 补入 OpenClaw vs dsh 对比表
+- **[concept 更新]** 算法页补入剑指 offer 引用：链表技巧→#24/#25、二叉树遍历→#32、动态规划→#42、单调栈→#09
+- **[concept 新建]** 量化交易.md（仓位管理/风险管理/策略回测三骨架 + 核心指标表）
+- **[index 更新]** raw 层目录地图补入 剑指offer/、量化交易/、AI应用开发子目录说明；概念页索引补入 量化交易
+- **[status 升级]** RAG/ContextEngineering/Agent/链表技巧/二叉树遍历/动态规划/单调栈 从 seed → growing
 
 ## 2026-08-30
 
