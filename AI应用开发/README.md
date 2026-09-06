@@ -116,6 +116,12 @@
 | 8 | � **如何编写一份 skill.md** | [8. 如何编写一份skill.md](8.%20如何编写一份skill.md) | Skill vs Tool vs Prompt、标准结构（frontmatter+body）、编写核心原则、AgentMate 实战（值班查询/研发周报异步模式）、生命周期、双引擎回归、Trae Skill 对照 |
 | 9 | � **沙箱机制** | [9. 沙箱机制.md](9.%20沙箱机制.md) | 进程隔离/容器沙箱、Code Interpreter 安全边界、资源限制、逃逸防护、Agent 工具执行安全 |
 
+### 🧠 Agent 记忆设计（15）
+
+| # | 主题 | 笔记 | 核心考点 |
+|:---:|:---|:---|:---|
+| 15 | 🧠 **AI Agent 记忆设计** | [15.ai agent记忆设计.md](15.ai%20agent记忆设计.md) | **记忆系统核心**：三层记忆架构（工作/情景/语义）、生命周期四阶段（写入→巩固→检索→遗忘）、写入决策树、多路召回+Reranker、遗忘策略（时间衰减/容量上限/冲突解决）、主流方案对比（Mem0/Letta/LangGraph/CrewAI/OpenClaw/dsh）、AgentMate 记忆提取流程 + 差异化优势、5 个常见陷阱 + Checklist |
+
 ### ☕ 框架落地（10）
 
 | # | 主题 | 笔记 | 核心考点 |
