@@ -20,6 +20,7 @@
 ├── redis/                  # Redis 面试题笔记（数据类型、持久化、内存淘汰、高可用集群、缓存实战 — P7 备战）
 ├── redisson/               # Redisson 面试题笔记（分布式锁全家桶/看门狗源码/二级缓存/延迟队列/Spring 集成事务坑 — P7 备战）
 ├── jvm/                    # JVM 面试笔记（内存、GC、类加载、JMM、调优 — P7 备战）
+├── arthas/                 # Arthas 面试笔记（字节码增强原理、watch/trace/tt 命令、线上排障实战 — P7 备战）
 ├── 计算机网络/              # 计算机网络面试题笔记（分层、TCP、HTTP/HTTPS、IP、DNS/CDN — P7 备战）
 ├── Mybatis/                # MyBatis 面试题笔记（架构执行流程、缓存、动态SQL、插件 — P7 备战）
 ├── dubbo/                  # Dubbo 面试题笔记（架构流程、SPI、注册发现、容错负载均衡、通信线程模型 — P7 备战）
