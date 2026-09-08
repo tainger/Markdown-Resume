@@ -7,6 +7,7 @@ import { generateSidebar, firstDoc } from './sidebar.mts'
 export const INCLUDE_DIRS: { text: string; dir: string }[] = [
   { text: '算法思想', dir: '算法思想' },
   { text: 'LeetCode Hot100', dir: 'leetcode-hot100' },
+  { text: '剑指 Offer', dir: '剑指offer' },
   { text: '华为OD机试', dir: '华为OD机试' },
   { text: '数据结构', dir: '数据结构' },
   { text: '分布式', dir: '分布式' },
@@ -36,7 +37,7 @@ export const INCLUDE_DIRS: { text: string; dir: string }[] = [
 // 顶部导航栏分组（下拉菜单）：目录太多平铺会溢出，按类折叠
 // dirs 里的值必须能在 INCLUDE_DIRS 中找到
 export const NAV_GROUPS: { text: string; dirs: string[] }[] = [
-  { text: '算法', dirs: ['算法思想', 'leetcode-hot100', '华为OD机试', '数据结构'] },
+  { text: '算法', dirs: ['算法思想', 'leetcode-hot100', '剑指offer', '华为OD机试', '数据结构'] },
   { text: '后端', dirs: ['分布式', '系统设计', '权限设计', 'mysql', 'redis', 'redisson', 'rocketMq', 'ElasticSearch', 'Mybatis', 'dubbo', 'Spring'] },
   { text: '基础', dirs: ['java', 'jvm', 'arthas', 'io', '计算机网络'] },
   { text: '更多', dirs: ['AI应用开发', 'DeepSeek Harness', '面试', '面试准备', '英语能力', '自媒体/微信公众号/探小虎', '每日记录'] },
