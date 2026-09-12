@@ -14,6 +14,7 @@ export const INCLUDE_DIRS: { text: string; dir: string }[] = [
   { text: '系统设计', dir: '系统设计' },
   { text: '权限设计', dir: '权限设计' },
   { text: 'AI应用开发', dir: 'AI应用开发' },
+  { text: 'Rag知识库', dir: 'Rag知识库' },
   { text: 'DeepSeek Harness', dir: 'DeepSeek Harness' },
   { text: 'MySQL', dir: 'mysql' },
   { text: 'Redis', dir: 'redis' },
@@ -40,7 +41,7 @@ export const NAV_GROUPS: { text: string; dirs: string[] }[] = [
   { text: '算法', dirs: ['算法思想', 'leetcode-hot100', '剑指offer', '华为OD机试', '数据结构'] },
   { text: '后端', dirs: ['分布式', '系统设计', '权限设计', 'mysql', 'redis', 'redisson', 'rocketMq', 'ElasticSearch', 'Mybatis', 'dubbo', 'Spring'] },
   { text: '基础', dirs: ['java', 'jvm', 'arthas', 'io', '计算机网络'] },
-  { text: '更多', dirs: ['AI应用开发', 'DeepSeek Harness', '面试', '面试准备', '英语能力', '自媒体/微信公众号/探小虎', '每日记录'] },
+  { text: '更多', dirs: ['AI应用开发', 'Rag知识库', 'DeepSeek Harness', '面试', '面试准备', '英语能力', '自媒体/微信公众号/探小虎', '每日记录'] },
 ]
 
 export default defineConfig({
@@ -160,9 +161,3 @@ export default defineConfig({
 
   lastUpdated: true,
 })
-
-// 导航栏点击某个板块时，跳到该目录下第一篇文档
-import { firstDoc } from './sidebar.mts'
-function firstDocLink(dir: string): string {
-  return firstDoc(dir)
-}
