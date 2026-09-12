@@ -35,15 +35,21 @@ updated: 2026-09-12
 
 | 页面 | 覆盖 |
 |:---|:---|
-| [[wiki/concepts/滑动窗口]] | 双指针与滑动窗口 + 4 道 hot100 |
-| [[wiki/concepts/动态规划]] | 背包系列 + 树形 DP + 区间 DP |
-| [[wiki/concepts/二分查找]] | 边界写法 + 3 道 hot100 |
-| [[wiki/concepts/回溯]] | 排列/组合/子集模板 |
-| [[wiki/concepts/单调栈与单调队列]] | 每日温度、接雨水 |
+| [[wiki/concepts/链表技巧]] | 反转/快慢指针/合并 + 剑指 Offer 5 道 |
+| [[wiki/concepts/二叉树遍历]] | 递归/层序/序列化 + 剑指 Offer 7 道 |
+| [[wiki/concepts/二分查找]] | 边界写法 + hot100 3 道 + 剑指 Offer 3 道 |
+| [[wiki/concepts/滑动窗口]] | 双指针滑窗 + hot100 4 道 + 剑指 Offer 1 道 |
+| [[wiki/concepts/单调栈与单调队列]] | 每日温度/接雨水 + 剑指 Offer 59 窗口最大值 |
+| [[wiki/concepts/动态规划]] | 背包/树形/区间 DP + Kadane 算法 |
+| [[wiki/concepts/回溯]] | 排列/组合/子集 + 二叉树路径和 |
 | [[wiki/concepts/前缀和与差分]] | 子数组和 + 树上前缀和 |
 | [[wiki/concepts/并查集]] | 连通性问题 |
-| [[wiki/concepts/链表技巧]] | 反转/快慢指针/合并 |
-| [[wiki/concepts/二叉树遍历]] | 递归/层序/序列化 |
+| [[wiki/concepts/栈与队列]] | 双栈队列 + 弹出序列验证 |
+| [[wiki/concepts/位运算与摩尔投票]] | 异或分组 + 摩尔投票找众数 |
+| [[wiki/concepts/堆与Top-K]] | Top-K 单堆 + 中位数双堆 |
+| [[wiki/concepts/归并排序与逆序对]] | 归并分治 + 跨段逆序对计数 |
+| [[wiki/concepts/快速选择]] | Quick Select 找第 k 小 |
+| [[wiki/concepts/数学递推]] | 约瑟夫环 + 扑克牌顺子 + 翻转字符串 |
 
 ## 三、概念页（AI 应用开发）
 
