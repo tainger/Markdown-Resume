@@ -266,7 +266,7 @@ $$L = 2 \times 30 = \textbf{60 个在途任务}$$
 
 ## 相关笔记
 
-- [gogo-agent/21.我给 Agent 加了哪些关键配置](../gogo-agent/21.我给%20Agent%20加了哪些关键配置.md)（maxIters/超时重试/cache/熔断 Hook）
-- [gogo-agent/22.多智能体之间的上下文传递方式](../gogo-agent/22.多智能体之间的上下文传递方式.md)（Reactor Context / SSE）
+- [gogo-agent/21.我给 Agent 加了哪些关键配置](./gogo-agent/21.我给%20Agent%20加了哪些关键配置.md)（maxIters/超时重试/cache/熔断 Hook）
+- [gogo-agent/22.多智能体之间的上下文传递方式](./gogo-agent/22.多智能体之间的上下文传递方式.md)（Reactor Context / SSE）
 - [Agent评测/如何做好Agent评测](../Agent评测/如何做好Agent评测.md)（质量层指标与 Pass^k）
-- [RAG评测/5.主流RAG评测框架](../RAG评测/5.主流RAG评测框架：RAGAS、TruLens、DeepEval、Phoenix.md)（Phoenix 线上监控指标）
+- [RAG评测/5.主流RAG评测框架](./RAG评测/5.主流RAG评测框架：RAGAS、TruLens、DeepEval、Phoenix.md)（Phoenix 线上监控指标）
