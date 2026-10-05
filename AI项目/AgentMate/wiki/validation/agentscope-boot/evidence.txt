@@ -1,0 +1,14 @@
+Validated: 2026-10-05 Asia/Shanghai
+Spring Boot 4.0.4 + AgentScope core 2.0.3 + Java 17.0.7
+Model: deterministic local fixture; no real model or MSE access
+
+-------------------------------------------------------------------------------
+Test set: com.agentmate.validation.IntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.069 s -- in com.agentmate.validation.IntegrationTest
+
+Separate JVM write/read probes (both exit code 0):
+2026-10-05T09:28:33.375+08:00  INFO 77979 --- [           main] c.a.validation.ValidationApplication     : Starting ValidationApplication v0.0.1 using Java 17.0.7 with PID 77979 (/Users/rocky/study/profile/Markdown-Resume/AI项目/AgentMate/wiki/validation/agentscope-boot/target/agentscope-boot-validation-0.0.1.jar started by rocky in /Users/rocky/study/profile/Markdown-Resume/AI项目/AgentMate/wiki/validation/agentscope-boot)
+VALIDATION_PROBE=SYNTHETIC_RESULT: "CODE_E1 repo=fixture-mse commit=fixture-c1 path=Config.java lines=10-12: missing listener may skip update""LOG_E2 instance=fixture-1: listener registered; update rejected due to version mismatch"
+2026-10-05T09:28:54.956+08:00  INFO 78389 --- [           main] c.a.validation.ValidationApplication     : Starting ValidationApplication v0.0.1 using Java 17.0.7 with PID 78389 (/Users/rocky/study/profile/Markdown-Resume/AI项目/AgentMate/wiki/validation/agentscope-boot/target/agentscope-boot-validation-0.0.1.jar started by rocky in /Users/rocky/study/profile/Markdown-Resume/AI项目/AgentMate/wiki/validation/agentscope-boot)
+VALIDATION_PROBE=REMEMBERED:marker-42
