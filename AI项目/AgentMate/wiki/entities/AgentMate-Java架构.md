@@ -119,3 +119,8 @@ AccessContext 来自认证上下文；ApprovedAction 由服务端验证内容哈
 
 ## 最小集成验证结果
 [[AI项目/AgentMate/wiki/entities/AgentScope-Java验证报告]] 已验证 Spring Boot 4.0.4 + AgentScope core 2.0.3 + JDK 17，5 项测试及独立 JVM 正常重启恢复通过；模型为测试替身，尚未验证业务诊断效果、HarnessAgent 或生产可靠性。
+
+## AutoDev 模块扩展
+新增 agentmate-autodev，复用 AgentScope 调查能力实现需求规划、代码实施、测试分析与评审角色；Spring Boot 状态机管理跨天开发发布流程，工具适配代码工作区、Git、CI/CD、验收与 Aone。
+部署执行器与编码沙箱分离，以不可变制品、环境策略和动作幂等驱动自动部署。现有 5 项测试只证明核心集成，尚未验证 AutoDev 的编码、部署或回滚。
+详细职责、状态与验收见 [[AI项目/AgentMate/wiki/concepts/AutoDev需求到部署]]。

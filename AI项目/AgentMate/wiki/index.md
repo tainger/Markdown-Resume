@@ -14,3 +14,5 @@ updated: 2026-10-05
 - [[AI项目/AgentMate/wiki/log]]：操作记录。
 
 - [[AI项目/AgentMate/wiki/entities/AgentScope-Java验证报告]]：Spring Boot + AgentScope Java 实测结果与复现工程。
+
+- [[AI项目/AgentMate/wiki/concepts/AutoDev需求到部署]]：Aone 驱动的自动开发、测试、部署、灰度与交付回写。

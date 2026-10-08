@@ -22,3 +22,9 @@ updated: 2026-10-05
 - 动作：更新。新建 [[AI项目/AgentMate/wiki/entities/AgentScope-Java验证报告]] 及 [[AI项目/AgentMate/wiki/validation/agentscope-boot/README]]，同步索引与架构页。
 - 真实编译打包 Spring Boot 4.0.4 + AgentScope core 2.0.3，5 项集成测试通过，两个独立 JVM 正常重启恢复通过。业务证据与模型为模拟，未接入 MSE/Aone/外部模型。
 - 修正调用签名、模拟流式工具参数内容、中文路径编码及本机镜像影响；未修改全局配置或 raw。
+
+## 2026-10-05 · Query / 更新 AutoDev 产品范围
+- 动作：更新。用户明确要求增加“根据 Aone 需求自动开发功能、部署”，新增 [[AI项目/AgentMate/wiki/concepts/AutoDev需求到部署]]。
+- 将总体设计中“开发仅出草稿、首期不追求自动发布”的旧范围更新为 AutoDev 分期交付：自动开发与测试环境部署起步，生产按明确策略完成灰度与回滚。
+- 同步总体设计、Java 架构、Aone 闭环与索引；定义需求版本、验收证据、跨仓制品清单、幂等与发布授权边界。
+- 仅更新设计文档，未创建真实 Aone、PR 或部署；缺少内部接入契约，未把既有框架验证结果扩大为 AutoDev 已验证能力。

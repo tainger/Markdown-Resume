@@ -65,3 +65,7 @@ NEED_INFO 等待资料，支持超时提醒与恢复；任意阶段可取消或�
 
 ## 关联
 [[AI项目/AgentMate/wiki/concepts/多仓源码与运行证据分析]] · [[AI项目/AgentMate/wiki/entities/AgentMate-Java架构]]
+
+## AutoDev 研发执行扩展
+Aone 中符合项目策略且已授权的需求可进入 [[AI项目/AgentMate/wiki/concepts/AutoDev需求到部署]]，自动开发、创建 PR/MR、测试与部署。独立 DevRun 记录需求 revision、代码版本和交付物，不混用工单状态。
+自动部署支持测试环境与按策略授权的生产环境；完成后回写验证证据，需求变更时重新评估，不能把旧版本通过结果用于新需求。Aone 接口接入能力仍待确认。
