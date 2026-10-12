@@ -42,7 +42,7 @@ JUnit 共 5 个测试，0 失败、0 错误、0 跳过；文件状态恢复和�
 - 版本以本次打包 Jar 中实际依赖为准；未额外导入 AgentScope 全量依赖 BOM。
 
 ## 接入时发现的问题
-1. ReActAgent 2.0.3 的带 RuntimeContext 调用使用 call(String, context) 或 call(List<Msg>, context)；不能直接套用 HarnessAgent 的示例签名。
+1. ReActAgent 2.0.3 的带 RuntimeContext 调用使用 `call(String, context)` 或 `call(List<Msg>, context)`；不能直接套用 HarnessAgent 的示例签名。
 2. 模拟流式工具响应必须携带原始 JSON content；只填解析后的 input Map 导致必填参数校验失败。修正适配器后工具实际执行成功。
 3. 本机 LC_ALL=C 导致中文路径在测试子进程中失真；验证脚本显式使用 UTF-8。没有修改用户的全局配置。
 4. 本机 Maven 镜像不可用，验证工程使用独立 settings.xml 与临时依赖缓存，没有修改全局 Maven 设置。
