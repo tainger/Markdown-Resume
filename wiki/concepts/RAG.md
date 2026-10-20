@@ -1,7 +1,7 @@
 ---
 type: concept
 status: growing
-updated: 2026-09-05
+updated: 2026-10-20
 ---
 
 # RAG 检索增强生成 Retrieval-Augmented Generation
@@ -41,3 +41,23 @@ updated: 2026-09-05
 
 - [[wiki/concepts/Agent]]（RAG 是 Agent 的知识供给方式之一）
 - [[wiki/concepts/ContextEngineering]]
+
+## AI项目 RAG 系列复习入口
+
+本轮按 [[AI项目/RAG/README]] 新增导航定向接入，不重扫其他 raw 目录；题库 6 个模块共 66 题，入口为 [[AI项目/RAG/interview/README]]。
+
+| 复习阶段 | 原始资料 | 使用方式 |
+|:---|:---|:---|
+| 索引与生成 | [[AI项目/RAG/2.深入理解RAG技术原理——索引构建]]、[[AI项目/RAG/3.深入理解RAG技术原理——检索生成]] | 分清离线入库和在线问答 |
+| 文档分片 | [[AI项目/RAG/9.什么是父子分片]] | 子块检索、父块补充上下文，说明额外查询与去重成本 |
+| 向量检索 | [[AI项目/RAG/16.相似度搜索的常见算法]] | 解释精确搜索与近似最近邻搜索（ANN）的取舍 |
+| 检索优化 | [[AI项目/RAG/27.RAG优化技术：重排序]] | 区分倒数排名融合（RRF）和模型重排序 |
+| Java 框架 | [[AI项目/RAG/32.Spring AI 和 LangChain4J的模块化RAG功能对比]] | 作为课程组件导航，版本能力待核实 |
+| 智能体集成 | [[AI项目/RAG/38.Agentic RAG]] | 区分固定链路与 Agent 动态调用检索 |
+| 质量闭环 | [[AI项目/RAG/interview/06-RAG评测体系]] | 从检索、生成到错误样本回归 |
+
+## 面试与审校
+
+- 按顺序口述：[[wiki/synthesis/RAG面试答题主线]]。
+- 对比和选型：[[wiki/comparisons/RAG检索方案选型]]。
+- 原文冲突、空文件及来源问题：[[wiki/synthesis/RAG资料审校与补齐清单]]。旧骨架中的固定耗时仅作笔记示例，不能当项目实测数据；来源为 [[AI项目/RAG/interview/05-框架与工程实践]]。

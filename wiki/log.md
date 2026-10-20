@@ -78,3 +78,12 @@ updated: 2026-09-12
 - **[ingest]** 消化 [[java/线程面试题]]（经人类授权代整理的 raw 成稿，10 题：三种创建方式 / 6 状态转换 + 三种阻塞态区别 / wait/notify + 为什么必须 synchronized 内 / sleep/wait/yield/join 四者对比 / synchronized 锁升级（底层详见 JUC 第二节）/ 死锁四条件 / volatile 写后读 happens-before / daemon 守护线程 / 中断机制 + stop 废弃原因 / 多线程单例五种写法）→ 新建 [[wiki/entities/Java]] 实体页核心笔记区挂载。定位：JUC 工具层之外的「基础线程机制层」，volatile 互引 JVM/JMM。
 - **[ingest]** 消化 [[java/线程池面试题]]（经人类授权代整理的 raw 成稿，10 题：三种队列在线程池里的行为差异 + 选型 / 核心参数公式 + 经验值 / 哪些参数能热更新哪些不能 / 监控指标 + 拒绝次数统计 / Spring Boot @Async 默认坑 + 正确配置 / ForkJoinPool vs ThreadPoolExecutor / 线程池隔离舱壁模式 / 任务堆积 OOM 排查 / submit 超时后 cancel(true) 三细节 / 生产必配 5 参数）→ 挂载 [[wiki/entities/Java]] 核心笔记区。定位：与 JUC 第十二节（七大参数/执行流程）互为分工的「生产配置实践 + 场景排查」层。
 - **[output]** 经授权新建 [[wiki/entities/Java]] 实体页（Java 语言核心层），覆盖 java 目录 16 篇核心笔记，关联 [[wiki/entities/JVM]]（底层运行时）与 [[wiki/entities/Spring生态]]（框架层）。同时更新 [[java/README]] 索引表：线程面试题 + 线程池面试题状态 ✅，P7 速查区补两条（synchronized 锁升级链路 + 线程池生产必做清单）。
+
+
+## 2026-10-20 · RAG 定向完善
+
+- **[ingest]** 工作区无待提交变更；以近期新增的 [[AI项目/RAG/README]] 导航为增量入口，定向读取关联原理与面试题，未全库重扫，未修改 raw。
+- **[更新]** [[wiki/concepts/RAG]] 接入系列笔记与 66 题入口；新建 [[wiki/synthesis/RAG面试答题主线]]、[[wiki/comparisons/RAG检索方案选型]]，同步全局索引。
+- **[更新/标过期]** [[wiki/synthesis/RAG资料审校与补齐清单]] 显式记录 ANN 必选、HNSW 代价、重排必选、评测 GT 冲突、无版本框架能力与固定耗时等证据问题；无法由 raw 解决的标为待补，不写成已核实结论。
+- **[合并]** 同主题 raw 仅在 wiki 统一导航：[[AI项目/RAG/19.检索增强生成]] 与 [[AI项目/RAG/37.检索增强生成]] 保留独立，未合并或删改原文。
+- **[lint]** 检查本次维护的 5 个页面：双链目标存在、页面不超过 200 行、知识页 frontmatter 完整、索引具备入链；两个空 raw 文件已标缺失。检查范围仅为本次改动。

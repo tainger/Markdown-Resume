@@ -1,7 +1,7 @@
 ---
 type: index
 status: stable
-updated: 2026-09-12
+updated: 2026-10-20
 ---
 
 # Wiki 全局索引
@@ -25,6 +25,8 @@ updated: 2026-09-12
 
 | 页面 | 一句话 |
 |:---|:---|
+| [[wiki/synthesis/RAG面试答题主线]] | RAG 从入库到评测的口述骨架与追问 |
+| [[wiki/synthesis/RAG资料审校与补齐清单]] | RAG 断言冲突、来源问题和待补资料 |
 | [[wiki/synthesis/P7面试复习主线]] | 面试前 24 小时的总入口 |
 | [[wiki/synthesis/高频踩坑本]] | hot100 全部「个人总结」聚合的 Top 10 踩坑模式 + 分簇速查 |
 | [[wiki/synthesis/高并发库存扣减]] | 秒杀主线：redis+mysql+mq+分布式锁 |
@@ -55,7 +57,7 @@ updated: 2026-09-12
 
 | 页面 | 覆盖 |
 |:---|:---|
-| [[wiki/concepts/RAG]] | 检索增强：双混合检索、切片、重排、6 阶段查询全链路 |
+| [[wiki/concepts/RAG]] | 检索增强：全链路、AI项目 RAG 系列、66 题导航与审校 |
 | [[wiki/concepts/Agent]] | 智能体框架、MCP、记忆、安全、OpenClaw vs dsh 对比 |
 | [[wiki/concepts/ContextEngineering]] | 上下文工程（含提示词工程子集）、OpenClaw + dsh 十大设计模式 |
 | [[wiki/concepts/量化交易]] | 仓位管理 / 风险管理 / 策略回测 |
@@ -78,6 +80,7 @@ updated: 2026-09-12
 
 | 页面 | 对比对象 |
 |:---|:---|
+| [[wiki/comparisons/RAG检索方案选型]] | 精确/近似检索、融合/重排、分片与 Java 框架 |
 | [[wiki/comparisons/B树与B+树]] | B树 vs B+树 vs 跳表，为什么索引用 B+树 |
 
 ## 六、raw 层目录地图
@@ -87,6 +90,6 @@ updated: 2026-09-12
 | 算法 | 算法思想 / leetcode-hot100 / 华为OD机试 / 数据结构 / 剑指offer | 各目录 README.md |
 | 后端 | 分布式 / 系统设计 / mysql / redis / rocketMq / Mybatis / dubbo | 各目录 README.md |
 | 基础 | java / jvm / io / 计算机网络 | 各目录 README.md |
-| AI | AI应用开发（含 openclaw/ 和 deepseek-harness/ 子目录） | AI应用开发/README.md |
+| AI | AI项目/RAG / AI应用开发（含 openclaw/ 和 deepseek-harness/ 子目录） | AI应用开发/README.md |
 | 量化 | 量化交易（仓位管理/风险管理/策略回测） | 量化交易/README.md |
 | 更多 | 面试 / 面试准备 / 英语能力 / 自媒体/微信公众号/探小虎 | 各目录 README.md |
