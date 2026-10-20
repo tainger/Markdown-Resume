@@ -11,3 +11,6 @@ node_modules/
 # repo 目录下仅保留 README.md，其他子仓库全部忽略
 repo/*
 !repo/README.md
+
+# know-engine 源码子仓库（独立 git 管理，不进本库）
+AI项目/know-engine/repo/know-engine/
