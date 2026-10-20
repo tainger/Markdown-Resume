@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitepress'
 import mathjax3 from 'markdown-it-mathjax3'
+import markdownItCjkFriendly from 'markdown-it-cjk-friendly'
 import { vitepressPluginLegend } from 'vitepress-plugin-legend'
 import { generateSidebar, firstDoc } from './sidebar.mts'
 
@@ -56,6 +57,11 @@ export default defineConfig({
   markdown: {
     // 支持 \(...\)、$$...$$ 等 LaTeX 数学公式渲染
     config: (md) => {
+      // 中文笔记里大量加粗把收尾标点写在了标记内部（如 **构建索引，**、**（默认值：800）**）。
+      // CommonMark 的 flanking 规则会把全角标点判定为 punctuation，于是这些 ** 既不能开也不能闭，
+      // 站点上就显示成裸露的星号。此插件放宽 CJK 场景下的判定，让这类加粗正常渲染。
+      md.use(markdownItCjkFriendly as any)
+
       md.use(mathjax3 as any)
 
       // 集成 markmap 脑图插件（XMind 风格可交互脑图）
