@@ -1,5 +1,5 @@
 # 五、检索链路与RAG优化
-[返回题库目录](./README.md) · 更新：2026-10-20
+[返回题库目录](./README.md) · 更新：2026-10-21
 
 > 覆盖 know-engine 检索链路全貌：LangChain4J RAG 五大组件与并行执行、问题改写、查询路由、ES 混合检索、父子分段、多级缓存、BGE-ReRanker 重排，以及路由错误、结构化结果重排失败两类故障的排查修复。
 
@@ -41,6 +41,7 @@
 - 多检索器结果默认怎么合？ContentAggregator 默认用 RRF 融合排序。
 
 > 来源：[[AI项目/know-engine/29.LangChain4J中的RAG执行流程]]。
+> 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/chat/service/ChatApplicationService.java`
 
 ---
 
@@ -84,11 +85,11 @@
 
 **参考答案**:
 
-**先说结论**：自定义 `KnowEngineQueryTransformer` 实现 QueryTransformer，用**一次 LLM 调用**组合多种改写策略、统一输出一个改写结果；`transform()` 返回 `List.of(改写后查询, 原始查询)` 两个 Query。
+**先说结论**：自定义 `KnowEngineQueryTransformer` 实现 QueryTransformer，用**一次 LLM 调用**组合多种改写策略、统一输出一个改写结果；`transform()` 当前返回单个改写后查询（`singletonList(compressedQuery)`，源码中保留了返回双查询 `List.of(compressedQuery, query)` 的注释代码）。
 
 理论铺垫：改写策略分两类——1 对 1（回溯提示、富化）和 1 对多（分解、多样化）。实际不会每个方案各调一次 LLM（太慢），一般组合处理；先做 1 对 1，效果不好再上 1 对多。富化主要解决多轮对话问题（单独处理）。
 
-落地 Prompt 组合了 4 种策略，逐一使用后给出统一结果；不需要改写则直接输出原问题：
+落地 Prompt 组合了 5 种策略，逐一使用后给出统一结果；不需要改写则直接输出原问题：
 
 | 策略 | 做法 |
 |:---|:---|
@@ -96,18 +97,22 @@
 | 抽象概念改写 | 把具体细节问题转成更基础、更简洁、更抽象的表述（"刹车吱吱响很吵" → "车辆刹车异响故障排查"），体现回溯提示思想 |
 | 错别字改写 | 纠正错别字和打成拼音的汽车术语（大小写不一样不算错别字） |
 | 车型信息提取 | 车型标准化："特斯拉毛豆3" → "Tesla Model 3"，"比亚迪汉"保持不变 |
+| 上下文补全 | 结合历史对话和最新提问，识别相关细节、术语和上下文，把问题重组为独立完整的查询 |
 
-处理流程 5 步：① 发送进度事件通知前端"正在优化您的问题" → ② LLM 按 Prompt 模板改写用户查询 → ③ 构造增强查询（拼接用户 ID、当前时间等上下文，供后续使用）→ ④ 用虚拟线程异步回写改写结果到 chat_message 表 → ⑤ 返回改写后查询 + 原始查询。重点是改写、保存、传递三件事。
+处理流程：① 发送进度事件通知前端"正在优化您的问题" → ② 从 Query metadata 提取历史对话记忆并格式化为 Prompt 上下文 → ③ LLM 按 Prompt 模板改写用户查询 → ④ 构造改写查询（保留原 Query 的 metadata，供后续路由/检索使用）→ ⑤ 用虚拟线程（`Thread.ofVirtual()`）异步回写改写结果到 chat_message 表 → ⑥ 返回改写后的单个查询。重点是改写、保存、传递三件事。
 
-**为什么返回两个查询**：改写后的查询用于语义检索，原始查询用于精确匹配——两路都保留，交给后续路由和聚合处理。
+**为什么曾设计返回两个查询**：改写后的查询用于语义检索，原始查询用于精确匹配——两路都保留，交给后续路由和聚合处理。该双查询方案在源码中以注释形式保留（`// return List.of(compressedQuery, query);`），当前版本只返回改写后的查询。
 
-**验证**：能说出"一次 LLM 调用组合多策略"而非多次调用，并能解释双查询各自的用途与异步回写对 bad case 排查的价值。
+**验证**：能说出"一次 LLM 调用组合多策略"而非多次调用，并能解释双查询设计（注释保留的方案）各自的用途与异步回写对 bad case 排查的价值。
 
 **追问**：
 - 为什么改写结果要回写数据库？把改写内容落到 chat_message，便于后期 bad case 排查。
-- 改写一定更好吗？不保证，所以保留原始查询兜底精确匹配。
+- 改写一定更好吗？不保证，源码中保留了返回双查询的注释代码，可用原始查询兜底精确匹配（当前未启用）。
+
+> 源码校核：笔记中的"Prompt 组合 4 种策略、`transform()` 返回 `List.of(改写后查询, 原始查询)` 两个 Query"在源码中实际为 5 种策略（多"上下文补全"）、返回单个改写查询 `singletonList(compressedQuery)`，双查询代码被注释保留；流程中还包含从 Query metadata 提取历史对话记忆一步。
 
 > 来源：[[AI项目/know-engine/30.如何针对用户问题做重写]]。
+> 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineQueryTransformer.java`
 
 ---
 
@@ -129,19 +134,22 @@
 
 决策流程：LLM 分析语义 → Prompt 模板判断 → 返回对应 ContentRetriever 集合。要求严格按 JSON 输出：`{intent, strategy, reasoning, confidence}`，strategy 三选一。
 
-代码行为：`JSON.parseObject(JsonUtil.fixJson(response))` 解析后 switch——relational_db / graph_db / knowledge_base 三个分支按 `instanceof` 过滤检索器；default 返回全部检索器；JSON 解析异常或其他异常时返回空列表（笔记中标注 fixme 的降级处理）。
+代码行为：`JSON.parseObject(JsonUtil.fixJson(response))` 解析后 switch——relational_db / graph_db / knowledge_base 三个分支按 `instanceof` 过滤检索器（会先解包 ProgressAwareContentRetriever 取 delegate 再判断）；default 返回全部检索器；JSON 解析异常或其他异常时同样返回全部检索器（降级为全量检索，避免直接无结果）。
 
 实测效果："我的车怎么加玻璃水" → ES 两个检索器；"我的车险什么时候到期" → SqlDatabaseContentRetriever；"问界L9混动版和纯电版哪些配置相同" → Neo4jText2CypherRetriever。
 
 （设计建议）Prompt 要求模型输出 confidence（0–1、保留两位小数），但当前代码未用它参与分流；后续可作为低置信度时多源兜底检索的依据。
 
-**验证**：能默写三个 strategy 字符串及各自对应的检索器类名，并说出路由失败时返回空列表的降级行为。
+**验证**：能默写三个 strategy 字符串及各自对应的检索器类名，并说出路由失败时返回全部检索器的降级行为。
 
 **追问**：
-- 路由错了或失败了怎么办？路由解析失败返回空列表；SQL/图检索器内部还有知识库兜底降级（见 Q12）。
+- 路由错了或失败了怎么办？路由解析失败返回全部检索器（全量检索兜底）；SQL/图检索器内部还有知识库兜底降级（见 Q12）。
 - SqlDatabaseContentRetriever 的原理？结合 DataSource 和 LLM，把自然语言问题转成 SQL 查询、执行并返回结果。
 
+> 源码校核：笔记中的"JSON 解析异常或其他异常时返回空列表（fixme 降级）"在源码中实际为返回全部 contentRetrievers（降级为全量检索，避免直接无结果）。
+
 > 来源：[[AI项目/know-engine/31.如何实现查询路由--检索器路由]]。
+> 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineQueryRouter.java`
 
 ---
 
@@ -166,6 +174,7 @@
 - 两路结果在哪里融合？在 LangChain4J 的 ContentAggregator 层融合（项目自实现方案，见 Q6）。
 
 > 来源：[[AI项目/know-engine/32.混合检索如何实现]]。
+> 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineElasticsearchContentRetriever.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/chat/service/ChatApplicationService.java`
 
 ---
 
@@ -217,6 +226,7 @@ DefaultRetrievalAugmentor.builder()
 - minScore 在这里的作用？过滤低分结果（项目配置 0.5），减少噪声进入聚合环节。
 
 > 来源：[[AI项目/know-engine/32.混合检索如何实现]]。
+> 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/controller/RagModuleController.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/chat/service/ChatApplicationService.java`
 
 ---
 
@@ -258,6 +268,7 @@ ES 自动创建的索引中向量字段定义：
 - m 越大一定越好吗？不是，召回提高的同时内存与性能代价增大，需按需设置。
 
 > 来源：[[AI项目/know-engine/33.自定义基于ElasticSearch的向量检索器]]。
+> 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/chat/service/ChatApplicationService.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/rag/config/ElasticSearchConfiguration.java`
 
 ---
 
@@ -288,6 +299,7 @@ ES 自动创建的索引中向量字段定义：
 - 兄弟分段扩展解决什么问题？命中子分片时把同一父分段下的兄弟分片一并补进上下文，获得更完整上下文。
 
 > 来源：[[AI项目/know-engine/33.自定义基于ElasticSearch的向量检索器]]、[[AI项目/know-engine/34.父子分段的切分和检索逻辑]]。
+> 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineElasticsearchContentRetriever.java`
 
 ---
 
@@ -313,7 +325,7 @@ ES 自动创建的索引中向量字段定义：
 2. **聚合相同元数据的行**：相同标题路径（相同元数据）的行合并为一个分块；标题与其下第一段内容合并。
 3. **chunkSize 二次切割**：超出 chunkSize 的分段——保留完整分片并标记 `skipEmbedding=1`（不生成向量、不用于向量检索）；再切成多个子分片，每个子分片携带 parentChunkId 建立父子关系。
 
-检索逻辑（KnowEngineElasticsearchHnswContentRetriever / KnowEngineElasticsearchKnnContentRetriever）：检索到 chunk 之后，检查结果是否携带 parentChunkId → 有则读取父分段的完整文本 → 用父分段内容替换子分段，获得更完整的语义。
+检索逻辑（`KnowEngineElasticsearchContentRetriever`）：检索到 chunk 之后，检查结果是否携带 parentChunkId → 有则读取父分段的完整文本 → 用父分段内容替换子分段，获得更完整的语义。
 
 两个阶段的分工：检索阶段小分片做向量匹配，精度高、能定位到具体知识点；展示阶段用父分段替换子分片，内容完整、用户看到完整上下文。
 
@@ -323,7 +335,10 @@ ES 自动创建的索引中向量字段定义：
 - 父分段会参与向量检索吗？不会，标记 skipEmbedding=1，不生成向量。
 - 为什么检索用小分片而不用父分段？小分片向量匹配精度高、能定位到具体知识点，父分段只负责展示完整上下文。
 
+> 源码校核：笔记中的"KnowEngineElasticsearchHnswContentRetriever / KnowEngineElasticsearchKnnContentRetriever"在源码中实际为统一的 `KnowEngineElasticsearchContentRetriever`（按 configuration 区分 KNN / FullText / Hybrid 模式）。
+
 > 来源：[[AI项目/know-engine/34.父子分段的切分和检索逻辑]]。
+> 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/splitter/MarkdownHeaderParentTextSplitter.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineElasticsearchContentRetriever.java`
 
 ---
 
@@ -339,19 +354,22 @@ ES 自动创建的索引中向量字段定义：
 
 第一级（本地 Map，单次请求内）：检索器中维护 `parentDocMap`（HashMap），方法执行结束即释放。父分段已处理过就直接跳过（同时从结果中移除重复子分段），避免同一次检索内重复加父分段；兄弟分段同理用 brotherDocMap 缓存。
 
-第二级（Redis，跨请求）：`KnowledgeSegmentService.getTextByChunkId()`——先 Redis `get(chunkId)`，命中直接返回；未命中查数据库 `getById`，查到则回写 Redis 再返回；数据库也没有时**缓存空值 `""`，避免缓存击穿**（同一个不存在的 chunkId 反复穿透到数据库）。
+第二级（Redis，跨请求）：`KnowledgeSegmentService.getTextByChunkId()`——先 Redis `get(chunkId)`，命中直接返回；未命中按 chunk_id 查数据库（`getOne`），查到则回写 Redis 再返回；数据库也没有时**缓存空值 `""`，避免缓存击穿**（同一个不存在的 chunkId 反复穿透到数据库）。
 
 为什么不用 Guava Cache / Caffeine：要解决的是"同一次检索内多个子分段对应同一个父分段"的问题，跨请求共享的本地缓存帮助不一定大；真要用也可以，只要设计好淘汰策略，还能在多次不同请求间共享缓存数据。
 
-数据一致性边界：担心 chunk 内容变更导致缓存脏数据其实不成立——chunk 变了会生成新的 chunkId，缓存以 chunkId 为 key，旧 key 相当于自然失效。
+数据一致性边界：源码中子分段文本变更时会同步更新父分段文本，并主动删除父分段的 Redis 缓存（`syncParentSegmentText` → `stringRedisTemplate.delete(parentChunkId)`）；同时 Redis 中命中的文本缓存带 30 秒 TTL，进一步缩短脏数据窗口。
 
 **验证**：能画出"Map → Redis → DB"的查找顺序，说出缓存空值防击穿、方法级 Map 用完即释放这两个细节。
 
 **追问**：
 - 为什么要缓存空值？避免不存在的 chunkId 每次都穿透到数据库重复查询。
-- chunk 更新后会脏读吗？不会，更新会生成新 chunkId，旧缓存 key 自然失效。
+- chunk 更新后会脏读吗？不会，子分段变更会同步更新父分段并主动清除父分段的 Redis 缓存，且缓存本身有 30 秒 TTL。
+
+> 源码校核：笔记中的"chunk 变了会生成新的 chunkId、旧 key 自然失效"在源码中实际为子分段变更时同步更新父分段文本并主动删除 Redis 缓存（`syncParentSegmentText`），且命中缓存设 30 秒 TTL。
 
 > 来源：[[AI项目/know-engine/35.多级缓存实现chunk的快速检索]]。
+> 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineElasticsearchContentRetriever.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/document/service/impl/KnowledgeSegmentServiceImpl.java`
 
 ---
 
@@ -388,7 +406,7 @@ OnnxScoringModel 关键参数：
 
 工程实现：`BgeScoringModel` 用 volatile + synchronized 双重检查锁做单例；classpath 资源在 JAR 包内时复制到临时文件再加载；依赖 `langchain4j-onnx-scoring` + `onnxruntime`（排除其默认传递版本，显式引入兼容版本）。
 
-**常见问题**：前面做过问题改写时，aggregate 入参含两个 Query（改写后 + 原始，即 `List.of(compressedQuery, query)`），ReRankingContentAggregator 不知道用哪个做重排，抛 "re-ranking ambiguous" 异常。解法：builder 加 `querySelector` 指定参考查询——`keySet().iterator().next()` 取第一个（改写后的查询）；要按原始查询重排则取列表最后一个。通常用改写后的查询重排效果更好：更精准、噪声更少。
+**常见问题**：若问题改写环节返回多个 Query（如源码注释中保留的双查询方案 `List.of(compressedQuery, query)`；当前 `KnowEngineQueryTransformer` 只返回单个改写查询），ReRankingContentAggregator 不知道用哪个做重排，抛 "re-ranking ambiguous" 异常。解法：builder 加 `querySelector` 指定参考查询——`keySet().iterator().next()` 取第一个（改写后的查询）；要按原始查询重排则取列表最后一个。通常用改写后的查询重排效果更好：更精准、噪声更少。生产链路（ChatApplicationService）已配置 querySelector 取第一个 Query，且 scoringModel 不可用时降级为 DefaultContentAggregator。
 
 **验证**：能说出两个聚合器的差异、normalize 两种取值对阈值设定的影响，以及多查询场景为什么要 querySelector。
 
@@ -396,7 +414,10 @@ OnnxScoringModel 关键参数：
 - 为什么选 v2-m3？体积小速度快、原生支持 100+ 语言，性价比最高。
 - 多查询时用哪个问题重排？querySelector 指定；通常用改写后的查询，更精准、噪声更少。
 
+> 源码校核：笔记中的"aggregate 入参含两个 Query（`List.of(compressedQuery, query)`）"在源码当前版本中实际为单个查询（双查询代码已注释），querySelector 配置仍保留；另笔记称模型文件从 ModelScope 下载，源码注释标注的下载源为 HuggingFace（onnx-community/bge-reranker-v2-m3-ONNX）。
+
 > 来源：[[AI项目/know-engine/36.使用BGE-ReRanker针对检索结果做重排序]]。
+> 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/reranker/BgeScoringModel.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineReRankingContentAggregator.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/chat/service/ChatApplicationService.java`
 
 ---
 
@@ -430,3 +451,4 @@ OnnxScoringModel 关键参数：
 - 结构化结果在最终上下文里排什么位置？合并时结构化在前、非结构化在后。
 
 > 来源：[[AI项目/know-engine/57.解决路由错误导致问答失败问题]]、[[AI项目/know-engine/58.解决针对非向量检索导致重排序失败问题]]。
+> 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineSqlDatabaseContentRetriever.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineHybridContentAggregator.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/ContentUtil.java`
