@@ -14,3 +14,6 @@ repo/*
 
 # know-engine 源码子仓库（独立 git 管理，不进本库）
 AI项目/know-engine/repo/know-engine/
+
+# gogo-agent 源码子仓库（独立 git 管理，不进本库）
+AI项目/gogo-agent/repo/gogo-agent/
