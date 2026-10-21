@@ -40,7 +40,7 @@
 - 五个组件里哪个必须自己提供？ContentRetriever，其余都有默认实现。
 - 多检索器结果默认怎么合？ContentAggregator 默认用 RRF 融合排序。
 
-> 来源：[[AI项目/know-engine/29.LangChain4J中的RAG执行流程]]。
+> 来源：[29.LangChain4J中的RAG执行流程](../29.LangChain4J中的RAG执行流程.md)。
 > 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/chat/service/ChatApplicationService.java`
 
 ---
@@ -75,7 +75,7 @@
 - 框架默认就并行吗？是，DefaultRetrievalAugmentor.process() 已用 CompletableFuture，配多个 Retriever 即可。
 - 并行后总耗时取决于什么？最慢的那一路检索，所以应对慢路径做监控与超时（设计建议）。
 
-> 来源：[[AI项目/know-engine/29.LangChain4J中的RAG执行流程]]。
+> 来源：[29.LangChain4J中的RAG执行流程](../29.LangChain4J中的RAG执行流程.md)。
 
 ---
 
@@ -111,7 +111,7 @@
 
 > 源码校核：笔记中的"Prompt 组合 4 种策略、`transform()` 返回 `List.of(改写后查询, 原始查询)` 两个 Query"在源码中实际为 5 种策略（多"上下文补全"）、返回单个改写查询 `singletonList(compressedQuery)`，双查询代码被注释保留；流程中还包含从 Query metadata 提取历史对话记忆一步。
 
-> 来源：[[AI项目/know-engine/30.如何针对用户问题做重写]]。
+> 来源：[30.如何针对用户问题做重写](../30.如何针对用户问题做重写.md)。
 > 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineQueryTransformer.java`
 
 ---
@@ -148,7 +148,7 @@
 
 > 源码校核：笔记中的"JSON 解析异常或其他异常时返回空列表（fixme 降级）"在源码中实际为返回全部 contentRetrievers（降级为全量检索，避免直接无结果）。
 
-> 来源：[[AI项目/know-engine/31.如何实现查询路由--检索器路由]]。
+> 来源：[31.如何实现查询路由--检索器路由](../31.如何实现查询路由--检索器路由.md)。
 > 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineQueryRouter.java`
 
 ---
@@ -173,7 +173,7 @@
 - 哪类查询必须靠 BM25 补位？专有名词、产品型号、精确短语这类需要字面精确匹配的查询。
 - 两路结果在哪里融合？在 LangChain4J 的 ContentAggregator 层融合（项目自实现方案，见 Q6）。
 
-> 来源：[[AI项目/know-engine/32.混合检索如何实现]]。
+> 来源：[32.混合检索如何实现](../32.混合检索如何实现.md)。
 > 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineElasticsearchContentRetriever.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/chat/service/ChatApplicationService.java`
 
 ---
@@ -225,7 +225,7 @@ DefaultRetrievalAugmentor.builder()
 - 为什么不直接用 ES 内置混合检索？开源版不支持内置 RRF，报 license 异常；项目改为应用层聚合绕开。
 - minScore 在这里的作用？过滤低分结果（项目配置 0.5），减少噪声进入聚合环节。
 
-> 来源：[[AI项目/know-engine/32.混合检索如何实现]]。
+> 来源：[32.混合检索如何实现](../32.混合检索如何实现.md)。
 > 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/controller/RagModuleController.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/chat/service/ChatApplicationService.java`
 
 ---
@@ -267,7 +267,7 @@ ES 自动创建的索引中向量字段定义：
 - index:true 是什么开关？告诉 ES 为向量建 HNSW 导航图，以便毫秒级速度进行近似搜索。
 - m 越大一定越好吗？不是，召回提高的同时内存与性能代价增大，需按需设置。
 
-> 来源：[[AI项目/know-engine/33.自定义基于ElasticSearch的向量检索器]]。
+> 来源：[33.自定义基于ElasticSearch的向量检索器](../33.自定义基于ElasticSearch的向量检索器.md)。
 > 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/chat/service/ChatApplicationService.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/rag/config/ElasticSearchConfiguration.java`
 
 ---
@@ -298,7 +298,7 @@ ES 自动创建的索引中向量字段定义：
 - 为什么最后才考虑精确 KNN？它是暴力遍历、影响性能，属于"性能优先"原则中放到最后的重操作。
 - 兄弟分段扩展解决什么问题？命中子分片时把同一父分段下的兄弟分片一并补进上下文，获得更完整上下文。
 
-> 来源：[[AI项目/know-engine/33.自定义基于ElasticSearch的向量检索器]]、[[AI项目/know-engine/34.父子分段的切分和检索逻辑]]。
+> 来源：[33.自定义基于ElasticSearch的向量检索器](../33.自定义基于ElasticSearch的向量检索器.md)、[34.父子分段的切分和检索逻辑](../34.父子分段的切分和检索逻辑.md)。
 > 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineElasticsearchContentRetriever.java`
 
 ---
@@ -337,7 +337,7 @@ ES 自动创建的索引中向量字段定义：
 
 > 源码校核：笔记中的"KnowEngineElasticsearchHnswContentRetriever / KnowEngineElasticsearchKnnContentRetriever"在源码中实际为统一的 `KnowEngineElasticsearchContentRetriever`（按 configuration 区分 KNN / FullText / Hybrid 模式）。
 
-> 来源：[[AI项目/know-engine/34.父子分段的切分和检索逻辑]]。
+> 来源：[34.父子分段的切分和检索逻辑](../34.父子分段的切分和检索逻辑.md)。
 > 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/splitter/MarkdownHeaderParentTextSplitter.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineElasticsearchContentRetriever.java`
 
 ---
@@ -368,7 +368,7 @@ ES 自动创建的索引中向量字段定义：
 
 > 源码校核：笔记中的"chunk 变了会生成新的 chunkId、旧 key 自然失效"在源码中实际为子分段变更时同步更新父分段文本并主动删除 Redis 缓存（`syncParentSegmentText`），且命中缓存设 30 秒 TTL。
 
-> 来源：[[AI项目/know-engine/35.多级缓存实现chunk的快速检索]]。
+> 来源：[35.多级缓存实现chunk的快速检索](../35.多级缓存实现chunk的快速检索.md)。
 > 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineElasticsearchContentRetriever.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/document/service/impl/KnowledgeSegmentServiceImpl.java`
 
 ---
@@ -416,7 +416,7 @@ OnnxScoringModel 关键参数：
 
 > 源码校核：笔记中的"aggregate 入参含两个 Query（`List.of(compressedQuery, query)`）"在源码当前版本中实际为单个查询（双查询代码已注释），querySelector 配置仍保留；另笔记称模型文件从 ModelScope 下载，源码注释标注的下载源为 HuggingFace（onnx-community/bge-reranker-v2-m3-ONNX）。
 
-> 来源：[[AI项目/know-engine/36.使用BGE-ReRanker针对检索结果做重排序]]。
+> 来源：[36.使用BGE-ReRanker针对检索结果做重排序](../36.使用BGE-ReRanker针对检索结果做重排序.md)。
 > 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/reranker/BgeScoringModel.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineReRankingContentAggregator.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/chat/service/ChatApplicationService.java`
 
 ---
@@ -450,5 +450,5 @@ OnnxScoringModel 关键参数：
 - 兜底降级的目标是什么？尽量减少拒答——SQL/图检索失败或为空时再走知识库检索一次。
 - 结构化结果在最终上下文里排什么位置？合并时结构化在前、非结构化在后。
 
-> 来源：[[AI项目/know-engine/57.解决路由错误导致问答失败问题]]、[[AI项目/know-engine/58.解决针对非向量检索导致重排序失败问题]]。
+> 来源：[57.解决路由错误导致问答失败问题](../57.解决路由错误导致问答失败问题.md)、[58.解决针对非向量检索导致重排序失败问题](../58.解决针对非向量检索导致重排序失败问题.md)。
 > 源码：`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineSqlDatabaseContentRetriever.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/KnowEngineHybridContentAggregator.java`、`src/main/java/cn/hollis/llm/mentor/know/engine/rag/modules/ContentUtil.java`
