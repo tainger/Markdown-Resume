@@ -25,6 +25,7 @@ updated: 2026-10-22
 
 | 页面 | 一句话 |
 |:---|:---|
+| [[wiki/synthesis/AgentScope1.0面试答题主线]] | AgentScope v1.0.12 的 64 题、执行机制与版本口径核对 |
 | [[wiki/synthesis/gogo-agent面试答题主线]] | gogo-agent 64 题、源码深挖与实现边界核对 |
 | [[wiki/synthesis/RAG面试答题主线]] | RAG 从入库到评测的口述骨架与追问 |
 | [[wiki/synthesis/RAG资料审校与补齐清单]] | RAG 断言冲突、来源问题和待补资料 |
