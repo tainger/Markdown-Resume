@@ -17,3 +17,9 @@ AI项目/know-engine/repo/know-engine/
 
 # gogo-agent 源码子仓库（独立 git 管理，不进本库）
 AI项目/gogo-agent/repo/gogo-agent/
+
+# agentscope-java 源码子仓库（独立 git 管理，不进本库）
+AI项目/AgentScope1.0/repo/agentscope-java/
+
+# agentscope-java 2.0 源码子仓库（独立 git 管理，不进本库）
+AI项目/AgentScope2.0/repo/agentscope-java/
