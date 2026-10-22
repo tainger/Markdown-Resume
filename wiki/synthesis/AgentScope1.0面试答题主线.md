@@ -47,6 +47,8 @@ updated: 2026-10-22
 
 ## 查询补充：如何读 Mono 与 Flux 执行链？
 
+系统课程及实验导航：[[wiki/synthesis/Reactor3学习与源码主线]]、[[AI项目/Reactor/README]]。
+
 - 在本系列 API 中，`agent.call(...)` 返回 `Mono<Msg>` 表达最终回复，`agent.stream(...)` 返回 `Flux<Event>` 表达执行过程中的多条事件。普通同步示例用 `.block()` 等待最终结果；流式 Web 示例返回 Flux 交给框架消费。来源：[[AI项目/AgentScope1.0/2.AgentScope Java特性：流式输出、结构化输出、超时与重试、执行控制]]。
 - 阅读 `reasoning` 时按数据类型追踪：推理前事件 → `flatMapMany` 接模型 chunk 流 → `doOnNext` 更新累积器 → `then(Mono.defer(...))` 在流完成后构造最终消息 → `flatMap` 接 PostReasoning Hook。该实现使用延后构造来读取累积后的最终状态。来源：[[AI项目/AgentScope1.0/8.AgentScope Java中ReactAgent的实现原理]]；本地 v1.0.12 `ReActAgent.java:460`。
 - Hook 返回 `Mono<T>`，调用方用 `flatMap(hook::onEvent)` 将处理串入主链；业务代码应将需要等待的异步步骤接回返回链，而非照抄内部通知场景的独立 `subscribe()`。来源：[[AI项目/AgentScope1.0/7.AgentScope Java特性：Hook]]、[[AI项目/AgentScope1.0/8.AgentScope Java中ReactAgent的实现原理]]。

@@ -135,3 +135,13 @@ updated: 2026-09-12
 
 - **[query/更新]** 在 [[wiki/synthesis/AgentScope1.0面试答题主线]] 追加 Reactor 执行链读法，引用 [[AI项目/AgentScope1.0/2.AgentScope Java特性：流式输出、结构化输出、超时与重试、执行控制]]、[[AI项目/AgentScope1.0/7.AgentScope Java特性：Hook]]、[[AI项目/AgentScope1.0/8.AgentScope Java中ReactAgent的实现原理]]。定向核对本地 v1.0.12 的 call、stream 与 reasoning，以及 Reactor 官方 Mono/Flux、订阅、调度和 defer 文档；原笔记、源码及其他既有修改保持原状。
 - **[lint]** 本次主线页 frontmatter、200 行上限及双链目标检查通过；仅静态核对示例和操作符含义，未运行模型或应用。
+
+
+## 2026-10-22 · Reactor 3 从入门到精通教程
+
+- **[output]** 用户明确指定 `AI项目/Reactor`（初始为空）并提供 Reactor 官方参考文档入口，授权在该 raw 目录新建教程。创建 [[AI项目/Reactor/README]] 与 13 章正文，包含订阅/类型、操作符组合、线程/背压、错误/超时/重试、冷热流/Sinks、Context/清理、测试/调试、批处理/生产排错和 AgentScope/WebFlux 对照；14 页共 1385 行，未修改既有 raw 笔记或上游源码。
+- **[版本/来源]** 2026-10-22 官方 release 页面标示 3.8.7；实验固定 Java 17 + Core/Test 3.8.2，与本地 AgentScope v1.0.12 / b9080f27 的 Reactor BOM 2025.0.2 对齐。各章链接官方对应章节，教学片段与可完整编译工程明确区分；未宣称逐字翻译或覆盖所有 API。
+- **[test]** 新建独立 examples 工程，28 项 JUnit/StepVerifier 语义实验在临时同内容副本离线运行通过：0 失败、0 错误、0 跳过。覆盖重复订阅、提前求值、顺序与并发、空流/Void、需求、恢复、重试、虚拟时间超时、Context、取消/资源、缓存错误、Sinks、Probe/TestPublisher 与窗口。因本机缓存来源标识差异使用临时 Maven settings，未更改全局配置；源码与 POM 逐字节比对一致。结果记入 [[AI项目/Reactor/13.可执行实验与面试自测]]。
+- **[ingest]** 定向读取相关 AgentScope/gogo-agent 笔记及固定版本实现，新建 [[wiki/synthesis/Reactor3学习与源码主线]]，挂载 [[wiki/index]] 与 [[wiki/synthesis/AgentScope1.0面试答题主线]]；未全库重扫。用户先前“只放 wiki”的默认规则已被本次指定新教程目录的明确授权覆盖，不推广为允许修改其他 raw。
+- **[更新/标过期]** 保留原 [[AI项目/gogo-agent/27.基于Reactor Context 实现多智能体之间的会话上下文传递]]，在 [[AI项目/Reactor/09.Context与资源生命周期]] 及 wiki 主线显式修正“ThreadLocal 完全不可用”“独立订阅 Context 必然为空”的绝对表述：桥接、显式 Context 和框架 Hook 会影响结果。[[AI项目/Reactor/11.AgentScope与WebFlux实战]] 另记录 v1.0.12 事件桥内部订阅/取消绑定与 BUFFER 的静态边界，未声称已做修复或端到端复现。
+- **[lint]** 本次 14 个教程页面与 1 个 wiki 主线的 94 处双链、4 处本地源码位置、代码围栏、导航与 200 行上限通过检查（单页最多 117 行），wiki frontmatter 与索引入链有效。未运行真实模型/SDK、WebFlux 服务、生产压测或全库 lint；这些证据缺口已明确记录。原有未提交修改保留。

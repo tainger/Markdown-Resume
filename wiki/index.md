@@ -25,6 +25,7 @@ updated: 2026-10-22
 
 | 页面 | 一句话 |
 |:---|:---|
+| [[wiki/synthesis/Reactor3学习与源码主线]] | Reactor 3 的 13 章教程、订阅/线程/背压、可执行实验与 AgentScope 源码 |
 | [[wiki/synthesis/AgentScope2.0面试答题主线]] | AgentScope v2.0.4 的 14 篇教程、64 题、状态与 Harness 迁移口径 |
 | [[wiki/synthesis/AgentScope1.0面试答题主线]] | AgentScope v1.0.12 的 64 题、执行机制与版本口径核对 |
 | [[wiki/synthesis/gogo-agent面试答题主线]] | gogo-agent 64 题、源码深挖与实现边界核对 |
