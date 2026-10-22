@@ -1,7 +1,7 @@
 ---
 type: index
 status: stable
-updated: 2026-10-20
+updated: 2026-10-22
 ---
 
 # Wiki 全局索引
@@ -25,6 +25,7 @@ updated: 2026-10-20
 
 | 页面 | 一句话 |
 |:---|:---|
+| [[wiki/synthesis/gogo-agent面试答题主线]] | gogo-agent 64 题、源码深挖与实现边界核对 |
 | [[wiki/synthesis/RAG面试答题主线]] | RAG 从入库到评测的口述骨架与追问 |
 | [[wiki/synthesis/RAG资料审校与补齐清单]] | RAG 断言冲突、来源问题和待补资料 |
 | [[wiki/synthesis/P7面试复习主线]] | 面试前 24 小时的总入口 |
