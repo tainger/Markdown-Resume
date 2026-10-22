@@ -25,6 +25,7 @@ updated: 2026-10-22
 
 | 页面 | 一句话 |
 |:---|:---|
+| [[wiki/synthesis/AgentScope2.0面试答题主线]] | AgentScope v2.0.4 的 14 篇教程、64 题、状态与 Harness 迁移口径 |
 | [[wiki/synthesis/AgentScope1.0面试答题主线]] | AgentScope v1.0.12 的 64 题、执行机制与版本口径核对 |
 | [[wiki/synthesis/gogo-agent面试答题主线]] | gogo-agent 64 题、源码深挖与实现边界核对 |
 | [[wiki/synthesis/RAG面试答题主线]] | RAG 从入库到评测的口述骨架与追问 |
@@ -82,6 +83,7 @@ updated: 2026-10-22
 
 | 页面 | 对比对象 |
 |:---|:---|
+| [[wiki/comparisons/AgentScope1.0与2.0迁移对照]] | v1.0.12 vs v2.0.4：状态、工具、记忆、审批与 Harness |
 | [[wiki/comparisons/RAG检索方案选型]] | 精确/近似检索、融合/重排、分片与 Java 框架 |
 | [[wiki/comparisons/B树与B+树]] | B树 vs B+树 vs 跳表，为什么索引用 B+树 |
 

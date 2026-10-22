@@ -29,6 +29,7 @@ updated: 2026-10-22
 - **可观测**：中断、回放、审计是生产级 Agent 的底线
 - **评测**：见 [[自媒体/微信公众号/探小虎/AI应用评测]]
 - **框架源码复习**：[[wiki/synthesis/AgentScope1.0面试答题主线]] 基于 [[AI项目/AgentScope1.0/8.AgentScope Java中ReactAgent的实现原理]]、[[AI项目/AgentScope1.0/7.AgentScope Java特性：Hook]]、[[AI项目/AgentScope1.0/13.AgentScope Java进阶：Human-in-the-Loop]] 整理 v1.0.12 的执行/工具/记忆/恢复；文档与实现差异在 [[AI项目/AgentScope1.0/interview/09.版本口径与源码核对]] 显式留痕。
+- **2.0 框架与迁移**：[[wiki/synthesis/AgentScope2.0面试答题主线]] 串联 [[AI项目/AgentScope2.0/3.多轮会话、RuntimeContext与状态持久化]]、[[AI项目/AgentScope2.0/7.Middleware与Hook迁移]]、[[AI项目/AgentScope2.0/13.Human-in-the-Loop与AgentRun执行控制]] 的状态、Middleware 与运行控制；[[wiki/comparisons/AgentScope1.0与2.0迁移对照]] 对照 v1.0.12/v2.0.4，文档冲突在 [[AI项目/AgentScope2.0/interview/09.版本口径与源码核对]] 留痕。
 - **项目落地与边界**：[[wiki/synthesis/gogo-agent面试答题主线]] 汇总路由、上下文传播、规划审核和集群恢复；来源 [[AI项目/gogo-agent/17.意图识别与问题改写的流水线编排]]、[[AI项目/gogo-agent/65.多维行程审核架构的方案设计]]、[[AI项目/gogo-agent/115.Human-in-the-Loop在集群模式下的支持]]。具体实现以 [[AI项目/gogo-agent/interview/09.源码核对与待补证据]] 的静态核对为准。
 
 ## 两大开源 Agent Harness 对比

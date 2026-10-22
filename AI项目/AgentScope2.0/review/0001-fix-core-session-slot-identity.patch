@@ -1,0 +1,423 @@
+From 761af7f6e6ee3ce3e147fc5f9215b40065200ae2 Mon Sep 17 00:00:00 2001
+From: tainger <598424640@qq.com>
+Date: Thu, 22 Oct 2026 21:17:02 +0800
+Subject: [PATCH] fix(core): preserve structured session slot identities
+
+---
+ .../java/io/agentscope/core/ReActAgent.java   |  49 +++---
+ .../agent/ReActAgentPerSessionStateTest.java  |  17 +-
+ .../agent/ReActAgentSlotIdentityTest.java     | 160 ++++++++++++++++++
+ .../ReActAgentUnknownVersionPersistTest.java  |   8 +-
+ 4 files changed, 190 insertions(+), 44 deletions(-)
+ create mode 100644 agentscope-core/src/test/java/io/agentscope/core/agent/ReActAgentSlotIdentityTest.java
+
+diff --git a/agentscope-core/src/main/java/io/agentscope/core/ReActAgent.java b/agentscope-core/src/main/java/io/agentscope/core/ReActAgent.java
+index 2f4470ca..b68d6974 100644
+--- a/agentscope-core/src/main/java/io/agentscope/core/ReActAgent.java
++++ b/agentscope-core/src/main/java/io/agentscope/core/ReActAgent.java
+@@ -283,14 +283,14 @@ public class ReActAgent extends AgentBase implements AutoCloseable {
+     // ==================== 2.0 Core Fields ====================
+ 
+     /** Cache of state per {@code (userId, sessionId)} slot key. */
+-    private final ConcurrentHashMap<String, AgentState> stateCache = new ConcurrentHashMap<>();
++    private final ConcurrentHashMap<SlotRef, AgentState> stateCache = new ConcurrentHashMap<>();
+ 
+     /**
+      * Optimistic-concurrency version observed for each slot (parallel to {@link #stateCache}).
+      * Updated on load and on successful CAS save. Absent entries mean {@link
+      * AgentStateStore#UNVERSIONED}.
+      */
+-    private final ConcurrentHashMap<String, Long> slotVersions = new ConcurrentHashMap<>();
++    private final ConcurrentHashMap<SlotRef, Long> slotVersions = new ConcurrentHashMap<>();
+ 
+     /** Count of CAS conflicts observed during agent_state saves (metric / diagnostics). */
+     private final AtomicLong stateConflictCount = new AtomicLong();
+@@ -299,7 +299,7 @@ public class ReActAgent extends AgentBase implements AutoCloseable {
+      * Per-slot permission engine cache: runtime-added ASK rules accumulate within the owning
+      * slot rather than leaking across users / sessions.
+      */
+-    private final ConcurrentHashMap<String, PermissionEngine> permissionEngineCache =
++    private final ConcurrentHashMap<SlotRef, PermissionEngine> permissionEngineCache =
+             new ConcurrentHashMap<>();
+ 
+     private final ModelConfig modelConfig;
+@@ -367,7 +367,7 @@ public class ReActAgent extends AgentBase implements AutoCloseable {
+                     agentState -> {
+                         String uid = agentState.getUserId();
+                         String sid = agentState.getSessionId();
+-                        String slot = slotKey(uid, sid);
++                        SlotRef slot = slotKey(uid, sid);
+                         long expected =
+                                 slotVersions.getOrDefault(slot, AgentStateStore.UNVERSIONED);
+                         long newVersion =
+@@ -390,24 +390,13 @@ public class ReActAgent extends AgentBase implements AutoCloseable {
+         }
+     }
+ 
+-    /**
+-     * Internal slot identifier — {@code (userId or "__anon__") + "/" + sessionId}.
+-     * Not part of the public API.
+-     */
+-    private static String slotKey(String userId, String sessionId) {
++    /** Internal slot identity. Keep components separate so delimiters cannot alias sessions. */
++    private static SlotRef slotKey(String userId, String sessionId) {
+         Objects.requireNonNull(sessionId, "sessionId must not be null");
+-        return (userId == null || userId.isBlank() ? "__anon__" : userId) + "/" + sessionId;
++        return new SlotRef(userId == null || userId.isBlank() ? null : userId, sessionId);
+     }
+ 
+-    /** Reverse of {@link #slotKey}: the parsed {@code (userId, sessionId)} pair. */
+-    private record SlotRef(String userId, String sessionId) {
+-        static SlotRef parse(String slotKey) {
+-            int slash = slotKey.lastIndexOf('/');
+-            String u = slotKey.substring(0, slash);
+-            String s = slotKey.substring(slash + 1);
+-            return new SlotRef("__anon__".equals(u) ? null : u, s);
+-        }
+-    }
++    private record SlotRef(String userId, String sessionId) {}
+ 
+     /**
+      * Initial agent-state load for a specific {@code (userId, sessionId)} slot. Tries (in order):
+@@ -476,7 +465,7 @@ public class ReActAgent extends AgentBase implements AutoCloseable {
+         if (stateStore == null) {
+             return Mono.empty();
+         }
+-        SlotRef ref = SlotRef.parse(scope.slotKey);
++        SlotRef ref = scope.slotKey;
+         AgentState toSave = scope.state;
+         return Mono.<Void>fromRunnable(
+                         () -> {
+@@ -535,7 +524,7 @@ public class ReActAgent extends AgentBase implements AutoCloseable {
+     private long persistAgentStateCas(
+             String userId,
+             String sessionId,
+-            String slot,
++            SlotRef slot,
+             AgentState toSave,
+             long expectedVersion,
+             int loadedContextSize) {
+@@ -662,7 +651,7 @@ public class ReActAgent extends AgentBase implements AutoCloseable {
+             sid = defaultSessionId;
+         }
+         String uid = ctx != null ? ctx.getUserId() : null;
+-        String slot = slotKey(uid, sid);
++        SlotRef slot = slotKey(uid, sid);
+         final String finalUid = uid;
+         final String finalSid = sid;
+         AgentState loaded;
+@@ -1710,7 +1699,7 @@ public class ReActAgent extends AgentBase implements AutoCloseable {
+         InterruptControl interruption = new InterruptControl();
+         AgentState state;
+         PermissionEngine permissionEngine;
+-        String slotKey;
++        SlotRef slotKey;
+ 
+         /**
+          * Store version observed when this call loaded {@link #state}. Used for CAS on save.
+@@ -1790,14 +1779,14 @@ public class ReActAgent extends AgentBase implements AutoCloseable {
+         /** Native structured-output format set on the per-call scope for native-path calls. */
+         ResponseFormat nativeResponseFormat;
+ 
+-        CallExecution(AgentState state, PermissionEngine permissionEngine, String slotKey) {
++        CallExecution(AgentState state, PermissionEngine permissionEngine, SlotRef slotKey) {
+             this(state, permissionEngine, slotKey, AgentStateStore.UNVERSIONED);
+         }
+ 
+         CallExecution(
+                 AgentState state,
+                 PermissionEngine permissionEngine,
+-                String slotKey,
++                SlotRef slotKey,
+                 long loadedVersion) {
+             this.state = state;
+             this.permissionEngine = permissionEngine;
+@@ -4445,7 +4434,7 @@ public class ReActAgent extends AgentBase implements AutoCloseable {
+      * for the "get → mutate → save" pattern used by admin APIs and tests).
+      */
+     public AgentState getAgentState(String userId, String sessionId) {
+-        String slot = slotKey(userId, sessionId);
++        SlotRef slot = slotKey(userId, sessionId);
+         return stateCache.computeIfAbsent(
+                 slot,
+                 k -> {
+@@ -4504,7 +4493,7 @@ public class ReActAgent extends AgentBase implements AutoCloseable {
+      */
+     public void clearStateCache(String userId, String sessionId) {
+         String sid = (sessionId == null || sessionId.isBlank()) ? defaultSessionId : sessionId;
+-        String slot = slotKey(userId, sid);
++        SlotRef slot = slotKey(userId, sid);
+         stateCache.remove(slot);
+         permissionEngineCache.remove(slot);
+         slotVersions.remove(slot);
+@@ -4554,7 +4543,7 @@ public class ReActAgent extends AgentBase implements AutoCloseable {
+      */
+     public void clearContext(String userId, String sessionId) {
+         String sid = (sessionId == null || sessionId.isBlank()) ? defaultSessionId : sessionId;
+-        String slot = slotKey(userId, sid);
++        SlotRef slot = slotKey(userId, sid);
+         AgentState state;
+         if (stateStore != null) {
+             if (stateStore.exists(userId, sid)) {
+@@ -4692,7 +4681,7 @@ public class ReActAgent extends AgentBase implements AutoCloseable {
+         if (stateStore == null) {
+             return;
+         }
+-        String slot = slotKey(userId, sessionId);
++        SlotRef slot = slotKey(userId, sessionId);
+         AgentState s = stateCache.get(slot);
+         if (s != null) {
+             long expected = slotVersions.getOrDefault(slot, AgentStateStore.UNVERSIONED);
+@@ -4736,7 +4725,7 @@ public class ReActAgent extends AgentBase implements AutoCloseable {
+     /** @deprecated Use {@code getAgentState(userId, sessionId).getPermissionContext()} instead. */
+     @Deprecated
+     public PermissionEngine getPermissionEngine() {
+-        String slot = slotKey(null, defaultSessionId);
++        SlotRef slot = slotKey(null, defaultSessionId);
+         AgentState s = getAgentState(null, defaultSessionId);
+         return permissionEngineCache.computeIfAbsent(
+                 slot, k -> new PermissionEngine(s.getPermissionContext()));
+diff --git a/agentscope-core/src/test/java/io/agentscope/core/agent/ReActAgentPerSessionStateTest.java b/agentscope-core/src/test/java/io/agentscope/core/agent/ReActAgentPerSessionStateTest.java
+index ccd661dd..dda75118 100644
+--- a/agentscope-core/src/test/java/io/agentscope/core/agent/ReActAgentPerSessionStateTest.java
++++ b/agentscope-core/src/test/java/io/agentscope/core/agent/ReActAgentPerSessionStateTest.java
+@@ -94,24 +94,16 @@ class ReActAgentPerSessionStateTest {
+     }
+ 
+     @SuppressWarnings("unchecked")
+-    private static Map<String, Long> slotVersionsMap(ReActAgent agent) throws Exception {
++    private static Map<?, Long> slotVersionsMap(ReActAgent agent) throws Exception {
+         Field field = ReActAgent.class.getDeclaredField("slotVersions");
+         field.setAccessible(true);
+-        return (Map<String, Long>) field.get(agent);
++        return (Map<?, Long>) field.get(agent);
+     }
+ 
+     private static int slotVersionCount(ReActAgent agent) throws Exception {
+         return slotVersionsMap(agent).size();
+     }
+ 
+-    private static Long slotVersionOf(ReActAgent agent, String slot) throws Exception {
+-        return slotVersionsMap(agent).get(slot);
+-    }
+-
+-    private static void clearSlotVersion(ReActAgent agent, String slot) throws Exception {
+-        slotVersionsMap(agent).remove(slot);
+-    }
+-
+     @Test
+     @DisplayName("fresh slots inherit default tool groups without overriding persisted state")
+     void freshSlotsInheritDefaultToolGroupsWithoutOverridingPersistedState() {
+@@ -659,12 +651,13 @@ class ReActAgentPerSessionStateTest {
+         // getAgentState seeds slotVersions with 0L for a fresh slot on a versioning store;
+         // drop the entry to recreate the "version unknown → unconditional persist" window
+         // (e.g. a restart whose version cache is empty), which is the path this fix hardens.
+-        clearSlotVersion(agent, "u1/sessA");
++        assertEquals(1, slotVersionCount(agent));
++        slotVersionsMap(agent).clear();
+         agent.saveAgentState("u1", "sessA");
+ 
+         assertEquals(1, store.unconditionalVersions.size());
+         assertEquals(1L, store.unconditionalVersions.get(0));
+-        assertEquals(1L, slotVersionOf(agent, "u1/sessA"));
++        assertEquals(List.of(1L), List.copyOf(slotVersionsMap(agent).values()));
+     }
+ 
+     @Test
+diff --git a/agentscope-core/src/test/java/io/agentscope/core/agent/ReActAgentSlotIdentityTest.java b/agentscope-core/src/test/java/io/agentscope/core/agent/ReActAgentSlotIdentityTest.java
+new file mode 100644
+index 00000000..5bd98793
+--- /dev/null
++++ b/agentscope-core/src/test/java/io/agentscope/core/agent/ReActAgentSlotIdentityTest.java
+@@ -0,0 +1,160 @@
++/*
++ * Copyright 2024-2026 the original author or authors.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++package io.agentscope.core.agent;
++
++import static org.junit.jupiter.api.Assertions.assertEquals;
++import static org.junit.jupiter.api.Assertions.assertFalse;
++import static org.junit.jupiter.api.Assertions.assertNotSame;
++import static org.junit.jupiter.api.Assertions.assertSame;
++import static org.junit.jupiter.api.Assertions.assertTrue;
++
++import io.agentscope.core.ReActAgent;
++import io.agentscope.core.agent.test.MockModel;
++import io.agentscope.core.message.GenerateReason;
++import io.agentscope.core.message.Msg;
++import io.agentscope.core.message.UserMessage;
++import io.agentscope.core.middleware.MiddlewareBase;
++import io.agentscope.core.state.AgentState;
++import io.agentscope.core.state.InMemoryAgentStateStore;
++import java.time.Duration;
++import java.util.List;
++import java.util.Map;
++import java.util.concurrent.ConcurrentHashMap;
++import org.junit.jupiter.api.Test;
++import reactor.core.publisher.Mono;
++import reactor.core.publisher.Sinks;
++
++class ReActAgentSlotIdentityTest {
++    private static final Duration TIMEOUT = Duration.ofSeconds(5);
++
++    @Test
++    void delimiterInEitherComponentDoesNotAliasStateOrCacheEviction() {
++        try (ReActAgent agent = ReActAgent.builder().model(new MockModel("ok")).build()) {
++            AgentState first = agent.getAgentState("tenant/alice", "conversation");
++            AgentState second = agent.getAgentState("tenant", "alice/conversation");
++
++            assertNotSame(first, second);
++            first.setSummary("private to alice");
++            assertFalse("private to alice".equals(second.getSummary()));
++            agent.clearStateCache("tenant/alice", "conversation");
++            assertSame(second, agent.getAgentState("tenant", "alice/conversation"));
++            assertNotSame(first, agent.getAgentState("tenant/alice", "conversation"));
++        }
++    }
++
++    @Test
++    void literalAnonymousMarkerDoesNotAliasAnonymousCachedState() {
++        try (ReActAgent agent = ReActAgent.builder().model(new MockModel("ok")).build()) {
++            assertNotSame(
++                    agent.getAgentState(null, "conversation"),
++                    agent.getAgentState("__anon__", "conversation"));
++            assertSame(
++                    agent.getAgentState(null, "conversation"),
++                    agent.getAgentState("  ", "conversation"));
++        }
++    }
++
++    @Test
++    void callPersistsAndRestoresTheOriginalSessionPairContainingSlashes() {
++        InMemoryAgentStateStore store = new InMemoryAgentStateStore();
++        RuntimeContext ctx = context("tenant/alice", "project/conversation");
++        try (ReActAgent agent =
++                ReActAgent.builder().model(new MockModel("ok")).stateStore(store).build()) {
++            agent.call(List.of(new UserMessage("remember this")), ctx).block(TIMEOUT);
++            assertTrue(
++                    store.get(
++                                    "tenant/alice",
++                                    "project/conversation",
++                                    "agent_state",
++                                    AgentState.class)
++                            .isPresent());
++            assertFalse(store.exists("tenant/alice/project", "conversation"));
++        }
++        try (ReActAgent restored =
++                ReActAgent.builder().model(new MockModel("ok")).stateStore(store).build()) {
++            assertTrue(
++                    restored
++                            .getAgentState("tenant/alice", "project/conversation")
++                            .getContext()
++                            .stream()
++                            .anyMatch(m -> "remember this".equals(m.getTextContent())));
++        }
++    }
++
++    @Test
++    void anonymousSessionContainingSlashesStaysInAnonymousStoreNamespace() {
++        InMemoryAgentStateStore store = new InMemoryAgentStateStore();
++        try (ReActAgent agent =
++                ReActAgent.builder().model(new MockModel("ok")).stateStore(store).build()) {
++            agent.call(List.of(new UserMessage("hello")), context(null, "project/conversation"))
++                    .block(TIMEOUT);
++            assertTrue(store.exists(null, "project/conversation"));
++            assertFalse(store.exists("__anon__/project", "conversation"));
++        }
++    }
++
++    @Test
++    void collidingConcatenationsRunIndependentlyAndInterruptOnlyTheTarget() {
++        Map<String, Sinks.One<String>> gates = new ConcurrentHashMap<>();
++        MiddlewareBase middleware =
++                new MiddlewareBase() {
++                    @Override
++                    public Mono<String> onSystemPrompt(
++                            Agent agent, RuntimeContext ctx, String prompt) {
++                        Sinks.One<String> gate = Sinks.one();
++                        gates.put(ctx.getUserId(), gate);
++                        return gate.asMono();
++                    }
++                };
++        try (ReActAgent agent =
++                ReActAgent.builder().model(new MockModel("ok")).middleware(middleware).build()) {
++            AgentRun<Msg> first =
++                    agent.prepareCall(
++                            List.of(new UserMessage("one")),
++                            context("tenant/alice", "conversation"));
++            AgentRun<Msg> second =
++                    agent.prepareCall(
++                            List.of(new UserMessage("two")),
++                            context("tenant", "alice/conversation"));
++            var firstResult =
++                    first.stream()
++                            .single()
++                            .toFuture()
++                            .orTimeout(5, java.util.concurrent.TimeUnit.SECONDS);
++            var secondResult =
++                    second.stream()
++                            .single()
++                            .toFuture()
++                            .orTimeout(5, java.util.concurrent.TimeUnit.SECONDS);
++            try {
++                assertEquals(AgentRun.Status.RUNNING, first.status());
++                assertEquals(AgentRun.Status.RUNNING, second.status());
++                agent.interrupt("tenant", "alice/conversation");
++                assertEquals(Sinks.EmitResult.OK, gates.get("tenant/alice").tryEmitValue("system"));
++                assertEquals(Sinks.EmitResult.OK, gates.get("tenant").tryEmitValue("system"));
++                assertFalse(firstResult.join().getGenerateReason() == GenerateReason.INTERRUPTED);
++                assertEquals(GenerateReason.INTERRUPTED, secondResult.join().getGenerateReason());
++            } finally {
++                first.cancel();
++                second.cancel();
++            }
++        }
++    }
++
++    private static RuntimeContext context(String userId, String sessionId) {
++        return RuntimeContext.builder().userId(userId).sessionId(sessionId).build();
++    }
++}
+diff --git a/agentscope-core/src/test/java/io/agentscope/core/agent/ReActAgentUnknownVersionPersistTest.java b/agentscope-core/src/test/java/io/agentscope/core/agent/ReActAgentUnknownVersionPersistTest.java
+index 93936f17..c5874ddf 100644
+--- a/agentscope-core/src/test/java/io/agentscope/core/agent/ReActAgentUnknownVersionPersistTest.java
++++ b/agentscope-core/src/test/java/io/agentscope/core/agent/ReActAgentUnknownVersionPersistTest.java
+@@ -74,17 +74,21 @@ class ReActAgentUnknownVersionPersistTest {
+      * version-unknown window (e.g. a restart whose version cache is empty).
+      */
+     private static long persistUnknownVersion(ReActAgent agent, AgentState state) throws Exception {
++        Method slotFactory =
++                ReActAgent.class.getDeclaredMethod("slotKey", String.class, String.class);
++        slotFactory.setAccessible(true);
++        Object slot = slotFactory.invoke(null, "u", "s");
+         Method method =
+                 ReActAgent.class.getDeclaredMethod(
+                         "persistAgentStateCas",
+                         String.class,
+                         String.class,
+-                        String.class,
++                        slotFactory.getReturnType(),
+                         AgentState.class,
+                         long.class,
+                         int.class);
+         method.setAccessible(true);
+-        return (long) method.invoke(agent, "u", "s", "u/s", state, AgentStateStore.UNVERSIONED, 0);
++        return (long) method.invoke(agent, "u", "s", slot, state, AgentStateStore.UNVERSIONED, 0);
+     }
+ 
+     @Test
+-- 
+2.53.0
+

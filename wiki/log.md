@@ -106,3 +106,32 @@ updated: 2026-09-12
 - **[更新/标过期]** 14 组差异集中在 [[AI项目/AgentScope1.0/interview/09.版本口径与源码核对]]：版本不可混用、Pending 恢复默认关闭、Toolkit 复制引用范围、静态长期记忆 PreCall/USER、Generic RAG PreCall、Hook 优先级与并发通知、工具异常提前转结果影响重试、Toolkit/McpTool 预设优先级差异、MCP enable/disable 及空列表语义、默认卸载为实例 HashMap、迭代/近期保护/估算边界、statefulToolsManaged 未见对应遍历、PostActing 批结果最后停止位、Session 原子性与宕机恢复边界。源码静态发现未运行复现，不改原文或实现。
 - **[合并]** 同主题仅在题库整合导航与答题口径，不合并/移动 raw；缺失的个人实践、性能、成本、质量和故障注入结果统一标“⚠️ raw 缺失，待补充”，不把改进方案写成成果。
 - **[lint]** 检查题库及新 wiki 主线共 11 页：Q01–Q64 连续无重号，每题答案与来源完整，190 处双链、204 处源码位置有效；66 个不同源码文件逐一与 v1.0.12 提交对象比对一致。frontmatter、代码围栏、导航与行数检查通过，页面最多 114 行；新增 wiki 入链/本段日志链接存在。源码跟踪文件无 diff；未运行原测试、真实模型或 MCP 服务，未执行全库 lint。
+
+
+## 2026-10-22 · AgentScope 2.0 教程与面试题库维护
+
+- **[output]** 用户明确要求维护 `AI项目/AgentScope2.0` 并参考 1.0；以原空 README 为入口，经授权补齐 14 篇新版教程、8 个主题共 Q01–Q64、题库导航及 [[AI项目/AgentScope2.0/interview/09.版本口径与源码核对]]，每题含答案、追问、边界、教程双链与源码位置。1.0 原笔记、题库、上游源码/文档均未修改。
+- **[ingest]** 开始时主库工作区干净，2.0 只有空 README、源码与带前导空格空目录 ` interview/`；定向对照 1.0 结构及 2.0 文档/实现，未全库重扫。新建标准 `interview/`，保留原空目录。源码已位于 `v2.0.4` / `0b6743b263ba8e39eb417e35048026f1e0196548`（Java 17），未切换标签；核对官方同标签发布记录，不以 main 解释此快照。
+- **[更新]** 新建 [[wiki/synthesis/AgentScope2.0面试答题主线]] 与 [[wiki/comparisons/AgentScope1.0与2.0迁移对照]]，挂载 [[wiki/index]] 与 [[wiki/concepts/Agent]]。教程按 RuntimeContext / AgentState / Middleware / 权限与请求工具视图 / Harness 重新组织，未逐字复制旧 API。
+- **[更新/标过期]** 16 组口径核对集中记入核对页：版本与模块、Core/Harness 默认保存、实例队列与 CAS、Middleware 顺序/系统提示词入口、Harness 默认开启压缩及 eviction、动态预算、工具并发默认 true、RAGMode.STATIC 不存在及旧兼容入口、maxRetries 实际传入 maxAttempts、技能晋升显式 ctx、Pending 恢复默认关闭与 ASKING 优先、审批 ID 校验与应用授权边界、cancel/interrupt、returnDirect 批次条件与 APPEND_MERGE 范围。上游残留文档只标明差异，不改原文或实现。
+- **[合并]** 同主题只整合导航与版本对照，1.0 与 2.0 保持独立；未合并/移动 raw。第 6 篇配置示例与验收步骤明确标为待执行；真实模型/MCP、重启、多副本、竞态/故障、性能成本、质量与个人贡献标“⚠️ raw 缺失，待补充”，不虚构已完成成果。
+- **[lint]** 检查本次 29 个教程/题库/wiki 页面：Q01–Q64 连续，每题四字段与来源完整；354 处双链、211 处本机文件/行号引用有效，32 个不同引用源码文件与固定提交对象逐一比对一致。frontmatter、代码围栏、导航和行数检查通过，最多 132 行；示例导入与依赖 artifact 静态存在性核对通过。日志本段增量双链有效，原日志保留前缀不变；上游子仓库干净。未运行 Java 示例、原测试或真实外部服务，未执行全库 lint。
+
+## 2026-10-22 · ReActAgent 上下文管理职责查询
+
+- **[query/更新]** 基于现有 wiki、1.0 原笔记与本地 `v1.0.12` 源码，向 [[wiki/synthesis/AgentScope1.0面试答题主线]] 追加上下文职责说明：默认 Memory 只累积历史；自动压缩由 AutoContextMemory + AutoContextHook 接入；Session、长期记忆和 ToolExecutionContext 各有不同职责。来源挂载 [[AI项目/AgentScope1.0/8.AgentScope Java中ReactAgent的实现原理]]、[[AI项目/AgentScope1.0/5.AgentScope Java特性：智能上下文压缩]]、[[AI项目/AgentScope1.0/6.实战：实现AgentScope的三层记忆体系]]。
+- **[核对]** 静态检查消息加入、prepareMessages、PreReasoning 输入替换、默认 Memory、压缩入口与扩展依赖，并核对官方同标签 AutoContextHook 页面；未修改 raw 或源码，未调用真实模型，未全库重扫。本次说明沿用现有版本核对结论，无新增冲突覆盖。
+
+
+## 2026-10-22 · AgentScope 2.0 会话标识源码审查与修复
+
+- **[review/output]** 用户要求 review 代码并寻找可提交修复。定向审查 ReActAgent 会话键、缓存/版本/权限、持久化、队列与中断，确认拼接键碰撞及反向拆分导致错误保存。新建 [[AI项目/AgentScope2.0/review/01.会话标识碰撞与修复]]，含复现条件、原版与修复来源、测试证据和可移植补丁；未全库重扫。
+- **[fix]** 原源码保持 v2.0.4 / 0b6743b263ba8e39eb417e35048026f1e0196548，另建修复工作区（最终移至 /private/tmp/agentscope-java-slot-fix-761af7f6），分支 codex/fix-session-slot-identity，本地提交 761af7f6：fix(core): preserve structured session slot identities。SlotRef 二元组取代拼接/解析键，新增 5 项回归，调整 2 个已有私有反射测试辅助代码，共 4 个 Java 文件；无公开 API/持久化格式变更，未推送远端。
+- **[test/lint]** 5 个场景在原版均失败，修复后通过；8 组测试入口合计 103 项、0 失败/错误/跳过，改动文件 Spotless 与 diff --check 通过，补丁在原快照 apply --check 通过但未应用。构建使用临时镜像与 UTF-8/预载测试代理，无 POM/依赖改动；没有调用真实外部服务。报告与增量双链/代码位置有效，单页不超过 200 行。
+- **[ingest]** 更新 2.0 README 与 [[wiki/synthesis/AgentScope2.0面试答题主线]] 入口，补上“逻辑隔离须有无碰撞内部键”的运行证据；历史静态核对日志保留，原 1.0 内容、2.0 标签快照与既有教程口径不覆盖。
+
+
+## 2026-10-22 · Reactor Mono 与 Flux 使用查询
+
+- **[query/更新]** 在 [[wiki/synthesis/AgentScope1.0面试答题主线]] 追加 Reactor 执行链读法，引用 [[AI项目/AgentScope1.0/2.AgentScope Java特性：流式输出、结构化输出、超时与重试、执行控制]]、[[AI项目/AgentScope1.0/7.AgentScope Java特性：Hook]]、[[AI项目/AgentScope1.0/8.AgentScope Java中ReactAgent的实现原理]]。定向核对本地 v1.0.12 的 call、stream 与 reasoning，以及 Reactor 官方 Mono/Flux、订阅、调度和 defer 文档；原笔记、源码及其他既有修改保持原状。
+- **[lint]** 本次主线页 frontmatter、200 行上限及双链目标检查通过；仅静态核对示例和操作符含义，未运行模型或应用。

@@ -37,6 +37,20 @@ updated: 2026-10-22
 
 先说明框架提供的工具协议、生命周期和状态接口，再讲应用自己如何管理身份、审批、方案、跨节点确认及外部幂等。对照 [[wiki/synthesis/gogo-agent面试答题主线]] 与 [[AI项目/gogo-agent/interview/README]]；两个目录的源码快照需各自核对。
 
+## 查询补充：ReActAgent 为什么看不到完整的上下文管理？
+
+- **职责分工**：`ReActAgent` 负责执行循环、消息入库和输入组装。`doCall` 将新输入加入 Memory，`prepareMessages` 拼接系统提示与 `memory.getMessages()`，`reasoning` 触发 `PreReasoningEvent` 后将事件中的消息及工具 Schema 交给模型。自动压缩策略通过扩展接入，而非固化在循环中。来源：[[AI项目/AgentScope1.0/8.AgentScope Java中ReactAgent的实现原理]]；本地 v1.0.12 `ReActAgent.java:264、460、821`。
+- **默认行为**：Builder 使用 `InMemoryMemory`，其 `getMessages()` 返回全部非空历史消息，不自带窗口截断或摘要。`AutoContextMemory.getMessages()` 也只读取工作视图，不自动触发压缩。来源：[[AI项目/AgentScope1.0/3.AgentScope Java特性：多轮会话&会话持久化]]、[[AI项目/AgentScope1.0/5.AgentScope Java特性：智能上下文压缩]]；本地 `ReActAgent.java:1106`、`InMemoryMemory.java:99`、`AutoContextMemory.java:157`。
+- **1.0.12 接法**：引入 `agentscope-extensions-autocontext-memory`，同时配置 `.memory(new AutoContextMemory(config, chatModel))` 与 `.hook(new AutoContextHook())`。Hook 在 PreCall 注册重载工具，在每次常规推理的 PreReasoning 调用 `compressIfNeeded()`，随后重建并设置实际输入；单换 Memory 不会自动压缩。来源：[[AI项目/AgentScope1.0/6.实战：实现AgentScope的三层记忆体系]]、[[AI项目/AgentScope1.0/interview/05.自动上下文压缩原理]]。
+- **持久化与召回**：Session 负责跨重启保存/恢复 Memory 状态，长期记忆负责跨会话事实召回；二者不能代替当前请求的 token 预算。预算需额外考虑系统提示、工具 Schema、检索内容及输出空间，单次压缩成功不保证完整请求已经降到安全范围。来源：[[AI项目/AgentScope1.0/3.AgentScope Java特性：多轮会话&会话持久化]]、[[AI项目/AgentScope1.0/4.AgentScope Java特性：长期记忆]]、[[AI项目/AgentScope1.0/interview/05.自动上下文压缩原理]]。
+- **区分业务上下文**：用户身份、数据库连接等工具侧参数可用 `ToolExecutionContext` 注入；这与模型消费的对话上下文不是同一概念。来源：[[AI项目/AgentScope1.0/9.AgentScope Java特性：工具集成]]。
+
+## 查询补充：如何读 Mono 与 Flux 执行链？
+
+- 在本系列 API 中，`agent.call(...)` 返回 `Mono<Msg>` 表达最终回复，`agent.stream(...)` 返回 `Flux<Event>` 表达执行过程中的多条事件。普通同步示例用 `.block()` 等待最终结果；流式 Web 示例返回 Flux 交给框架消费。来源：[[AI项目/AgentScope1.0/2.AgentScope Java特性：流式输出、结构化输出、超时与重试、执行控制]]。
+- 阅读 `reasoning` 时按数据类型追踪：推理前事件 → `flatMapMany` 接模型 chunk 流 → `doOnNext` 更新累积器 → `then(Mono.defer(...))` 在流完成后构造最终消息 → `flatMap` 接 PostReasoning Hook。该实现使用延后构造来读取累积后的最终状态。来源：[[AI项目/AgentScope1.0/8.AgentScope Java中ReactAgent的实现原理]]；本地 v1.0.12 `ReActAgent.java:460`。
+- Hook 返回 `Mono<T>`，调用方用 `flatMap(hook::onEvent)` 将处理串入主链；业务代码应将需要等待的异步步骤接回返回链，而非照抄内部通知场景的独立 `subscribe()`。来源：[[AI项目/AgentScope1.0/7.AgentScope Java特性：Hook]]、[[AI项目/AgentScope1.0/8.AgentScope Java中ReactAgent的实现原理]]。
+
 ## 证据边界
 
 本次为静态源码与文档核对，未运行原测试或真实模型/MCP 服务。⚠️ raw 缺失，待补充：应用级压测、真实 token/账单、故障注入、权限与个人实践报告。框架支持、应用接入、实际验证三者分开表述。
